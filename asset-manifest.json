@@ -1,11 +1,11 @@
 {
-  "main.css": "/phoenix-web-app/static/css/main.67324a91.chunk.css",
-  "main.js": "/phoenix-web-app/static/js/main.fb336614.chunk.js",
-  "main.css.map": "/phoenix-web-app/static/css/main.67324a91.chunk.css.map",
-  "main.js.map": "/phoenix-web-app/static/js/main.fb336614.chunk.js.map",
-  "runtime~main.js": "/phoenix-web-app/static/js/runtime~main.5b34f47f.js",
-  "runtime~main.js.map": "/phoenix-web-app/static/js/runtime~main.5b34f47f.js.map",
-  "vendors~main.js": "/phoenix-web-app/static/js/vendors~main.3ca81432.chunk.js",
-  "vendors~main.js.map": "/phoenix-web-app/static/js/vendors~main.3ca81432.chunk.js.map",
-  "index.html": "/phoenix-web-app/index.html"
+  "main.css": "/static/css/main.67324a91.chunk.css",
+  "main.js": "/static/js/main.66029993.chunk.js",
+  "main.css.map": "/static/css/main.67324a91.chunk.css.map",
+  "main.js.map": "/static/js/main.66029993.chunk.js.map",
+  "runtime~main.js": "/static/js/runtime~main.d53d57e4.js",
+  "runtime~main.js.map": "/static/js/runtime~main.d53d57e4.js.map",
+  "vendors~main.js": "/static/js/vendors~main.3ca81432.chunk.js",
+  "vendors~main.js.map": "/static/js/vendors~main.3ca81432.chunk.js.map",
+  "index.html": "/index.html"
 }
