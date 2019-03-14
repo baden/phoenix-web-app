@@ -31,6 +31,65 @@
     <link rel="apple-touch-startup-image" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)" href="static/splash/SplashScreen2048x2732.png">
 
     <title>FX-360</title>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+    <style media="screen">
+    .flex-wrapper {
+      display: flex;
+      flex-flow: row nowrap;
+    }
+
+    .single-chart {
+      width: 180px;
+      justify-content: space-around ;
+    }
+
+    .circular-chart {
+      display: block;
+      margin: 10px auto;
+      max-width: 80%;
+      max-height: 250px;
+    }
+
+    .circle-bg {
+      fill: none;
+      stroke: #eee;
+      stroke-width: 5.0;
+    }
+
+    .circle {
+      fill: none;
+      stroke-width: 4.0;
+      stroke-linecap: round;
+      animation: progress 1s ease-out forwards;
+    }
+
+    @keyframes progress {
+      0% {
+        stroke-dasharray: 0 100;
+      }
+    }
+
+    .circular-chart.orange .circle {
+      stroke: #ff9f00;
+    }
+
+    .circular-chart.green .circle {
+      stroke: #4CC790;
+    }
+
+    .circular-chart.blue .circle {
+      stroke: #3c9ee5;
+    }
+
+    .percentage {
+      fill: #666;
+      font-family: sans-serif;
+      font-size: 0.5em;
+      text-anchor: middle;
+    }
+    </style>
 </head>
 <body>
     <noscript>

@@ -1,13 +1,16 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Browser
+import Config
 import Html exposing (Html, div, h1, img)
-import Html.Attributes exposing (src)
+import Html.Attributes exposing (src, style)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
 import Element.Input as Input
 import Element.Font as Font
+import Json.Encode as Encode
+import Components.ChartSvg as ChartSvg
 
 
 ---- MODEL ----
@@ -19,7 +22,9 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { username = "" }, Cmd.none )
+    ( { username = "" }
+    , Cmd.batch [ websocketOpen Config.ws ]
+    )
 
 
 
@@ -29,6 +34,9 @@ init =
 type Msg
     = NoOp
     | OnName String
+    | WebsocketIn String
+    | OpenWebsocket String
+    | WebsocketOpened Bool
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -43,6 +51,38 @@ update msg model =
 
         NoOp ->
             ( model, Cmd.none )
+
+        WebsocketIn message ->
+            let
+                _ =
+                    Debug.log "WebsocketIn" message
+            in
+                ( model, Cmd.none )
+
+        OpenWebsocket url ->
+            ( model, websocketOpen url )
+
+        WebsocketOpened _ ->
+            -- let
+            --     -- ( request, listener ) =
+            --     --     sendTicket model.websocketTicket
+            -- in
+            -- sendMessage model request listener
+            ( model
+            , Cmd.batch
+                [ websocketOut <|
+                    makeRequest 1 "foo"
+                ]
+            )
+
+
+makeRequest : Int -> String -> Encode.Value
+makeRequest id method =
+    Encode.object
+        [ ( "jsonrpc", Encode.string "2.0" )
+        , ( "method", Encode.string method )
+        , ( "id", Encode.int id )
+        ]
 
 
 
@@ -68,7 +108,8 @@ myColOfStuff model =
     column [ centerX, centerY, spacing 36 ]
         [ myRowOfStuff
         , (Element.text "Вот над этой строкой мы сейчас усердно работаем...")
-        , authViev model
+        , ChartSvg.chartView "Батарея" 80.0
+        , authView model
         ]
 
 
@@ -92,8 +133,8 @@ myElement =
         (Element.text "+")
 
 
-authViev : Model -> Element Msg
-authViev model =
+authView : Model -> Element Msg
+authView model =
     column
         [ spacing 20
         , height fill
@@ -143,5 +184,22 @@ main =
         { view = view
         , init = \_ -> init
         , update = update
-        , subscriptions = always Sub.none
+        , subscriptions = subscriptions
         }
+
+
+port websocketOpen : String -> Cmd msg
+
+
+port websocketOpened : (Bool -> msg) -> Sub msg
+
+
+port websocketIn : (String -> msg) -> Sub msg
+
+
+port websocketOut : Encode.Value -> Cmd msg
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch [ websocketOpened WebsocketOpened, websocketIn WebsocketIn ]
