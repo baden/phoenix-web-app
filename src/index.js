@@ -1,5 +1,6 @@
 import './main.css';
 import { Elm } from './Main.elm';
+import Map from './Map/leaflet-port.js';
 import registerServiceWorker from './registerServiceWorker';
 
 var app = Elm.Main.init({
@@ -30,3 +31,9 @@ app.ports.websocketOut.subscribe(message => {
         socket.send(JSON.stringify(message));
     }
 });
+
+
+// app.ports.mapInit.subscribe(id => {
+//     console.log('mapInit(', id, ')');
+//     Map(id);
+// });

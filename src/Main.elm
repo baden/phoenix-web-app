@@ -3,7 +3,7 @@ port module Main exposing (..)
 import Browser
 import Config
 import Html exposing (Html, div, h1, img)
-import Html.Attributes exposing (src, style)
+import Html.Attributes exposing (src, style, class)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
@@ -92,9 +92,12 @@ makeRequest id method =
 view : Model -> Html Msg
 view model =
     div []
-        [ img [ src "static/images/qr_code.png" ] []
-        , h1 [] [ Html.text "Приложение в процессе разработки, приходите завтра." ]
-        , eel model
+        [ div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string model.username) ] []
+        , div [ class "control" ]
+            [ img [ src "static/images/qr_code.png" ] []
+            , h1 [] [ Html.text "Приложение в процессе разработки, приходите завтра." ]
+            , eel model
+            ]
         ]
 
 
@@ -198,6 +201,9 @@ port websocketIn : (String -> msg) -> Sub msg
 
 
 port websocketOut : Encode.Value -> Cmd msg
+
+
+port mapInit : String -> Cmd msg
 
 
 subscriptions : Model -> Sub Msg

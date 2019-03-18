@@ -1,0 +1,27 @@
+{
+  "name": "phoenix-web-app",
+  "version": "1.0.0",
+  "description": "(public/static/images/qr_code.png)",
+  "main": "elmapp.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "leaflet": "^1.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baden/phoenix-web-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/baden/phoenix-web-app/issues"
+  },
+  "homepage": "https://github.com/baden/phoenix-web-app#readme"
+}
