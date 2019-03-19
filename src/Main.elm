@@ -1,9 +1,11 @@
 port module Main exposing (..)
 
 import Browser
+import Browser.Navigation as Nav
 import Config
-import Html exposing (Html, div, h1, img)
-import Html.Attributes exposing (src, style, class)
+import Url
+import Html exposing (Html, div, h1, img, a)
+import Html.Attributes exposing (src, style, class, href)
 import Element exposing (..)
 import Element.Background as Background
 import Element.Border as Border
@@ -11,32 +13,60 @@ import Element.Input as Input
 import Element.Font as Font
 import Json.Encode as Encode
 import Components.ChartSvg as ChartSvg
+import Page.Login as Login
 
 
 ---- MODEL ----
 
 
+type Route
+    = Home
+    | Login
+    | SignUp
+    | Contracts
+    | Contract Int
+    | Profile String
+
+
 type alias Model =
-    { username : String }
-
-
-init : ( Model, Cmd Msg )
-init =
-    ( { username = "" }
-    , Cmd.batch [ websocketOpen Config.ws ]
-    )
+    { key : Nav.Key
+    , url : Url.Url
+    , currentView : Route
+    , login : Login.Model
+    }
 
 
 
+-- type alias Model =
+--     { username : String }
 ---- UPDATE ----
 
 
 type Msg
     = NoOp
-    | OnName String
+    | LinkClicked Browser.UrlRequest
+    | UrlChanged Url.Url
     | WebsocketIn String
     | OpenWebsocket String
     | WebsocketOpened Bool
+    | LoginMgs Login.Msg
+
+
+
+-- init : ( Model, Cmd Msg )
+-- init =
+--     ( { username = "" }
+--     , Cmd.batch [ websocketOpen Config.ws ]
+--     )
+
+
+init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init flags url key =
+    let
+        ( loginModel, _ ) =
+            Login.init
+    in
+        ( Model key url Home loginModel, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -46,11 +76,36 @@ update msg model =
     --         Debug.log "Update" ( msg, model )
     -- in
     case msg of
-        OnName val ->
-            ( { model | username = val }, Cmd.none )
-
         NoOp ->
             ( model, Cmd.none )
+
+        LoginMgs loginMsg ->
+            let
+                ( updatedLoginModel, upstream ) =
+                    Login.update loginMsg model.login
+            in
+                ( { model | login = updatedLoginModel }, Cmd.map LoginMgs upstream )
+
+        LinkClicked urlRequest ->
+            let
+                _ =
+                    Debug.log "LinkClicked" urlRequest
+            in
+                case urlRequest of
+                    Browser.Internal url ->
+                        ( model, Nav.pushUrl model.key (Url.toString url) )
+
+                    Browser.External href ->
+                        ( model, Nav.load href )
+
+        UrlChanged url ->
+            let
+                _ =
+                    Debug.log "UrlChanged" url
+            in
+                ( { model | url = url, currentView = Login }
+                , Cmd.none
+                )
 
         WebsocketIn message ->
             let
@@ -87,18 +142,24 @@ makeRequest id method =
 
 
 ---- VIEW ----
+-- view : Model -> Html Msg
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
-    div []
-        [ div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string model.username) ] []
-        , div [ class "control" ]
-            [ img [ src "static/images/qr_code.png" ] []
-            , h1 [] [ Html.text "Приложение в процессе разработки, приходите завтра." ]
-            , eel model
+    { title = "Charity Code - Helping Nonprofits find the development help they need!"
+    , body =
+        [ div []
+            [ div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []
+            , div [ class "control" ]
+                [ img [ src "static/images/qr_code.png" ] []
+                , a [ href "/auth" ] []
+                , h1 [] [ Html.text "Приложение в процессе разработки, приходите завтра." ]
+                , eel model
+                ]
             ]
         ]
+    }
 
 
 eel model =
@@ -112,7 +173,7 @@ myColOfStuff model =
         [ myRowOfStuff
         , (Element.text "Вот над этой строкой мы сейчас усердно работаем...")
         , ChartSvg.chartView "Батарея" 80.0
-        , authView model
+        , Login.view model.login |> Element.map LoginMgs
         ]
 
 
@@ -136,59 +197,29 @@ myElement =
         (Element.text "+")
 
 
-authView : Model -> Element Msg
-authView model =
-    column
-        [ spacing 20
-        , height fill
-        , width (fillPortion 50)
-        ]
-        [ (Element.text "Авторизация")
-        , (Input.text []
-            { onChange = OnName
-            , text = model.username
-            , placeholder = Just (Input.placeholder [] (text "username"))
-            , label = Input.labelHidden "Solution"
-            }
-          )
-        , Input.button
-            [ Background.color blue
-            , Font.color white
-            , Border.color darkBlue
-            , paddingXY 32 16
-            , Border.rounded 3
-            , width fill
-            ]
-            { onPress = Nothing
-            , label = Element.text <| "Авторизоваться как " ++ model.username
-            }
-        ]
-
-
-darkBlue =
-    Element.rgb 0 0 0.9
-
-
-blue =
-    Element.rgb 0 0 0.8
-
-
-white =
-    Element.rgb 1 1 1
-
-
 
 ---- PROGRAM ----
 
 
 main : Program () Model Msg
 main =
-    Browser.element
-        { view = view
-        , init = \_ -> init
+    Browser.application
+        { init = init
+        , view = view
         , update = update
         , subscriptions = subscriptions
+        , onUrlChange = UrlChanged
+        , onUrlRequest = LinkClicked
         }
+
+
+
+-- Browser.element
+--     { view = view
+--     , init = \_ -> init
+--     , update = update
+--     , subscriptions = subscriptions
+--     }
 
 
 port websocketOpen : String -> Cmd msg
