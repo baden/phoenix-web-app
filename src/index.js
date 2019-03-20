@@ -2,6 +2,8 @@ import './main.css';
 import { Elm } from './Main.elm';
 import Map from './Map/leaflet-port.js';
 import registerServiceWorker from './registerServiceWorker';
+import "../node_modules/materialize-css/dist/css/materialize.css";
+// import materialize from 'materialize';
 
 var app = Elm.Main.init({
   node: document.getElementById('root')

@@ -6,28 +6,14 @@ import Config
 import Url
 import Url.Parser as Parser
 import Page.Route as Route
-import Html exposing (Html, div, h1, img, a)
-import Html.Attributes exposing (src, style, class, href)
-import Element exposing (..)
-import Element.Background as Background
-import Element.Border as Border
-import Element.Input as Input
-import Element.Font as Font
+import Html exposing (Html)
 import Json.Encode as Encode
 import Components.ChartSvg as ChartSvg
 import Page.Home as Home
 import Page.Login as Login
 import Page.System.Info as SystemInfo
-
-
----- MODEL ----
--- type Route
---     = Home
---     | Login
---     | SignUp
---     | Contracts
---     | Contract Int
---     | Profile String
+import Page.NotFound as NotFound
+import Page.GlobalMap as GlobalMap
 
 
 type alias Model =
@@ -36,12 +22,6 @@ type alias Model =
     , page : Route.Page
     , login : Login.Model
     }
-
-
-
--- type alias Model =
---     { username : String }
----- UPDATE ----
 
 
 type Msg
@@ -82,6 +62,7 @@ init flags url key =
         , Cmd.batch
             [ -- Backend.fetchMe MeFetched
               navedCmd
+            , websocketOpen Config.ws
             ]
         )
 
@@ -179,65 +160,30 @@ makeRequest id method =
 view : Model -> Browser.Document Msg
 view model =
     { title = "Fenix App"
-    , body = viewPage model
+    , body = [ viewPage model ]
     }
 
 
-viewPage : Model -> List (Html Msg)
+viewPage : Model -> Html Msg
 viewPage model =
     case model.page of
         Route.Home ->
             Home.view
 
+        Route.Login ->
+            Login.loginView model.login |> Html.map LoginMgs
+
+        Route.Auth ->
+            Login.authView model.login |> Html.map LoginMgs
+
         Route.SystemInfo id ->
             SystemInfo.view id
 
+        Route.GlobalMap ->
+            GlobalMap.view
+
         _ ->
-            [ div []
-                [ div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []
-                , div [ class "control" ]
-                    [ img [ src "static/images/qr_code.png" ] []
-                    , a [ href "/auth" ] []
-                    , h1 [] [ Html.text "Приложение в процессе разработки, приходите завтра." ]
-                    , eel model
-                    ]
-                ]
-            ]
-
-
-eel model =
-    Element.layout []
-        (myColOfStuff model)
-
-
-myColOfStuff : Model -> Element Msg
-myColOfStuff model =
-    column [ centerX, centerY, spacing 36 ]
-        [ myRowOfStuff
-        , (Element.text "Вот над этой строкой мы сейчас усердно работаем...")
-        , ChartSvg.chartView "Батарея" 80.0
-        , Login.view model.login |> Element.map LoginMgs
-        ]
-
-
-myRowOfStuff : Element Msg
-myRowOfStuff =
-    row [ width fill, centerY, spacing 30 ]
-        [ myElement
-        , myElement
-        , el [ alignRight ] myElement
-        ]
-
-
-myElement : Element Msg
-myElement =
-    el
-        [ Background.color (rgb255 240 0 245)
-        , Font.color (rgb255 255 255 255)
-        , Border.rounded 3
-        , padding 3
-        ]
-        (Element.text "+")
+            NotFound.view
 
 
 
@@ -254,15 +200,6 @@ main =
         , onUrlChange = UrlChanged
         , onUrlRequest = LinkClicked
         }
-
-
-
--- Browser.element
---     { view = view
---     , init = \_ -> init
---     , update = update
---     , subscriptions = subscriptions
---     }
 
 
 port websocketOpen : String -> Cmd msg

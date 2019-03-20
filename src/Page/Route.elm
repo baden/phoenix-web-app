@@ -5,6 +5,8 @@ import Url.Parser as Parser exposing (Parser, oneOf, s, string, map, top, (</>))
 
 type Page
     = Home
+    | Auth
+    | Login
     | User
     | GlobalMap
     | Config
@@ -23,6 +25,7 @@ routeParser =
         , map Config (s "config")
         , map SystemInfo (s "system" </> string)
         , map SystemConfig (s "system" </> string </> s "config")
-        , map BouncePage (s "auth")
+        , map Auth (s "auth")
+        , map Login (s "login")
         , map BouncePage (s "logout")
         ]

@@ -4,11 +4,10 @@ import Html exposing (Html, div, text, a)
 import Html.Attributes exposing (class, href)
 
 
-view : String -> List (Html a)
+view : String -> Html a
 view id =
-    [ div []
+    div []
         [ div [] [ text "Информация о системе" ]
         , div [] [ text <| "Id:" ++ id ]
         , a [ class "button", href "/" ] [ text "На главную" ]
         ]
-    ]
