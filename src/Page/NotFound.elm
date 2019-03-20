@@ -1,10 +1,9 @@
 module Page.NotFound exposing (view)
 
-import Html exposing (Html)
-import Element exposing (..)
+import Html exposing (Html, div, text)
 
 
 view : Html a
 view =
-    layout []
-        (el [] (text "404. Page not found."))
+    div []
+        [ text "404. Page not found." ]

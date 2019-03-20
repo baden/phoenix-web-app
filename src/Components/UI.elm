@@ -1,6 +1,7 @@
 module Components.UI
     exposing
         ( button
+        , cmdButton
         , formHeader
         , formInput
         , formPassword
@@ -12,6 +13,12 @@ module Components.UI
 import Html exposing (Html, h1, h5, div, a, text, i, input)
 import Html.Attributes exposing (class, href, placeholder, value, type_)
 import Html.Events exposing (onInput)
+
+
+cmdButton : String -> Html a
+cmdButton label =
+    Html.button [ class "waves-effect waves-light btn" ]
+        [ text label ]
 
 
 button : String -> String -> Html a
@@ -38,7 +45,8 @@ formInput title value_ update =
 formPassword : String -> String -> (String -> msg) -> Html msg
 formPassword title value_ update =
     input
-        [ onInput update
+        [ type_ "password"
+        , onInput update
         , value value_
         , placeholder title
         ]

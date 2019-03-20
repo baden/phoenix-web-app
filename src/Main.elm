@@ -182,6 +182,9 @@ viewPage model =
         Route.GlobalMap ->
             GlobalMap.view
 
+        Route.SystemOnMap id ->
+            GlobalMap.viewSystem id
+
         _ ->
             NotFound.view
 

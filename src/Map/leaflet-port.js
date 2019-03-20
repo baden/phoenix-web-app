@@ -44,42 +44,66 @@ function addMap(element) {
     // configureMap(element);
 }
 
-const MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+// const MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+//
+// var observer = new MutationObserver(function(mutations) {
+//     mutations.forEach(function(m) {
+//         // console.log("mutations", m);
+//         m.addedNodes.forEach(function(n) {
+//             if (n.getElementsByClassName == null) return;
+//             var elements = (n.classList.contains("leaflet-map")) ? [n] : n.getElementsByClassName("leaflet-map");
+//             // console.log("mutations elements", [n, elements]);
+//             Array.prototype.forEach.call(elements, function(element) {
+//                 addMap(element);
+//             });
+//         });
+//         m.removedNodes.forEach(function(n) {
+//             if (n.getElementsByClassName == null) return;
+//             // var elements = n.getElementsByClassName("leaflet-map");
+//             var elements = (n.classList.contains("leaflet-map")) ? [n] : n.getElementsByClassName("leaflet-map");
+//             Array.prototype.forEach.call(elements, function(element) {
+//                 if (element._leaflet_id != null) {
+//                     console.log("removing map with leaflet id", element._leaflet_id);
+//                     maps[element._leaflet_id].remove();
+//                     delete maps[element._leaflet_id];
+//                     // delete mapLayers[element._leaflet_id];
+//                 }
+//             });
+//         });
+//         if (m.type == "attributes") {
+//             // configureMap(m.target);
+//             console.log("attributes", m.target);
+//         }
+//     });
+// });
+//
+// observer.observe(document.body, {
+//     subtree: true,
+//     childList: true,
+//     attributes: true,
+//     attributeFilter: ["data-map-selected-var"],
+//     attributeOldValue: true
+// });
 
-var observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(m) {
-        m.addedNodes.forEach(function(n) {
-            if (n.getElementsByClassName == null) return;
-            var elements = (n.classList.contains("leaflet-map")) ? [n] : n.getElementsByClassName("leaflet-map");
-            // console.log("mutations elements", [n, elements]);
-            Array.prototype.forEach.call(elements, function(element) {
-                addMap(element);
-            });
-        });
-        m.removedNodes.forEach(function(n) {
-            if (n.getElementsByClassName == null) return;
-            // var elements = n.getElementsByClassName("leaflet-map");
-            var elements = (n.classList.contains("leaflet-map")) ? [n] : n.getElementsByClassName("leaflet-map");
-            Array.prototype.forEach.call(elements, function(element) {
-                if (element._leaflet_id != null) {
-                    console.log("removing map with leaflet id", element._leaflet_id);
-                    maps[element._leaflet_id].remove();
-                    delete maps[element._leaflet_id];
-                    // delete mapLayers[element._leaflet_id];
-                }
-            });
-        });
-        if (m.type == "attributes") {
-            // configureMap(m.target);
-            console.log("attributes", m.target);
-        }
-    });
-});
 
-observer.observe(document.body, {
-    subtree: true,
-    childList: true,
-    attributes: true,
-    attributeFilter: ["data-map-selected-var"],
-    attributeOldValue: true
-});
+class LeafletMap extends HTMLElement {
+    connectedCallback() {
+        var container = document.createElement("div");
+        // container.innerHTML = "LeafletMap";
+        container.className = "leaflet-map";
+        this.appendChild(container);
+        console.log('add map', this);
+        addMap(container);
+        this._leaflet_id = container._leaflet_id;
+    }
+
+    disconnectedCallback() {
+        // this[VIEW].disconnect();
+        console.log('remove map', this);
+        maps[this._leaflet_id].remove();
+        delete maps[this._leaflet_id];
+    }
+
+}
+
+window.customElements.define("leaflet-map", LeafletMap);
