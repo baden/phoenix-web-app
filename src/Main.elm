@@ -85,34 +85,34 @@ update msg model =
                 ( { model | login = updatedLoginModel }, Cmd.map LoginMgs upstream )
 
         LinkClicked urlRequest ->
-            let
-                _ =
-                    Debug.log "LinkClicked" urlRequest
-            in
-                case urlRequest of
-                    Browser.Internal url ->
-                        ( model, Nav.pushUrl model.key (Url.toString url) )
+            -- let
+            --     _ =
+            --         Debug.log "LinkClicked" urlRequest
+            -- in
+            case urlRequest of
+                Browser.Internal url ->
+                    ( model, Nav.pushUrl model.key (Url.toString url) )
 
-                    Browser.External href ->
-                        ( model, Nav.load href )
+                Browser.External href ->
+                    ( model, Nav.load href )
 
         UrlChanged url ->
-            let
-                _ =
-                    Debug.log "UrlChanged" url
-            in
-                case Parser.parse Route.routeParser url of
-                    -- Just Route.BouncePage ->
-                    --     ( model, Nav.load (Url.toString url) )
-                    Just page ->
-                        ( { model | page = page }
-                            |> computeViewForPage
-                        , Cmd.none
-                        )
+            -- let
+            --     _ =
+            --         Debug.log "UrlChanged" url
+            -- in
+            case Parser.parse Route.routeParser url of
+                -- Just Route.BouncePage ->
+                --     ( model, Nav.load (Url.toString url) )
+                Just page ->
+                    ( { model | page = page }
+                        |> computeViewForPage
+                    , Cmd.none
+                    )
 
-                    Nothing ->
-                        -- 404 would be nice
-                        ( model, Cmd.none )
+                Nothing ->
+                    -- 404 would be nice
+                    ( model, Cmd.none )
 
         WebsocketIn message ->
             let

@@ -1,14 +1,11 @@
 module Page.Home exposing (view)
 
-import Html exposing (Html)
+import Html exposing (Html, h1, text, i, p, a, button)
+import Html.Attributes exposing (src, href, class)
 
 
--- import Html.Attributes exposing (class, href)
-
-import Element exposing (..)
-import Element.Region as Region
-
-
+-- import Element exposing (..)
+-- import Element.Region as Region
 -- import Element.Attributes exposing (class)
 
 import Components.UI as UI
@@ -16,25 +13,23 @@ import Components.UI as UI
 
 view : Html a
 view =
-    Element.layout [] <|
-        column [ centerX, width fill ]
-            [ el [ Region.heading 1 ] (text "Феникс")
-            , image [] { src = "static/images/qr_code.png", description = "Отсканируйте код на мобильном устройстве" }
-            , paragraph [] [ text "Чтобы пользоваться сервисом, вы должны авторизоваться в системе." ]
-            , column [ centerX, width fill ]
-                [ UI.button "/login" "Авторизация"
-                , UI.button "/auth" "Новый пользователь"
-                , UI.button "/map" "Карта"
-                ]
-            , link
-                [--class "waves-effect waves-light btn"
-                ]
-                { url = "/system/FOOBAR"
-                , label = Element.text "Информация о трекере"
-                }
-
-            -- [ class "waves-effect waves-light btn", href "/system/FOOBAR" ]
-            -- [ i [ class "material-icons left" ] [ text "cloud" ]
-            -- , text "Информация о трекере"
-            -- ]
+    UI.column12
+        [ h1 [] [ text "Феникс" ]
+        , i [ src "static/images/qr_code.png" ] []
+        , p [] [ text "Чтобы пользоваться сервисом, вы должны авторизоваться в системе." ]
+        , UI.button "/login" "Авторизация"
+        , UI.button "/auth" "Новый пользователь"
+        , UI.button "/map" "Карта"
+        , a
+            [ class "waves-effect waves-light btn"
+            , href "/system/FOOBAR"
             ]
+            [ text "Информация о трекере" ]
+        , button [ class "waves-effect waves-light btn" ]
+            [ text "Просто кнопка" ]
+
+        -- [ class "waves-effect waves-light btn", href "/system/FOOBAR" ]
+        -- [ i [ class "material-icons left" ] [ text "cloud" ]
+        -- , text "Информация о трекере"
+        -- ]
+        ]

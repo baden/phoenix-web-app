@@ -1,116 +1,69 @@
-module Components.UI exposing (button, formHeader, formInput, formPassword, formButton)
-
-import Html exposing (Html, h1, div, a, text, i)
-import Html.Attributes exposing (class, href)
-import Element exposing (..)
-import Element.Region as Region
-import Element.Font as Font
-import Element.Input as Input
-import Element.Background as Background
-import Element.Border as Border
-
-
--- type Styles
---     = None
---
---
--- stylesheet : StyleSheet Styles variation
--- stylesheet =
---     Style.stylesheet
---         [ style None [] ]
-
-
-addClass name =
-    htmlAttribute (Html.Attributes.class name)
-
-
-button : String -> String -> Element a
-button url label =
-    Element.html
-        (a [ class "waves-effect waves-light btn", href url ]
-            [ Html.div [] [ Html.text label ] ]
+module Components.UI
+    exposing
+        ( button
+        , formHeader
+        , formInput
+        , formPassword
+        , formButton
+        , column12
+        , smallForm
         )
 
+import Html exposing (Html, h1, h5, div, a, text, i, input)
+import Html.Attributes exposing (class, href, placeholder, value, type_)
+import Html.Events exposing (onInput)
 
 
--- Element.link
---     -- url
---     [ addClass "waves-effect waves-light btn", centerX ]
---     { url = url
---     , label = Element.text label
---     }
--- Element.html <|
---     Html.a
---         [ class "btn-floating pulse", href url ]
---         [ Html.i [ class "material-icons" ] [ Html.text "menu" ]
---         ]
+button : String -> String -> Html a
+button url label =
+    a [ class "waves-effect waves-light btn", href url ]
+        [ text label ]
 
 
-formHeader : String -> Element m
+formHeader : String -> Html m
 formHeader title =
-    el
-        [ Region.heading 1
-        , width fill
+    h5 [] [ text title ]
 
-        -- , centerX
-        -- , alignLeft
-        , Font.size 36
-        , mouseOver
-            [ Font.color (rgba 0.3 0.4 0.6 0.5) ]
-        , padding 12
+
+formInput : String -> String -> (String -> msg) -> Html msg
+formInput title value_ update =
+    input
+        [ onInput update
+        , placeholder title
+        , value value_
         ]
-        (Element.text title)
+        []
 
 
-formInput : String -> String -> (String -> msg) -> Element msg
-formInput title input update =
-    Input.text [ Input.focusedOnLoad ]
-        { onChange = update
-        , text = input
-        , placeholder = Just (Input.placeholder [] (Element.text title))
-        , label = Input.labelHidden title
-        }
+formPassword : String -> String -> (String -> msg) -> Html msg
+formPassword title value_ update =
+    input
+        [ onInput update
+        , value value_
+        , placeholder title
+        ]
+        []
 
 
-formPassword : String -> String -> (String -> msg) -> Element msg
-formPassword title input update =
-    Input.currentPassword []
-        { onChange = update
-        , text = input
-        , placeholder = Just (Input.placeholder [] (Element.text title))
-        , label = Input.labelHidden title
-        , show = False
-        }
-
-
-formButton : String -> Maybe String -> Maybe msg -> Element msg
+formButton : String -> Maybe String -> Maybe msg -> Html msg
 formButton title enabled update =
     case enabled of
         Nothing ->
-            (Input.button
-                [ Background.color blue
-                , Font.color white
-                , Border.color darkBlue
-                , paddingXY 32 16
-                , Border.rounded 3
-                , width (fill |> maximum 400)
-                ]
-                { onPress = update
-                , label = Element.text <| title
-                }
-            )
+            a
+                [ class "waves-effect waves-light btn", href "" ]
+                [ text title ]
 
         Just text_ ->
-            (Element.text text_)
+            text text_
 
 
-blue =
-    Element.rgb 0 0 0.8
+column12 : List (Html a) -> Html a
+column12 childrens =
+    div [ class "col s12" ] childrens
 
 
-white =
-    Element.rgb 1 1 1
-
-
-darkBlue =
-    Element.rgb 0 0 0.9
+smallForm : List (Html a) -> Html a
+smallForm childrens =
+    div [ class "row" ]
+        [ div [ class "col s8 offset-s2" ] childrens
+        ]
