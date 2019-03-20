@@ -48,20 +48,20 @@ const MutationObserver = window.MutationObserver || window.WebKitMutationObserve
 
 var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(m) {
-        // console.log("mutations", [m]);
         m.addedNodes.forEach(function(n) {
             if (n.getElementsByClassName == null) return;
-            var elements = n.getElementsByClassName("leaflet-map");
+            var elements = (n.classList.contains("leaflet-map")) ? [n] : n.getElementsByClassName("leaflet-map");
+            // console.log("mutations elements", [n, elements]);
             Array.prototype.forEach.call(elements, function(element) {
                 addMap(element);
             });
         });
         m.removedNodes.forEach(function(n) {
             if (n.getElementsByClassName == null) return;
-            var elements = n.getElementsByClassName("leaflet-map");
+            // var elements = n.getElementsByClassName("leaflet-map");
+            var elements = (n.classList.contains("leaflet-map")) ? [n] : n.getElementsByClassName("leaflet-map");
             Array.prototype.forEach.call(elements, function(element) {
                 if (element._leaflet_id != null) {
-                    // console.log("removed map element", [element]);
                     console.log("removing map with leaflet id", element._leaflet_id);
                     maps[element._leaflet_id].remove();
                     delete maps[element._leaflet_id];

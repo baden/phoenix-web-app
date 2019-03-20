@@ -4,6 +4,8 @@ import Browser
 import Browser.Navigation as Nav
 import Config
 import Url
+import Url.Parser as Parser
+import Page.Route as Route
 import Html exposing (Html, div, h1, img, a)
 import Html.Attributes exposing (src, style, class, href)
 import Element exposing (..)
@@ -13,25 +15,25 @@ import Element.Input as Input
 import Element.Font as Font
 import Json.Encode as Encode
 import Components.ChartSvg as ChartSvg
+import Page.Home as Home
 import Page.Login as Login
+import Page.System.Info as SystemInfo
 
 
 ---- MODEL ----
-
-
-type Route
-    = Home
-    | Login
-    | SignUp
-    | Contracts
-    | Contract Int
-    | Profile String
+-- type Route
+--     = Home
+--     | Login
+--     | SignUp
+--     | Contracts
+--     | Contract Int
+--     | Profile String
 
 
 type alias Model =
     { key : Nav.Key
     , url : Url.Url
-    , currentView : Route
+    , page : Route.Page
     , login : Login.Model
     }
 
@@ -65,8 +67,23 @@ init flags url key =
     let
         ( loginModel, _ ) =
             Login.init
+
+        model =
+            { key = key
+            , url = url
+            , page = Route.Home
+            , login = loginModel
+            }
+
+        ( navedModel, navedCmd ) =
+            update (UrlChanged url) model
     in
-        ( Model key url Home loginModel, Cmd.none )
+        ( navedModel
+        , Cmd.batch
+            [ -- Backend.fetchMe MeFetched
+              navedCmd
+            ]
+        )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -103,9 +120,18 @@ update msg model =
                 _ =
                     Debug.log "UrlChanged" url
             in
-                ( { model | url = url, currentView = Login }
-                , Cmd.none
-                )
+                case Parser.parse Route.routeParser url of
+                    -- Just Route.BouncePage ->
+                    --     ( model, Nav.load (Url.toString url) )
+                    Just page ->
+                        ( { model | page = page }
+                            |> computeViewForPage
+                        , Cmd.none
+                        )
+
+                    Nothing ->
+                        -- 404 would be nice
+                        ( model, Cmd.none )
 
         WebsocketIn message ->
             let
@@ -131,6 +157,11 @@ update msg model =
             )
 
 
+computeViewForPage : Model -> Model
+computeViewForPage model =
+    model
+
+
 makeRequest : Int -> String -> Encode.Value
 makeRequest id method =
     Encode.object
@@ -147,19 +178,31 @@ makeRequest id method =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "Charity Code - Helping Nonprofits find the development help they need!"
-    , body =
-        [ div []
-            [ div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []
-            , div [ class "control" ]
-                [ img [ src "static/images/qr_code.png" ] []
-                , a [ href "/auth" ] []
-                , h1 [] [ Html.text "Приложение в процессе разработки, приходите завтра." ]
-                , eel model
+    { title = "Fenix App"
+    , body = viewPage model
+    }
+
+
+viewPage : Model -> List (Html Msg)
+viewPage model =
+    case model.page of
+        Route.Home ->
+            Home.view
+
+        Route.SystemInfo id ->
+            SystemInfo.view id
+
+        _ ->
+            [ div []
+                [ div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []
+                , div [ class "control" ]
+                    [ img [ src "static/images/qr_code.png" ] []
+                    , a [ href "/auth" ] []
+                    , h1 [] [ Html.text "Приложение в процессе разработки, приходите завтра." ]
+                    , eel model
+                    ]
                 ]
             ]
-        ]
-    }
 
 
 eel model =
