@@ -42,6 +42,7 @@ function addMap(element) {
     maps[element._leaflet_id] = map;
     console.log("added leaflet id", element._leaflet_id);
     // configureMap(element);
+    return map;
 }
 
 // const MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
@@ -85,15 +86,42 @@ function addMap(element) {
 //     attributeOldValue: true
 // });
 
+const minScaleAttr = 'min-scale';
 
 class LeafletMap extends HTMLElement {
+    constructor() {
+        super();
+        console.log("LeafletMap:constructor", this);
+
+        new MutationObserver((mr) => this._stageElChange(mr))
+          .observe(this, { attributes: true, attributeFilter: ["data-map-center"], attributeOldValue: true});
+
+        // static get observedAttributes() {
+        //     console.log("observedAttributes");
+        //     return [minScaleAttr];
+        // }
+    }
+    // attributeChangedCallback(name, oldValue, newValue) {
+    //     console.log("attributeChangedCallback", name, oldValue, newValue);
+    //     if (name === minScaleAttr) {
+    //         if (this.scale < this.minScale) {
+    //             this.setTransform({ scale: this.minScale });
+    //         }
+    //     }
+    // }
+
     connectedCallback() {
         var container = document.createElement("div");
         // container.innerHTML = "LeafletMap";
         container.className = "leaflet-map";
         this.appendChild(container);
-        console.log('add map', this);
-        addMap(container);
+        var center = this.getAttribute('data-map-center');
+        var values = center.split(",");
+        var lat = parseFloat(values[0]);
+        var lng = parseFloat(values[1]);
+        console.log('add map', this, center);
+        this._map = addMap(container);
+        this._map.setView(L.latLng(lat, lng), 15);
         this._leaflet_id = container._leaflet_id;
     }
 
@@ -102,6 +130,25 @@ class LeafletMap extends HTMLElement {
         console.log('remove map', this);
         maps[this._leaflet_id].remove();
         delete maps[this._leaflet_id];
+    }
+
+    _stageElChange(mutations) {
+        const me = this;
+        console.log("_stageElChange", this, mutations);
+        mutations.forEach(function(m) {
+            switch (m.attributeName) {
+                case 'data-map-center':
+                    var center = me.getAttribute('data-map-center');
+                    var values = center.split(",");
+                    var lat = parseFloat(values[0]);
+                    var lng = parseFloat(values[1]);
+                    console.log("Pan map to ", lat, ', ', lng);
+                    me._map.flyTo(L.latLng(lat, lng), 15);
+                    break;
+                default:
+            };
+        });
+
     }
 
 }

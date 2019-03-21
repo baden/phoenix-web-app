@@ -21,6 +21,7 @@ type alias Model =
     , url : Url.Url
     , page : Route.Page
     , login : Login.Model
+    , globalMap : GlobalMap.Model
     }
 
 
@@ -31,7 +32,8 @@ type Msg
     | WebsocketIn String
     | OpenWebsocket String
     | WebsocketOpened Bool
-    | LoginMgs Login.Msg
+    | LoginMsg Login.Msg
+    | GlobalMapMsg GlobalMap.Msg
 
 
 
@@ -48,11 +50,15 @@ init flags url key =
         ( loginModel, _ ) =
             Login.init
 
+        ( globalMapModel, _ ) =
+            GlobalMap.init
+
         model =
             { key = key
             , url = url
             , page = Route.Home
             , login = loginModel
+            , globalMap = globalMapModel
             }
 
         ( navedModel, navedCmd ) =
@@ -77,12 +83,19 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-        LoginMgs loginMsg ->
+        LoginMsg loginMsg ->
             let
                 ( updatedLoginModel, upstream ) =
                     Login.update loginMsg model.login
             in
-                ( { model | login = updatedLoginModel }, Cmd.map LoginMgs upstream )
+                ( { model | login = updatedLoginModel }, Cmd.map LoginMsg upstream )
+
+        GlobalMapMsg globalMapMsg ->
+            let
+                ( updatedGlobalMapModel, upstream ) =
+                    GlobalMap.update globalMapMsg model.globalMap
+            in
+                ( { model | globalMap = updatedGlobalMapModel }, Cmd.map GlobalMapMsg upstream )
 
         LinkClicked urlRequest ->
             -- let
@@ -171,10 +184,10 @@ viewPage model =
             Home.view
 
         Route.Login ->
-            Login.loginView model.login |> Html.map LoginMgs
+            Login.loginView model.login |> Html.map LoginMsg
 
         Route.Auth ->
-            Login.authView model.login |> Html.map LoginMgs
+            Login.authView model.login |> Html.map LoginMsg
 
         Route.SystemInfo id ->
             SystemInfo.view id
@@ -182,8 +195,8 @@ viewPage model =
         Route.GlobalMap ->
             GlobalMap.view
 
-        Route.SystemOnMap id ->
-            GlobalMap.viewSystem id
+        Route.SystemOnMap id_ ->
+            GlobalMap.viewSystem model.globalMap |> Html.map GlobalMapMsg
 
         _ ->
             NotFound.view
