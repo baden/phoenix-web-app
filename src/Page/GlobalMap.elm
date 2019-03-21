@@ -45,19 +45,35 @@ latLng2String ( lat, lng ) =
     (String.fromFloat lat) ++ "," ++ (String.fromFloat lng)
 
 
+
+-- encodeFloats : List Float -> Encode.Value
+-- encodeFloats list =
+--     Encode.list (List.map Encode.float list)
+
+
+encodeLatLong : Float -> Float -> Encode.Value
+encodeLatLong lat lon =
+    Encode.list Encode.float [ lat, lon ]
+
+
 viewSystem : Model -> Html Msg
 viewSystem model =
-    div []
-        [ --div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []
-          Html.node "leaflet-map"
-            [ Html.Attributes.attribute "data-map-center" (latLng2String model.center)
+    let
+        ( lat, lon ) =
+            model.center
+    in
+        div []
+            [ --div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []
+              Html.node "leaflet-map"
+                [ --Html.Attributes.attribute "data-map-center" (latLng2String model.center)
+                  Html.Attributes.property "center" (encodeLatLong lat lon)
+                ]
+                []
+            , div [ class "control" ]
+                [ a [ href "/login" ] [ Html.text "Выйти" ]
+                , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.4226036 35.0252341) ]
+                    [ Html.text "На высоковольтную" ]
+                , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.5013798 34.6234255) ]
+                    [ Html.text "Домой" ]
+                ]
             ]
-            []
-        , div [ class "control" ]
-            [ a [ href "/login" ] [ Html.text "Выйти" ]
-            , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.4226036 35.0252341) ]
-                [ Html.text "На высоковольтную" ]
-            , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.5013798 34.6234255) ]
-                [ Html.text "Домой" ]
-            ]
-        ]

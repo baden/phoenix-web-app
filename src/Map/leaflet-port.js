@@ -93,6 +93,8 @@ class LeafletMap extends HTMLElement {
         super();
         console.log("LeafletMap:constructor", this);
 
+        this._center = [48.5013798, 34.6234255];
+
         new MutationObserver((mr) => this._stageElChange(mr))
           .observe(this, { attributes: true, attributeFilter: ["data-map-center"], attributeOldValue: true});
 
@@ -115,11 +117,13 @@ class LeafletMap extends HTMLElement {
         // container.innerHTML = "LeafletMap";
         container.className = "leaflet-map";
         this.appendChild(container);
-        var center = this.getAttribute('data-map-center');
-        var values = center.split(",");
-        var lat = parseFloat(values[0]);
-        var lng = parseFloat(values[1]);
-        console.log('add map', this, center);
+        // var center = this.getAttribute('data-map-center');
+        // var values = center.split(",");
+        // var lat = parseFloat(values[0]);
+        // var lng = parseFloat(values[1]);
+        console.log('add map', this, this._center);
+        var lat = this._center ? this._center[0] : 0.0;
+        var lng = this._center ? this._center[1] : 0.0;
         this._map = addMap(container);
         this._map.setView(L.latLng(lat, lng), 15);
         this._leaflet_id = container._leaflet_id;
@@ -130,6 +134,21 @@ class LeafletMap extends HTMLElement {
         console.log('remove map', this);
         maps[this._leaflet_id].remove();
         delete maps[this._leaflet_id];
+    }
+
+    get center() {
+        console.log("get center");
+        return this._center;
+        // return Number(this.htmlElement.getAttribute("cx"));
+    }
+    set center(value) {
+        // this.htmlElement.setAttribute("cx", value);
+        if(!this._map) return;
+        console.log("set center", value);
+        this._center = value;
+        var lat = this._center[0];
+        var lng = this._center[1];
+        this._map.flyTo(L.latLng(lat, lng), 15);
     }
 
     _stageElChange(mutations) {
