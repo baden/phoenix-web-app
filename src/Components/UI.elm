@@ -12,7 +12,7 @@ module Components.UI
 
 import Html exposing (Html, h1, h5, div, a, text, i, input)
 import Html.Attributes exposing (class, href, placeholder, value, type_)
-import Html.Events exposing (onInput)
+import Html.Events exposing (onInput, onClick)
 
 
 cmdButton : String -> Html a
@@ -57,9 +57,18 @@ formButton : String -> Maybe String -> Maybe msg -> Html msg
 formButton title enabled update =
     case enabled of
         Nothing ->
-            a
-                [ class "waves-effect waves-light btn", href "" ]
-                [ text title ]
+            let
+                cmd =
+                    case update of
+                        Nothing ->
+                            []
+
+                        Just command ->
+                            [ onClick command ]
+            in
+                a
+                    ([ class "waves-effect waves-light btn", href "" ] ++ cmd)
+                    [ text title ]
 
         Just text_ ->
             text text_

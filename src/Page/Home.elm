@@ -18,7 +18,6 @@ view =
         , i [ src "static/images/qr_code.png" ] []
         , p [] [ text "Чтобы пользоваться сервисом, вы должны авторизоваться в системе." ]
         , UI.button "/login" "Авторизация"
-        , UI.button "/auth" "Новый пользователь"
         , UI.button "/map" "Карта"
         , a
             [ class "waves-effect waves-light btn"
