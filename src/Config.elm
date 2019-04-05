@@ -4,4 +4,4 @@ module Config exposing (ws)
 
 
 ws =
-    "ws://localhost:8080/websocket"
+    "ws://localhost:8080/api/v1/websocket"

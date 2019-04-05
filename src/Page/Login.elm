@@ -2,6 +2,7 @@ module Page.Login exposing (Model, Msg(..), init, update, loginView, authView)
 
 import Html exposing (Html)
 import MD5 exposing (hex)
+import API exposing (registerUserRequest)
 
 
 -- import Element exposing (..)
@@ -52,7 +53,12 @@ update msg model =
                 _ =
                     Debug.log "Register" ( model.username, password_hash )
             in
-                ( model, Cmd.none )
+                ( model
+                , Cmd.batch
+                    [ API.websocketOut <|
+                        API.registerUserRequest model.username password_hash
+                    ]
+                )
 
 
 loginView : Model -> Html Msg

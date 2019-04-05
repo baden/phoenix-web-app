@@ -14,6 +14,7 @@ import Page.Login as Login
 import Page.System.Info as SystemInfo
 import Page.NotFound as NotFound
 import Page.GlobalMap as GlobalMap
+import API
 
 
 type alias Model =
@@ -34,14 +35,6 @@ type Msg
     | WebsocketOpened Bool
     | LoginMsg Login.Msg
     | GlobalMapMsg GlobalMap.Msg
-
-
-
--- init : ( Model, Cmd Msg )
--- init =
---     ( { username = "" }
---     , Cmd.batch [ websocketOpen Config.ws ]
---     )
 
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -68,17 +61,13 @@ init flags url key =
         , Cmd.batch
             [ -- Backend.fetchMe MeFetched
               navedCmd
-            , websocketOpen Config.ws
+            , API.websocketOpen Config.ws
             ]
         )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    -- let
-    --     _ =
-    --         Debug.log "Update" ( msg, model )
-    -- in
     case msg of
         NoOp ->
             ( model, Cmd.none )
@@ -135,18 +124,13 @@ update msg model =
                 ( model, Cmd.none )
 
         OpenWebsocket url ->
-            ( model, websocketOpen url )
+            ( model, API.websocketOpen url )
 
         WebsocketOpened _ ->
-            -- let
-            --     -- ( request, listener ) =
-            --     --     sendTicket model.websocketTicket
-            -- in
-            -- sendMessage model request listener
             ( model
             , Cmd.batch
-                [ websocketOut <|
-                    makeRequest 1 "foo"
+                [ API.websocketOut <|
+                    API.authRequest "$TOKEN(TBD)"
                 ]
             )
 
@@ -154,15 +138,6 @@ update msg model =
 computeViewForPage : Model -> Model
 computeViewForPage model =
     model
-
-
-makeRequest : Int -> String -> Encode.Value
-makeRequest id method =
-    Encode.object
-        [ ( "jsonrpc", Encode.string "2.0" )
-        , ( "method", Encode.string method )
-        , ( "id", Encode.int id )
-        ]
 
 
 
@@ -218,21 +193,9 @@ main =
         }
 
 
-port websocketOpen : String -> Cmd msg
-
-
-port websocketOpened : (Bool -> msg) -> Sub msg
-
-
-port websocketIn : (String -> msg) -> Sub msg
-
-
-port websocketOut : Encode.Value -> Cmd msg
-
-
 port mapInit : String -> Cmd msg
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch [ websocketOpened WebsocketOpened, websocketIn WebsocketIn ]
+    Sub.batch [ API.websocketOpened WebsocketOpened, API.websocketIn WebsocketIn ]

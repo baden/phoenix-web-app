@@ -15,7 +15,8 @@ let socket;
 
 console.log("app.ports", [app.ports]);
 
-app.ports.websocketOpen.subscribe(url => {
+function open(url) {
+    console.log("open");
     socket = new WebSocket(url);
     socket.onopen = () => {
         console.log("onopen");
@@ -25,12 +26,28 @@ app.ports.websocketOpen.subscribe(url => {
         console.log("onmessage", [message.data]);
         app.ports.websocketIn.send(message.data);
     }
+    socket.onerror = (error) => {
+        console.log("onerror", error.message);
+    };
+    socket.onclose = () => {
+        console.log("onclose");
+        socket = null;
+        setTimeout(function() {
+            open(url);
+        }, 1000);
+    }
+}
+
+app.ports.websocketOpen.subscribe(url => {
+    open(url);
 });
 
 app.ports.websocketOut.subscribe(message => {
     console.log("websocketOut", [message]);
     if (socket && socket.readyState === 1) {
         socket.send(JSON.stringify(message));
+    } else {
+        console.log("sending canceled", [message, socket]);
     }
 });
 
