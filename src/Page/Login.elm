@@ -25,6 +25,7 @@ type Msg
     = OnName String
     | OnPassword String
     | Update Model
+    | Auth
     | Register
 
 
@@ -44,6 +45,21 @@ update msg model =
 
         Update newModel ->
             ( newModel, Cmd.none )
+
+        Auth ->
+            let
+                password_hash =
+                    hex model.password
+
+                _ =
+                    Debug.log "Auth" ( model.username, password_hash )
+            in
+                ( model
+                , Cmd.batch
+                    [ API.websocketOut <|
+                        API.authUserRequest model.username password_hash
+                    ]
+                )
 
         Register ->
             let
@@ -67,7 +83,7 @@ loginView model =
         [ UI.formHeader "Авторизация"
         , UI.formInput "Имя пользователя" model.username (\new -> Update { model | username = new })
         , UI.formPassword "Пароль" model.password (\new -> Update { model | password = new })
-        , UI.formButton ("Авторизоваться как " ++ model.username) (Nothing) Nothing
+        , UI.formButton ("Авторизоваться как " ++ model.username) (Nothing) (Just Auth)
         , UI.button "/auth" "Новый пользователь"
         ]
 

@@ -5,8 +5,14 @@ import registerServiceWorker from './registerServiceWorker';
 import "../node_modules/materialize-css/dist/css/materialize.css";
 // import materialize from 'materialize';
 
+const tokenKey = 'auth_token';
+
 var app = Elm.Main.init({
-  node: document.getElementById('root')
+  // node: document.getElementById('root'),
+  //
+  flags: {
+      token: localStorage.getItem(tokenKey)
+  }
 });
 
 registerServiceWorker();
@@ -48,6 +54,16 @@ app.ports.websocketOut.subscribe(message => {
         socket.send(JSON.stringify(message));
     } else {
         console.log("sending canceled", [message, socket]);
+    }
+});
+
+
+app.ports.saveToken.subscribe(token => {
+    console.log('saveToken', token);
+    if (token === null) {
+        localStorage.removeItem(tokenKey);
+    } else {
+        localStorage.setItem(tokenKey, token);
     }
 });
 

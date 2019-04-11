@@ -35,7 +35,7 @@ view =
     div []
         [ Html.node "leaflet-map" [] []
         , div [ class "control" ]
-            [ a [ href "/login" ] [ Html.text "Выйти" ]
+            [ a [ href "/" ] [ Html.text "На гравную" ]
             ]
         ]
 
@@ -70,7 +70,7 @@ viewSystem model =
                 ]
                 []
             , div [ class "control" ]
-                [ a [ href "/login" ] [ Html.text "Выйти" ]
+                [ a [ href "/" ] [ Html.text "На главную" ]
                 , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.4226036 35.0252341) ]
                     [ Html.text "На высоковольтную" ]
                 , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.5013798 34.6234255) ]

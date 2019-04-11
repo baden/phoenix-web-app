@@ -18,11 +18,13 @@ import API
 
 
 type alias Model =
-    { key : Nav.Key
+    { token : Maybe String
+    , key : Nav.Key
     , url : Url.Url
     , page : Route.Page
     , login : Login.Model
     , globalMap : GlobalMap.Model
+    , account : Maybe API.AccountDocumentInfo
     }
 
 
@@ -37,7 +39,12 @@ type Msg
     | GlobalMapMsg GlobalMap.Msg
 
 
-init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+type alias Flags =
+    { token : Maybe String
+    }
+
+
+init : Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     let
         ( loginModel, _ ) =
@@ -47,11 +54,13 @@ init flags url key =
             GlobalMap.init
 
         model =
-            { key = key
+            { token = flags.token
+            , key = key
             , url = url
             , page = Route.Home
             , login = loginModel
             , globalMap = globalMapModel
+            , account = Nothing
             }
 
         ( navedModel, navedCmd ) =
@@ -120,19 +129,67 @@ update msg model =
             let
                 _ =
                     Debug.log "WebsocketIn" message
+
+                res =
+                    -- API.decodeCommand message
+                    API.parsePayload message
+
+                _ =
+                    Debug.log "Message" res
+
+                -- API.commandDecoder
             in
-                ( model, Cmd.none )
+                case res of
+                    Nothing ->
+                        let
+                            _ =
+                                Debug.log "Nothing" 0
+                        in
+                            ( model, Cmd.none )
+
+                    Just (API.Token token) ->
+                        ( model
+                        , Cmd.batch
+                            [ saveToken token.value
+                            , API.websocketOut <| API.authRequest token.value
+                            ]
+                        )
+
+                    Just (API.Document (API.AccountDocument document)) ->
+                        let
+                            _ =
+                                Debug.log "account document" document
+                        in
+                            ( { model | account = Just document }
+                            , Cmd.batch
+                                [ Nav.pushUrl model.key "/"
+                                ]
+                            )
+
+                    Just command ->
+                        let
+                            _ =
+                                Debug.log "Command" command
+                        in
+                            ( model, Cmd.none )
 
         OpenWebsocket url ->
             ( model, API.websocketOpen url )
 
         WebsocketOpened _ ->
-            ( model
-            , Cmd.batch
-                [ API.websocketOut <|
-                    API.authRequest "$TOKEN(TBD)"
-                ]
-            )
+            let
+                authCmd =
+                    case model.token of
+                        Nothing ->
+                            Cmd.none
+
+                        Just token ->
+                            API.websocketOut <| API.authRequest token
+            in
+                ( model
+                , Cmd.batch
+                    [ authCmd ]
+                )
 
 
 computeViewForPage : Model -> Model
@@ -156,7 +213,7 @@ viewPage : Model -> Html Msg
 viewPage model =
     case model.page of
         Route.Home ->
-            Home.view
+            Home.view model.account
 
         Route.Login ->
             Login.loginView model.login |> Html.map LoginMsg
@@ -181,7 +238,7 @@ viewPage model =
 ---- PROGRAM ----
 
 
-main : Program () Model Msg
+main : Program Flags Model Msg
 main =
     Browser.application
         { init = init
@@ -194,6 +251,9 @@ main =
 
 
 port mapInit : String -> Cmd msg
+
+
+port saveToken : String -> Cmd msg
 
 
 subscriptions : Model -> Sub Msg
