@@ -15,6 +15,7 @@ import Page.System.Info as SystemInfo
 import Page.NotFound as NotFound
 import Page.GlobalMap as GlobalMap
 import API
+import API.Account exposing (AccountDocumentInfo)
 
 
 type alias Model =
@@ -24,7 +25,7 @@ type alias Model =
     , page : Route.Page
     , login : Login.Model
     , globalMap : GlobalMap.Model
-    , account : Maybe API.AccountDocumentInfo
+    , account : Maybe AccountDocumentInfo
     }
 
 

@@ -3,6 +3,7 @@ module Page.Home exposing (view)
 import Html exposing (Html, h1, text, i, p, a, button)
 import Html.Attributes exposing (src, href, class)
 import API
+import API.Account exposing (AccountDocumentInfo)
 
 
 -- import Element exposing (..)
@@ -12,7 +13,7 @@ import API
 import Components.UI as UI
 
 
-view : Maybe API.AccountDocumentInfo -> Html a
+view : Maybe AccountDocumentInfo -> Html a
 view acc =
     UI.column12
         [ h1 [] [ text "Феникс" ]
@@ -41,7 +42,7 @@ view acc =
 --   </div>
 
 
-auth_info : Maybe API.AccountDocumentInfo -> Html a
+auth_info : Maybe AccountDocumentInfo -> Html a
 auth_info macc =
     Html.div [ class "card-panel" ]
         [ Html.span [ class "blue-text text-darken-2" ]
@@ -53,6 +54,8 @@ auth_info macc =
                     ]
 
                 Just acc ->
-                    [ text <| "Вы авторизованы как " ++ acc.realname ]
+                    [ p [] [ text <| "Вы авторизованы как " ++ acc.realname ]
+                    , p [] [ text <| "У вас в списке наблюдения " ++ (String.fromInt <| List.length acc.systems) ++ " систем" ]
+                    ]
             )
         ]

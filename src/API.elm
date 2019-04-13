@@ -1,32 +1,9 @@
 port module API exposing (..)
 
--- ( websocketOpen
--- , websocketOut
--- , websocketOpened
--- , websocketIn
--- , authUserRequest
--- , registerUserRequest
--- , authRequest
--- , parsePayload
--- )
-
+import API.Account as Account
 import Json.Encode as Encode
 import Json.Decode as JD exposing (Decoder, Value, string, value)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
-
-
--- type alias Command =
---     { cmd : String
---     , data : JD.Value
---     }
--- type CommandValue
---     = CommandPing
---     | CommandError
---
---
--- type Resource
---     = Token
---     | Account
 
 
 type APIContent
@@ -53,12 +30,7 @@ type alias TokenInfo =
 
 
 type DocumentInfo
-    = AccountDocument AccountDocumentInfo
-
-
-type alias AccountDocumentInfo =
-    { realname : String
-    }
+    = AccountDocument Account.AccountDocumentInfo
 
 
 parsePayload : String -> Maybe APIContent
@@ -138,7 +110,7 @@ documentDecoder =
                     JD.field "value" <|
                         case c of
                             "account" ->
-                                JD.map AccountDocument accountDocumentDecoder
+                                JD.map AccountDocument Account.accountDocumentDecoder
 
                             _ ->
                                 let
@@ -147,12 +119,6 @@ documentDecoder =
                                 in
                                     JD.fail ("unexpected document " ++ c)
             )
-
-
-accountDocumentDecoder : JD.Decoder AccountDocumentInfo
-accountDocumentDecoder =
-    JD.map AccountDocumentInfo
-        (JD.field "realname" JD.string)
 
 
 
