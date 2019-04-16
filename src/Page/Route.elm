@@ -18,6 +18,7 @@ type Page
     | SystemInfo String
     | SystemConfig String
     | BouncePage
+    | LinkSys
 
 
 routeParser : Parser (Page -> a) a
@@ -34,4 +35,5 @@ routeParser =
         , map Auth (s "auth")
         , map Login (s "login")
         , map BouncePage (s "logout")
+        , map LinkSys (s "linksys")
         ]

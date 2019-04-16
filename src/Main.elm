@@ -14,6 +14,7 @@ import Page.Login as Login
 import Page.System.Info as SystemInfo
 import Page.NotFound as NotFound
 import Page.GlobalMap as GlobalMap
+import Page.LinkSys as LinkSys
 import API
 import API.Account exposing (AccountDocumentInfo)
 
@@ -24,6 +25,7 @@ type alias Model =
     , url : Url.Url
     , page : Route.Page
     , login : Login.Model
+    , linkSys : LinkSys.Model
     , globalMap : GlobalMap.Model
     , account : Maybe AccountDocumentInfo
     }
@@ -38,6 +40,7 @@ type Msg
     | WebsocketOpened Bool
     | LoginMsg Login.Msg
     | GlobalMapMsg GlobalMap.Msg
+    | LinkSysMsg LinkSys.Msg
 
 
 type alias Flags =
@@ -54,12 +57,16 @@ init flags url key =
         ( globalMapModel, _ ) =
             GlobalMap.init
 
+        ( linkSysModel, _ ) =
+            LinkSys.init
+
         model =
             { token = flags.token
             , key = key
             , url = url
             , page = Route.Home
             , login = loginModel
+            , linkSys = linkSysModel
             , globalMap = globalMapModel
             , account = Nothing
             }
@@ -89,6 +96,13 @@ update msg model =
             in
                 ( { model | login = updatedLoginModel }, Cmd.map LoginMsg upstream )
 
+        LinkSysMsg linkSysMsg ->
+            let
+                ( updatedLinkSysModel, upstream ) =
+                    LinkSys.update linkSysMsg model.linkSys
+            in
+                ( { model | linkSys = updatedLinkSysModel }, Cmd.map LinkSysMsg upstream )
+
         GlobalMapMsg globalMapMsg ->
             let
                 ( updatedGlobalMapModel, upstream ) =
@@ -117,10 +131,14 @@ update msg model =
                 -- Just Route.BouncePage ->
                 --     ( model, Nav.load (Url.toString url) )
                 Just page ->
-                    ( { model | page = page }
-                        |> computeViewForPage
-                    , Cmd.none
-                    )
+                    let
+                        _ =
+                            Debug.log "UrlChanged for Just " page
+                    in
+                        ( { model | page = page }
+                            |> computeViewForPage page
+                        , Cmd.none
+                        )
 
                 Nothing ->
                     -- 404 would be nice
@@ -193,9 +211,14 @@ update msg model =
                 )
 
 
-computeViewForPage : Model -> Model
-computeViewForPage model =
-    model
+computeViewForPage : Route.Page -> Model -> Model
+computeViewForPage page model =
+    case page of
+        Route.LinkSys ->
+            { model | linkSys = Tuple.first LinkSys.init }
+
+        _ ->
+            model
 
 
 
@@ -230,6 +253,9 @@ viewPage model =
 
         Route.SystemOnMap id_ ->
             GlobalMap.viewSystem model.globalMap |> Html.map GlobalMapMsg
+
+        Route.LinkSys ->
+            LinkSys.view model.linkSys |> Html.map LinkSysMsg
 
         _ ->
             NotFound.view

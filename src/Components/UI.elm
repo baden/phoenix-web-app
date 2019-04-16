@@ -8,6 +8,8 @@ module Components.UI
         , formButton
         , column12
         , smallForm
+        , master
+        , MasterItem
         )
 
 import Html exposing (Html, h1, h5, div, a, text, i, input)
@@ -83,4 +85,31 @@ smallForm : List (Html a) -> Html a
 smallForm childrens =
     div [ class "row" ]
         [ div [ class "col s8 offset-s2" ] childrens
+        ]
+
+
+type alias MasterItem =
+    { title : String
+    , content : List String
+    }
+
+
+master : List MasterItem -> Html a
+master ch =
+    div [ class "row" ]
+        [ div [ class "col s8 offset-s2" ]
+            (ch
+                |> List.foldl (\e acc -> acc ++ [ master_element e ]) []
+            )
+        ]
+
+
+master_element : MasterItem -> Html a
+master_element { title, content } =
+    div []
+        [ Html.h5 [] [ text title ]
+        , div []
+            (content
+                |> List.map (\e -> Html.p [] [ text e ])
+            )
         ]

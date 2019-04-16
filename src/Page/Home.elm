@@ -56,6 +56,7 @@ auth_info macc =
                 Just acc ->
                     [ p [] [ text <| "Вы авторизованы как " ++ acc.realname ]
                     , p [] [ text <| "У вас в списке наблюдения " ++ (String.fromInt <| List.length acc.systems) ++ " систем" ]
+                    , p [] [ a [ href "/linksys" ] [ text "Добавить систему в список наблюдения" ] ]
                     ]
             )
         ]
