@@ -2,7 +2,7 @@ module Page.LinkSys exposing (..)
 
 import Components.UI as UI
 import Html exposing (Html, div, text)
-import Html.Attributes exposing (class, placeholder, value, pattern)
+import Html.Attributes as HA exposing (class, placeholder, value, pattern)
 import Html.Events exposing (onInput, onClick)
 import String
 import Regex
@@ -62,6 +62,11 @@ update msg model =
             ( model, Cmd.none )
 
 
+smsLink : String -> String -> Html a
+smsLink phone body =
+    Html.a [ HA.href <| "sms:" ++ phone ++ "?body=" ++ body ] [ text "Отправить SMS" ]
+
+
 view : Model -> Html Msg
 view model =
     div []
@@ -69,6 +74,10 @@ view model =
         , UI.master
             [ page_1
             , page_2
+            ]
+        , div [ class "row" ]
+            [ div [ class "col s4 offset-s4" ]
+                [ smsLink "+380677700200" "link" ]
             ]
         , div [ class "row" ]
             [ div [ class "col s4 offset-s4" ]
