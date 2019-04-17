@@ -50,9 +50,6 @@ update msg model =
             let
                 password_hash =
                     hex model.password
-
-                _ =
-                    Debug.log "Auth" ( model.username, password_hash )
             in
                 ( model
                 , Cmd.batch
@@ -65,9 +62,6 @@ update msg model =
             let
                 password_hash =
                     hex model.password
-
-                _ =
-                    Debug.log "Register" ( model.username, password_hash )
             in
                 ( model
                 , Cmd.batch

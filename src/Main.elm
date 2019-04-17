@@ -21,6 +21,7 @@ import API.Account exposing (AccountDocumentInfo)
 
 type alias Model =
     { token : Maybe String
+    , api_url : Maybe String
     , key : Nav.Key
     , url : Url.Url
     , page : Route.Page
@@ -45,6 +46,7 @@ type Msg
 
 type alias Flags =
     { token : Maybe String
+    , api_url : Maybe String
     }
 
 
@@ -62,6 +64,7 @@ init flags url key =
 
         model =
             { token = flags.token
+            , api_url = flags.api_url
             , key = key
             , url = url
             , page = Route.Home
@@ -78,7 +81,9 @@ init flags url key =
         , Cmd.batch
             [ -- Backend.fetchMe MeFetched
               navedCmd
-            , API.websocketOpen Config.ws
+
+            -- , API.websocketOpen Config.ws
+            , flags.api_url |> Maybe.withDefault Config.ws |> API.websocketOpen
             ]
         )
 
@@ -111,10 +116,6 @@ update msg model =
                 ( { model | globalMap = updatedGlobalMapModel }, Cmd.map GlobalMapMsg upstream )
 
         LinkClicked urlRequest ->
-            -- let
-            --     _ =
-            --         Debug.log "LinkClicked" urlRequest
-            -- in
             case urlRequest of
                 Browser.Internal url ->
                     ( model, Nav.pushUrl model.key (Url.toString url) )
@@ -123,22 +124,14 @@ update msg model =
                     ( model, Nav.load href )
 
         UrlChanged url ->
-            -- let
-            --     _ =
-            --         Debug.log "UrlChanged" url
-            -- in
             case Parser.parse Route.routeParser url of
                 -- Just Route.BouncePage ->
                 --     ( model, Nav.load (Url.toString url) )
                 Just page ->
-                    let
-                        _ =
-                            Debug.log "UrlChanged for Just " page
-                    in
-                        ( { model | page = page }
-                            |> computeViewForPage page
-                        , Cmd.none
-                        )
+                    ( { model | page = page }
+                        |> computeViewForPage page
+                    , Cmd.none
+                    )
 
                 Nothing ->
                     -- 404 would be nice
@@ -146,25 +139,14 @@ update msg model =
 
         WebsocketIn message ->
             let
-                _ =
-                    Debug.log "WebsocketIn" message
-
                 res =
-                    -- API.decodeCommand message
                     API.parsePayload message
-
-                _ =
-                    Debug.log "Message" res
 
                 -- API.commandDecoder
             in
                 case res of
                     Nothing ->
-                        let
-                            _ =
-                                Debug.log "Nothing" 0
-                        in
-                            ( model, Cmd.none )
+                        ( model, Cmd.none )
 
                     Just (API.Token token) ->
                         ( model
@@ -175,22 +157,14 @@ update msg model =
                         )
 
                     Just (API.Document (API.AccountDocument document)) ->
-                        let
-                            _ =
-                                Debug.log "account document" document
-                        in
-                            ( { model | account = Just document }
-                            , Cmd.batch
-                                [ Nav.pushUrl model.key "/"
-                                ]
-                            )
+                        ( { model | account = Just document }
+                        , Cmd.batch
+                            [ Nav.pushUrl model.key "/"
+                            ]
+                        )
 
                     Just command ->
-                        let
-                            _ =
-                                Debug.log "Command" command
-                        in
-                            ( model, Cmd.none )
+                        ( model, Cmd.none )
 
         OpenWebsocket url ->
             ( model, API.websocketOpen url )
@@ -281,6 +255,10 @@ port mapInit : String -> Cmd msg
 
 
 port saveToken : String -> Cmd msg
+
+
+
+-- port logger : String -> Cmd msg
 
 
 subscriptions : Model -> Sub Msg

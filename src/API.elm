@@ -40,11 +40,7 @@ parsePayload payload =
             Just content
 
         Err error ->
-            let
-                _ =
-                    Debug.log "Err Error" error
-            in
-                Nothing
+            Nothing
 
 
 payloadDecoder : JD.Decoder APIContent
@@ -52,30 +48,22 @@ payloadDecoder =
     (JD.field "cmd" JD.string)
         |> JD.andThen
             (\t ->
-                let
-                    _ =
-                        Debug.log "cmd" t
-                in
-                    -- JD.field "data" <|
-                    case t of
-                        "ping" ->
-                            JD.map Ping pingDecoder
+                -- JD.field "data" <|
+                case t of
+                    "ping" ->
+                        JD.map Ping pingDecoder
 
-                        "error" ->
-                            JD.map Error errorDecoder
+                    "error" ->
+                        JD.map Error errorDecoder
 
-                        "token" ->
-                            JD.map Token tokenDecoder
+                    "token" ->
+                        JD.map Token tokenDecoder
 
-                        "document" ->
-                            JD.map Document documentDecoder
+                    "document" ->
+                        JD.map Document documentDecoder
 
-                        _ ->
-                            let
-                                _ =
-                                    Debug.log "" ("unexpected message " ++ t)
-                            in
-                                JD.fail ("unexpected message " ++ t)
+                    _ ->
+                        JD.fail ("unexpected message " ++ t)
             )
 
 
@@ -103,21 +91,13 @@ documentDecoder =
     (JD.field "collection" JD.string)
         |> JD.andThen
             (\c ->
-                let
-                    _ =
-                        Debug.log "collection" c
-                in
-                    JD.field "value" <|
-                        case c of
-                            "account" ->
-                                JD.map AccountDocument Account.accountDocumentDecoder
+                JD.field "value" <|
+                    case c of
+                        "account" ->
+                            JD.map AccountDocument Account.accountDocumentDecoder
 
-                            _ ->
-                                let
-                                    _ =
-                                        Debug.log "" ("unexpected document " ++ c)
-                                in
-                                    JD.fail ("unexpected document " ++ c)
+                        _ ->
+                            JD.fail ("unexpected document " ++ c)
             )
 
 

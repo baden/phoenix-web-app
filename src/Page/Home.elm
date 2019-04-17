@@ -13,6 +13,11 @@ import API.Account exposing (AccountDocumentInfo)
 import Components.UI as UI
 
 
+smsLink : String -> String -> Html a
+smsLink phone body =
+    Html.a [ href <| "sms:" ++ phone ++ "?body=" ++ body ] [ text "Отправить SMS" ]
+
+
 view : Maybe AccountDocumentInfo -> Html a
 view acc =
     UI.column12
@@ -51,6 +56,10 @@ auth_info macc =
                     [ text "Чтобы пользоваться сервисом, вы должны "
                     , a [ href "/login" ] [ text "авторизоваться" ]
                     , text " в системе."
+                    , Html.div [ class "row" ]
+                        [ Html.div [ class "col s4 offset-s4" ]
+                            [ smsLink "+380677700200" "link" ]
+                        ]
                     ]
 
                 Just acc ->
