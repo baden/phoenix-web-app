@@ -9,6 +9,18 @@
   height: inherit;
 }
 
+@media screen and (max-width: 800px) {
+    .nomobile {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 801px) {
+    .nodesktop {
+        display: none;
+    }
+}
+
 body {
   font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
   padding: 0;

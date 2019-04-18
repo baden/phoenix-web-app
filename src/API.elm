@@ -139,6 +139,13 @@ registerUserRequest username password_hash =
         ]
 
 
+linkSysRequest : String -> Encode.Value
+linkSysRequest code =
+    commonRequest "link"
+        [ ( "code", Encode.string code )
+        ]
+
+
 commonRequest : String -> List ( String, Encode.Value ) -> Encode.Value
 commonRequest cmd data =
     Encode.object

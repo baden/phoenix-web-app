@@ -4,6 +4,7 @@ import Components.UI as UI
 import Html exposing (Html, div, text)
 import Html.Attributes as HA exposing (class, placeholder, value, pattern)
 import Html.Events exposing (onInput, onClick)
+import API
 import String
 import Regex
 
@@ -59,7 +60,12 @@ update msg model =
                 ( { model | code = putDashEvery 2 cd }, Cmd.none )
 
         StartLink ->
-            ( model, Cmd.none )
+            ( model
+            , Cmd.batch
+                [ API.websocketOut <|
+                    API.linkSysRequest model.code
+                ]
+            )
 
 
 smsLink : String -> String -> Html a
@@ -75,12 +81,12 @@ view model =
             [ page_1
             , page_2
             ]
-        , div [ class "row" ]
+        , div [ class "row nodesktop" ]
             [ div [ class "col s4 offset-s4" ]
-                [ smsLink "+380677700200" "link" ]
+                [ smsLink "" "link" ]
             ]
         , div [ class "row" ]
-            [ div [ class "col s4 offset-s4" ]
+            [ div [ class "col s6 offset-s3 m4 offset-m4 l2 offset-l5" ]
                 [ Html.input
                     [ class "sms_code"
                     , placeholder "Введите код из SMS"

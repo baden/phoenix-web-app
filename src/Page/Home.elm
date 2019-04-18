@@ -22,7 +22,7 @@ view : Maybe AccountDocumentInfo -> Html a
 view acc =
     UI.column12
         [ h1 [] [ text "Феникс" ]
-        , i [ src "static/images/qr_code.png" ] []
+        , Html.img [ src "static/images/fx.navi.cc.png", class "nomobile" ] []
         , auth_info acc
         , UI.button "/login" "Авторизация"
         , UI.button "/map" "Карта"
