@@ -17,6 +17,10 @@ import Page.GlobalMap as GlobalMap
 import Page.LinkSys as LinkSys
 import API
 import API.Account exposing (AccountDocumentInfo)
+import API.System exposing (SystemDocumentInfo)
+import Dict exposing (Dict)
+import Task
+import Time
 
 
 type alias Model =
@@ -25,10 +29,12 @@ type alias Model =
     , key : Nav.Key
     , url : Url.Url
     , page : Route.Page
+    , timeZone : Time.Zone
     , login : Login.Model
     , linkSys : LinkSys.Model
     , globalMap : GlobalMap.Model
     , account : Maybe AccountDocumentInfo
+    , systems : Dict String SystemDocumentInfo
     }
 
 
@@ -42,6 +48,7 @@ type Msg
     | LoginMsg Login.Msg
     | GlobalMapMsg GlobalMap.Msg
     | LinkSysMsg LinkSys.Msg
+    | TimeZoneDetected Time.Zone
 
 
 type alias Flags =
@@ -68,10 +75,12 @@ init flags url key =
             , key = key
             , url = url
             , page = Route.Home
+            , timeZone = Time.utc
             , login = loginModel
             , linkSys = linkSysModel
             , globalMap = globalMapModel
             , account = Nothing
+            , systems = Dict.empty
             }
 
         ( navedModel, navedCmd ) =
@@ -84,6 +93,7 @@ init flags url key =
 
             -- , API.websocketOpen Config.ws
             , flags.api_url |> Maybe.withDefault Config.ws |> API.websocketOpen
+            , Task.perform TimeZoneDetected Time.here
             ]
         )
 
@@ -163,8 +173,21 @@ update msg model =
                             ]
                         )
 
+                    Just (API.Document (API.SystemDocument document)) ->
+                        let
+                            _ =
+                                Debug.log "System: " document
+                        in
+                            ( { model | systems = Dict.insert document.id document model.systems }
+                            , Cmd.none
+                            )
+
                     Just command ->
-                        ( model, Cmd.none )
+                        let
+                            _ =
+                                Debug.log "???" command
+                        in
+                            ( model, Cmd.none )
 
         OpenWebsocket url ->
             ( model, API.websocketOpen url )
@@ -183,6 +206,9 @@ update msg model =
                 , Cmd.batch
                     [ authCmd ]
                 )
+
+        TimeZoneDetected zone ->
+            ( { model | timeZone = zone }, Cmd.none )
 
 
 computeViewForPage : Route.Page -> Model -> Model
@@ -211,7 +237,7 @@ viewPage : Model -> Html Msg
 viewPage model =
     case model.page of
         Route.Home ->
-            Home.view model.account
+            Home.view model.account model.systems model.timeZone
 
         Route.Login ->
             Login.loginView model.login |> Html.map LoginMsg

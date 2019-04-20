@@ -85,3 +85,11 @@ input.sms_code:-moz-placeholder { /* Firefox 18- */
     text-align: center;
     align-content: center;
 }
+
+dt {
+    /* display: inline-block; */
+}
+
+dd {
+    /* display: inline-block; */
+}

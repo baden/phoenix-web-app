@@ -1,6 +1,7 @@
 port module API exposing (..)
 
 import API.Account as Account
+import API.System as System
 import Json.Encode as Encode
 import Json.Decode as JD exposing (Decoder, Value, string, value)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
@@ -31,6 +32,7 @@ type alias TokenInfo =
 
 type DocumentInfo
     = AccountDocument Account.AccountDocumentInfo
+    | SystemDocument System.SystemDocumentInfo
 
 
 parsePayload : String -> Maybe APIContent
@@ -96,8 +98,15 @@ documentDecoder =
                         "account" ->
                             JD.map AccountDocument Account.accountDocumentDecoder
 
+                        "system" ->
+                            JD.map SystemDocument System.systemDocumentDecoder
+
                         _ ->
-                            JD.fail ("unexpected document " ++ c)
+                            let
+                                _ =
+                                    Debug.log "unexpected document " c
+                            in
+                                JD.fail ("unexpected document " ++ c)
             )
 
 
@@ -141,8 +150,9 @@ registerUserRequest username password_hash =
 
 linkSysRequest : String -> Encode.Value
 linkSysRequest code =
-    commonRequest "link"
-        [ ( "code", Encode.string code )
+    Encode.object
+        [ ( "cmd", Encode.string "link" )
+        , ( "code", Encode.string code )
         ]
 
 
