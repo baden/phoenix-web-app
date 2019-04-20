@@ -102,11 +102,7 @@ documentDecoder =
                             JD.map SystemDocument System.systemDocumentDecoder
 
                         _ ->
-                            let
-                                _ =
-                                    Debug.log "unexpected document " c
-                            in
-                                JD.fail ("unexpected document " ++ c)
+                            JD.fail ("unexpected document " ++ c)
             )
 
 

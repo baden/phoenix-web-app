@@ -174,20 +174,16 @@ update msg model =
                         )
 
                     Just (API.Document (API.SystemDocument document)) ->
-                        let
-                            _ =
-                                Debug.log "System: " document
-                        in
-                            ( { model | systems = Dict.insert document.id document model.systems }
-                            , Cmd.none
-                            )
+                        ( { model | systems = Dict.insert document.id document model.systems }
+                        , Cmd.none
+                        )
 
                     Just command ->
-                        let
-                            _ =
-                                Debug.log "???" command
-                        in
-                            ( model, Cmd.none )
+                        -- let
+                        --     _ =
+                        --         Debug.log "???" command
+                        -- in
+                        ( model, Cmd.none )
 
         OpenWebsocket url ->
             ( model, API.websocketOpen url )
