@@ -19,16 +19,18 @@ module Components.UI
         , app_title
         , card_panel
         , card
+        , modal
+        , modal_overlay
         )
 
 import Html exposing (Html, h1, h5, div, a, text, i, input)
-import Html.Attributes exposing (class, href, placeholder, value, type_, src)
+import Html.Attributes as HA exposing (class, href, placeholder, value, type_, src)
 import Html.Events exposing (onInput, onClick)
 
 
-cmdButton : String -> Html a
-cmdButton label =
-    Html.button [ class "waves-effect waves-light btn" ]
+cmdButton : String -> m -> Html m
+cmdButton label cmd =
+    Html.button [ class "waves-effect waves-light btn", onClick cmd ]
         [ text label ]
 
 
@@ -177,3 +179,53 @@ card : List (Html a) -> Html a
 card child =
     Html.div [ class "col s12 m4 l2" ]
         [ Html.div [ class "z-depth-2 shadow-demo" ] child ]
+
+
+modal : String -> List String -> List (Html m) -> Html m
+modal title content buttons =
+    Html.div
+        [ class "modal open"
+        , HA.tabindex 0
+        , HA.style "z-index" "1003"
+        , HA.style "display" "block"
+        , HA.style "opacity" "1"
+        , HA.style "top" "10%"
+        , HA.style "transform" "scaleX(1) scaleY(1)"
+        ]
+        [ Html.div [ class "modal-content" ] <|
+            [ Html.h4 []
+                [ Html.text title ]
+            ]
+                ++ (content |> List.map (\row_value -> Html.p [] [ Html.text row_value ]))
+        , Html.div [ class "modal-footer" ] buttons
+        ]
+
+
+modal_overlay : m -> Html m
+modal_overlay cancelcmd =
+    Html.div
+        [ class "modal-overlay"
+        , HA.style "z-index" "1002"
+        , HA.style "display" "block"
+        , HA.style "opacity" "0.5"
+        , onClick cancelcmd
+        ]
+        []
+
+
+
+-- <div class="modal-overlay" style="z-index: 1002; display: block; opacity: 0.5;"></div>
+-- <div id="modal1" class="modal open" tabindex="0" style="z-index: 1003; display: block; opacity: 1; top: 10%; transform: scaleX(1) scaleY(1);">
+--           <div class="modal-content">
+--             <h4>Modal Header</h4>
+--             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+--               magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+--               consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+--               Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</p>
+--           </div>
+--           <div class="modal-footer">
+--             <a href="#!" class="modal-close waves-effect waves-red btn-flat">Disagree</a>
+--             <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+--           </div>
+--         </div>
+--

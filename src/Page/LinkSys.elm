@@ -99,7 +99,7 @@ view model =
                     [ class "waves-effect waves-light btn"
                     , onClick StartLink
                     ]
-                    [ text <| "Добавить" ++ " " ++ model.code ]
+                    [ text <| "Добавить" ]
                 ]
             ]
         ]

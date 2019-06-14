@@ -16,11 +16,14 @@ import Page.NotFound as NotFound
 import Page.GlobalMap as GlobalMap
 import Page.LinkSys as LinkSys
 import API
-import API.Account exposing (AccountDocumentInfo)
+import API.Account exposing (AccountDocumentInfo, fixSysListRequest)
 import API.System exposing (SystemDocumentInfo)
 import Dict exposing (Dict)
 import Task
 import Time
+import Msg as MsgT
+import List.Extra as ListExtra
+import Components.UI as UI
 
 
 type alias Model =
@@ -30,11 +33,13 @@ type alias Model =
     , url : Url.Url
     , page : Route.Page
     , timeZone : Time.Zone
+    , home : Home.Model
     , login : Login.Model
     , linkSys : LinkSys.Model
     , globalMap : GlobalMap.Model
     , account : Maybe AccountDocumentInfo
     , systems : Dict String SystemDocumentInfo
+    , errorMessage : Maybe String -- Надо бы расширить функцилнал
     }
 
 
@@ -45,10 +50,12 @@ type Msg
     | WebsocketIn String
     | OpenWebsocket String
     | WebsocketOpened Bool
+    | HomeMsg Home.Msg
     | LoginMsg Login.Msg
     | GlobalMapMsg GlobalMap.Msg
     | LinkSysMsg LinkSys.Msg
     | TimeZoneDetected Time.Zone
+    | OnCloseModal
 
 
 type alias Flags =
@@ -60,6 +67,9 @@ type alias Flags =
 init : Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
     let
+        ( homeModel, _ ) =
+            Home.init
+
         ( loginModel, _ ) =
             Login.init
 
@@ -76,11 +86,13 @@ init flags url key =
             , url = url
             , page = Route.Home
             , timeZone = Time.utc
+            , home = homeModel
             , login = loginModel
             , linkSys = linkSysModel
             , globalMap = globalMapModel
             , account = Nothing
             , systems = Dict.empty
+            , errorMessage = Nothing
             }
 
         ( navedModel, navedCmd ) =
@@ -98,11 +110,46 @@ init flags url key =
         )
 
 
+upmessageUpdate : Maybe MsgT.UpMsg -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+upmessageUpdate msg ( model, cmd ) =
+    case msg of
+        Nothing ->
+            ( model, Cmd.none )
+
+        Just (MsgT.RemoveSystemFromList index) ->
+            let
+                _ =
+                    Debug.log "TBD: remove system from list" index
+            in
+                case model.account of
+                    Nothing ->
+                        ( model, Cmd.none )
+
+                    Just account ->
+                        let
+                            newSysList =
+                                account.systems |> ListExtra.removeAt index
+
+                            _ =
+                                Debug.log "newSysList" newSysList
+                        in
+                            ( model, Cmd.batch [ API.websocketOut <| fixSysListRequest newSysList ] )
+
+
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         NoOp ->
             ( model, Cmd.none )
+
+        HomeMsg homeMsg ->
+            let
+                ( updatedHomeModel, upstream, upmessage ) =
+                    Home.update homeMsg model.home
+            in
+                -- TODO: Move to UP
+                ( { model | home = updatedHomeModel }, Cmd.map HomeMsg upstream )
+                    |> upmessageUpdate upmessage
 
         LoginMsg loginMsg ->
             let
@@ -178,6 +225,23 @@ update msg model =
                         , Cmd.none
                         )
 
+                    Just (API.Error { resource, code }) ->
+                        let
+                            _ =
+                                Debug.log "error: " ( resource, code )
+                        in
+                            case ( resource, code ) of
+                                ( "link_code", "invalid_credentials" ) ->
+                                    -- Не самое элегантное решение
+                                    ( { model | errorMessage = Just "Код неверный, уже исользован или вышло время действия кода." }, Cmd.none )
+
+                                ( "token", "invalid_credentials" ) ->
+                                    -- Не самое элегантное решение
+                                    ( { model | errorMessage = Just "Неверное имя пользователя или пароль." }, Cmd.none )
+
+                                _ ->
+                                    ( model, Cmd.none )
+
                     Just command ->
                         -- let
                         --     _ =
@@ -206,6 +270,9 @@ update msg model =
         TimeZoneDetected zone ->
             ( { model | timeZone = zone }, Cmd.none )
 
+        OnCloseModal ->
+            ( { model | errorMessage = Nothing }, Cmd.none )
+
 
 computeViewForPage : Route.Page -> Model -> Model
 computeViewForPage page model =
@@ -224,16 +291,32 @@ computeViewForPage page model =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = "Fenix App"
-    , body = [ viewPage model ]
-    }
+    let
+        modal =
+            case model.errorMessage of
+                Nothing ->
+                    []
+
+                Just errorText ->
+                    [ UI.modal
+                        "Ошибка"
+                        [ errorText
+                        ]
+                        [ UI.cmdButton "Закрыть" (OnCloseModal)
+                        ]
+                    , UI.modal_overlay OnCloseModal
+                    ]
+    in
+        { title = "Fenix App"
+        , body = [ viewPage model ] ++ modal
+        }
 
 
 viewPage : Model -> Html Msg
 viewPage model =
     case model.page of
         Route.Home ->
-            Home.view model.account model.systems model.timeZone
+            Home.view model.home model.account model.systems model.timeZone |> Html.map HomeMsg
 
         Route.Login ->
             Login.loginView model.login |> Html.map LoginMsg

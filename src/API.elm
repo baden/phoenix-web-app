@@ -2,6 +2,7 @@ port module API exposing (..)
 
 import API.Account as Account
 import API.System as System
+import API.Error as Error
 import Json.Encode as Encode
 import Json.Decode as JD exposing (Decoder, Value, string, value)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
@@ -11,17 +12,11 @@ type APIContent
     = Ping PingInfo
     | Token TokenInfo
     | Document DocumentInfo
-    | Error ApiError
+    | Error Error.ApiError
 
 
 type alias PingInfo =
     { timestamp : Int
-    }
-
-
-type alias ApiError =
-    { resource : String
-    , code : String
     }
 
 
@@ -56,7 +51,7 @@ payloadDecoder =
                         JD.map Ping pingDecoder
 
                     "error" ->
-                        JD.map Error errorDecoder
+                        JD.map Error Error.errorDecoder
 
                     "token" ->
                         JD.map Token tokenDecoder
@@ -73,13 +68,6 @@ pingDecoder : JD.Decoder PingInfo
 pingDecoder =
     JD.map PingInfo
         (JD.field "timestamp" JD.int)
-
-
-errorDecoder : JD.Decoder ApiError
-errorDecoder =
-    JD.map2 ApiError
-        (JD.field "resource" JD.string)
-        (JD.field "code" JD.string)
 
 
 tokenDecoder : JD.Decoder TokenInfo

@@ -1,4 +1,4 @@
-module Page.Home exposing (view)
+module Page.Home exposing (..)
 
 import Html exposing (Html)
 import API
@@ -8,20 +8,69 @@ import Dict exposing (Dict)
 import Time
 import Components.UI as UI exposing (text)
 import Components.DateTime as DT
+import Msg
 
 
-view : Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Time.Zone -> Html a
-view acc systems timeZone =
-    UI.column12
+type alias Model =
+    { showRemodeDialog : Bool
+    , removeIndex : Int
+    }
+
+
+type Msg
+    = OnRemove Int
+    | OnCancelRemove
+    | OnConfirmRemove
+
+
+init : ( Model, Cmd Msg )
+init =
+    ( { showRemodeDialog = False
+      , removeIndex = -1
+      }
+    , Cmd.none
+    )
+
+
+update : Msg -> Model -> ( Model, Cmd Msg, Maybe Msg.UpMsg )
+update msg model =
+    case msg of
+        OnRemove index ->
+            ( { model | showRemodeDialog = True, removeIndex = index }, Cmd.none, Nothing )
+
+        OnCancelRemove ->
+            ( { model | showRemodeDialog = False }, Cmd.none, Nothing )
+
+        OnConfirmRemove ->
+            ( { model | showRemodeDialog = False }, Cmd.none, Just (Msg.RemoveSystemFromList model.removeIndex) )
+
+
+view : Model -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Time.Zone -> Html Msg
+view model acc systems timeZone =
+    UI.column12 <|
         [ UI.app_title
         , UI.qr_code
         , auth_info acc systems timeZone
         , UI.button "/login" "Авторизация"
         , UI.button "/map" "Карта"
         ]
+            ++ (if model.showRemodeDialog then
+                    [ UI.modal
+                        "Удаление"
+                        [ "Вы уверены что хотите удалить систему из списка наблюдения?"
+                        , "Напоминаю, что вы не можете просто добавить систему в список наблюдения, необходимо проделать определенную процедуру."
+                        ]
+                        [ UI.cmdButton "Да" (OnConfirmRemove)
+                        , UI.cmdButton "Нет" (OnCancelRemove)
+                        ]
+                    , UI.modal_overlay OnCancelRemove
+                    ]
+                else
+                    []
+               )
 
 
-auth_info : Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Time.Zone -> Html a
+auth_info : Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Time.Zone -> Html Msg
 auth_info macc systems timeZone =
     UI.card_panel <|
         case macc of
@@ -39,33 +88,41 @@ auth_info macc systems timeZone =
                 ]
 
 
-systemList : List String -> Dict String SystemDocumentInfo -> Time.Zone -> Html a
+systemList : List String -> Dict String SystemDocumentInfo -> Time.Zone -> Html Msg
 systemList sysIds systems timeZone =
     UI.row
         (sysIds
-            |> List.map (systemItem systems timeZone)
+            |> List.indexedMap (systemItem systems timeZone)
         )
 
 
-systemItem : Dict String SystemDocumentInfo -> Time.Zone -> String -> Html a
-systemItem systems timeZone sysId =
-    UI.card <|
-        case Dict.get sysId systems of
-            Nothing ->
-                [ UI.info_2_10 "ID:" sysId
-                , UI.row_item [ UI.text "Данные по трекеру еще не получены" ]
-                , UI.row_item [ UI.linkButton "Управление" ("/system/" ++ sysId) ]
-                ]
+systemItem : Dict String SystemDocumentInfo -> Time.Zone -> Int -> String -> Html Msg
+systemItem systems timeZone index sysId =
+    let
+        title =
+            [ UI.info_2_10 "Index:" (String.fromInt index)
+            , UI.info_2_10 "ID:" sysId
+            ]
 
-            Just system ->
-                [ UI.info_2_10 "ID:" sysId
-                , UI.info_2_10 "Название:" system.title
-                , UI.info_2_10 "Последная известная позиция:" (position_of system.lastPosition timeZone)
-                , UI.row_item
-                    [ UI.linkButton "Управление" ("/system/" ++ sysId)
-                    , UI.linkButton "Удалить" ("/system/delete/" ++ sysId)
+        body =
+            case Dict.get sysId systems of
+                Nothing ->
+                    [ UI.row_item [ UI.text "Данные по трекеру еще не получены" ]
                     ]
+
+                Just system ->
+                    [ UI.info_2_10 "Название:" system.title
+                    , UI.info_2_10 "Последная известная позиция:" (position_of system.lastPosition timeZone)
+                    ]
+
+        footer =
+            [ UI.row_item
+                [ UI.linkButton "Управление" ("/system/" ++ sysId)
+                , UI.cmdButton "Удалить" (OnRemove index)
                 ]
+            ]
+    in
+        UI.card (title ++ body ++ footer)
 
 
 position_of : Maybe LastPosition -> Time.Zone -> String
