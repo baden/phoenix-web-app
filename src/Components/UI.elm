@@ -10,10 +10,19 @@ module Components.UI
         , smallForm
         , master
         , MasterItem
+        , row
+        , row_item
+        , info_2_10
+        , linkButton
+        , text
+        , qr_code
+        , app_title
+        , card_panel
+        , card
         )
 
 import Html exposing (Html, h1, h5, div, a, text, i, input)
-import Html.Attributes exposing (class, href, placeholder, value, type_)
+import Html.Attributes exposing (class, href, placeholder, value, type_, src)
 import Html.Events exposing (onInput, onClick)
 
 
@@ -113,3 +122,58 @@ master_element { title, content } =
                 |> List.map (\e -> Html.p [] [ text e ])
             )
         ]
+
+
+row : List (Html a) -> Html a
+row child_list =
+    Html.div [ class "row" ] child_list
+
+
+row_item : List (Html a) -> Html a
+row_item child =
+    row [ Html.div [ class "col s12 " ] child ]
+
+
+info_2_10 : String -> String -> Html a
+info_2_10 title value =
+    row
+        [ Html.div [ class "col s2" ] [ text title ]
+        , Html.div [ class "col s10" ] [ text value ]
+        ]
+
+
+linkButton : String -> String -> Html a
+linkButton title link_ref =
+    Html.a
+        [ class "waves-effect waves-light btn"
+        , href link_ref
+        ]
+        [ text title ]
+
+
+text : String -> Html a
+text value =
+    Html.text value
+
+
+qr_code : Html a
+qr_code =
+    Html.img [ src "static/images/fx.navi.cc.png", class "nomobile" ] []
+
+
+app_title : Html a
+app_title =
+    Html.h1 [] [ Html.text "Феникс" ]
+
+
+card_panel : List (Html a) -> Html a
+card_panel childs =
+    Html.div [ class "card-panel" ]
+        [ Html.span [ class "blue-text text-darken-2" ] childs
+        ]
+
+
+card : List (Html a) -> Html a
+card child =
+    Html.div [ class "col s12 m4 l2" ]
+        [ Html.div [ class "z-depth-2 shadow-demo" ] child ]

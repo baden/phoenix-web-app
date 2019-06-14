@@ -2,6 +2,7 @@ module API.System
     exposing
         ( SystemDocumentInfo
         , systemDocumentDecoder
+        , LastPosition
           -- , SysId
         )
 
