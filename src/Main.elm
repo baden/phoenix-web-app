@@ -18,6 +18,7 @@ import Page.LinkSys as LinkSys
 import API
 import API.Account exposing (AccountDocumentInfo, fixSysListRequest)
 import API.System exposing (SystemDocumentInfo)
+import API.Error exposing (errorMessageString)
 import Dict exposing (Dict)
 import Task
 import Time
@@ -117,23 +118,16 @@ upmessageUpdate msg ( model, cmd ) =
             ( model, Cmd.none )
 
         Just (MsgT.RemoveSystemFromList index) ->
-            let
-                _ =
-                    Debug.log "TBD: remove system from list" index
-            in
-                case model.account of
-                    Nothing ->
-                        ( model, Cmd.none )
+            case model.account of
+                Nothing ->
+                    ( model, Cmd.none )
 
-                    Just account ->
-                        let
-                            newSysList =
-                                account.systems |> ListExtra.removeAt index
-
-                            _ =
-                                Debug.log "newSysList" newSysList
-                        in
-                            ( model, Cmd.batch [ API.websocketOut <| fixSysListRequest newSysList ] )
+                Just account ->
+                    let
+                        newSysList =
+                            account.systems |> ListExtra.removeAt index
+                    in
+                        ( model, Cmd.batch [ API.websocketOut <| fixSysListRequest newSysList ] )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -225,29 +219,21 @@ update msg model =
                         , Cmd.none
                         )
 
-                    Just (API.Error { resource, code }) ->
-                        let
-                            _ =
-                                Debug.log "error: " ( resource, code )
-                        in
-                            case ( resource, code ) of
-                                ( "link_code", "invalid_credentials" ) ->
-                                    -- Не самое элегантное решение
-                                    ( { model | errorMessage = Just "Код неверный, уже исользован или вышло время действия кода." }, Cmd.none )
+                    Just (API.Error error) ->
+                        case errorMessageString error of
+                            Nothing ->
+                                ( model, Cmd.none )
 
-                                ( "token", "invalid_credentials" ) ->
-                                    -- Не самое элегантное решение
-                                    ( { model | errorMessage = Just "Неверное имя пользователя или пароль." }, Cmd.none )
-
-                                _ ->
-                                    ( model, Cmd.none )
+                            Just astext ->
+                                -- Не самое элегантное решение
+                                ( { model | errorMessage = Just astext }, Cmd.none )
 
                     Just command ->
-                        -- let
-                        --     _ =
-                        --         Debug.log "???" command
-                        -- in
-                        ( model, Cmd.none )
+                        let
+                            _ =
+                                Debug.log "???" command
+                        in
+                            ( model, Cmd.none )
 
         OpenWebsocket url ->
             ( model, API.websocketOpen url )

@@ -17,6 +17,23 @@ errorDecoder =
 
 
 
+-- Не самое элегантное решение
+
+
+errorMessageString : ApiError -> Maybe String
+errorMessageString { resource, code } =
+    case ( resource, code ) of
+        ( "link_code", "invalid_credentials" ) ->
+            Just "Код неверный, уже исользован или вышло время действия кода."
+
+        ( "token", "invalid_credentials" ) ->
+            Just "Неверное имя пользователя или пароль."
+
+        ( _, _ ) ->
+            Nothing
+
+
+
 -- payloadDecoder : JD.Decoder APIContent
 -- payloadDecoder =
 --     (JD.field "cmd" JD.string)

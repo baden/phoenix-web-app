@@ -68,40 +68,19 @@ update msg model =
             )
 
 
-smsLink : String -> String -> Html a
-smsLink phone body =
-    Html.a [ HA.href <| "sms:" ++ phone ++ "?body=" ++ body ] [ text "Отправить SMS" ]
-
-
 view : Model -> Html Msg
 view model =
     div []
-        [ Html.h4 [] [ text "Мастер добавления систем" ]
+        [ UI.title_item "Мастер добавления систем"
         , UI.master
             [ page_1
             , page_2
             ]
         , div [ class "row nodesktop" ]
             [ div [ class "col s4 offset-s4" ]
-                [ smsLink "" "link" ]
+                [ UI.smsLink "" "link" ]
             ]
-        , div [ class "row" ]
-            [ div [ class "col s6 offset-s3 m4 offset-m4 l2 offset-l5" ]
-                [ Html.input
-                    [ class "sms_code"
-                    , placeholder "Введите код из SMS"
-                    , value model.code
-                    , onInput OnCode
-                    , pattern "[A-Za-z0-9]{3}"
-                    ]
-                    []
-                , Html.button
-                    [ class "waves-effect waves-light btn"
-                    , onClick StartLink
-                    ]
-                    [ text <| "Добавить" ]
-                ]
-            ]
+        , UI.smsCodeInput model.code OnCode StartLink
         ]
 
 
@@ -109,7 +88,7 @@ page_1 : UI.MasterItem
 page_1 =
     UI.MasterItem "1. Активируйте закладку"
         [ "Убедитесь, что трекер-закладка находится в активном режиме (в режиме трекера)."
-        , "(Доработать!) Инструкция по переводу закладки в активный режим"
+        , "(Доработать!) Инструкция по переводу закладки в активный режим."
         ]
 
 
@@ -117,16 +96,5 @@ page_2 : UI.MasterItem
 page_2 =
     UI.MasterItem "2. Начните процедуру привязки"
         [ "Отправьте на телефонный номер карточки трекера SMS: link."
-        , "В ответ придёт уникальный код, введите код в окне ниже."
+        , "В ответ придёт уникальный код, введите код в поле ниже."
         ]
-
-
-
--- { text = "Убедитесь, что трекер-закладка находится в активном режиме (в режиме трекера)."
--- , content = div [] [ text "TBD" ]
--- }
--- div []
---     [ Html.h5 [] [ text "1" ]
---     , Html.p [] [ text "Убедитесь, что трекер-закладка находится в активном режиме (в режиме трекера)." ]
---     , Html.p [] [ text "(Доработать!) Инструкция по переводу закладки в активный режим" ]
---     ]

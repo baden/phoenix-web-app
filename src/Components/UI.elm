@@ -21,6 +21,9 @@ module Components.UI
         , card
         , modal
         , modal_overlay
+        , title_item
+        , smsLink
+        , smsCodeInput
         )
 
 import Html exposing (Html, h1, h5, div, a, text, i, input)
@@ -41,33 +44,33 @@ button url label =
 
 
 formHeader : String -> Html m
-formHeader title =
-    h5 [] [ text title ]
+formHeader text_title =
+    h5 [] [ text text_title ]
 
 
 formInput : String -> String -> (String -> msg) -> Html msg
-formInput title value_ update =
+formInput text_title value_ update =
     input
         [ onInput update
-        , placeholder title
+        , placeholder text_title
         , value value_
         ]
         []
 
 
 formPassword : String -> String -> (String -> msg) -> Html msg
-formPassword title value_ update =
+formPassword text_title value_ update =
     input
         [ type_ "password"
         , onInput update
         , value value_
-        , placeholder title
+        , placeholder text_title
         ]
         []
 
 
 formButton : String -> Maybe String -> Maybe msg -> Html msg
-formButton title enabled update =
+formButton text_title enabled update =
     case enabled of
         Nothing ->
             let
@@ -81,7 +84,7 @@ formButton title enabled update =
             in
                 a
                     ([ class "waves-effect waves-light btn", href "" ] ++ cmd)
-                    [ text title ]
+                    [ text text_title ]
 
         Just text_ ->
             text text_
@@ -137,20 +140,20 @@ row_item child =
 
 
 info_2_10 : String -> String -> Html a
-info_2_10 title value =
+info_2_10 text_title value =
     row
-        [ Html.div [ class "col s2" ] [ text title ]
+        [ Html.div [ class "col s2" ] [ text text_title ]
         , Html.div [ class "col s10" ] [ text value ]
         ]
 
 
 linkButton : String -> String -> Html a
-linkButton title link_ref =
+linkButton text_title link_ref =
     Html.a
         [ class "waves-effect waves-light btn"
         , href link_ref
         ]
-        [ text title ]
+        [ text text_title ]
 
 
 text : String -> Html a
@@ -182,7 +185,7 @@ card child =
 
 
 modal : String -> List String -> List (Html m) -> Html m
-modal title content buttons =
+modal text_title content buttons =
     Html.div
         [ class "modal open"
         , HA.tabindex 0
@@ -194,7 +197,7 @@ modal title content buttons =
         ]
         [ Html.div [ class "modal-content" ] <|
             [ Html.h4 []
-                [ Html.text title ]
+                [ Html.text text_title ]
             ]
                 ++ (content |> List.map (\row_value -> Html.p [] [ Html.text row_value ]))
         , Html.div [ class "modal-footer" ] buttons
@@ -213,19 +216,33 @@ modal_overlay cancelcmd =
         []
 
 
+title_item : String -> Html a
+title_item text_label =
+    Html.h4 [] [ text text_label ]
 
--- <div class="modal-overlay" style="z-index: 1002; display: block; opacity: 0.5;"></div>
--- <div id="modal1" class="modal open" tabindex="0" style="z-index: 1003; display: block; opacity: 1; top: 10%; transform: scaleX(1) scaleY(1);">
---           <div class="modal-content">
---             <h4>Modal Header</h4>
---             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
---               magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
---               consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
---               Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum</p>
---           </div>
---           <div class="modal-footer">
---             <a href="#!" class="modal-close waves-effect waves-red btn-flat">Disagree</a>
---             <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
---           </div>
---         </div>
---
+
+smsLink : String -> String -> Html a
+smsLink phone body =
+    Html.a [ HA.href <| "sms:" ++ phone ++ "?body=" ++ body ] [ text "Отправить SMS" ]
+
+
+smsCodeInput : String -> (String -> cmd) -> cmd -> Html cmd
+smsCodeInput code_ cmd_ start_ =
+    Html.div [ class "row" ]
+        [ div [ class "col s6 offset-s3 m4 offset-m4 l2 offset-l5" ]
+            ([ Html.input
+                [ HA.class "sms_code"
+                , HA.placeholder "Введите код из SMS"
+                , HA.value code_
+                , onInput cmd_
+                , HA.pattern "[A-Za-z0-9]{3}"
+                ]
+                []
+             ]
+                ++ (if code_ /= "" then
+                        [ cmdButton "Добавить" start_ ]
+                    else
+                        []
+                   )
+            )
+        ]
