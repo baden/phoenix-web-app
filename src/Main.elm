@@ -310,8 +310,13 @@ viewPage model =
         Route.Auth ->
             Login.authView model.login |> Html.map LoginMsg
 
-        Route.SystemInfo id ->
-            SystemInfo.view id
+        Route.SystemInfo sysId ->
+            case Dict.get sysId model.systems of
+                Nothing ->
+                    Html.div [] [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра." ]
+
+                Just system ->
+                    SystemInfo.view system
 
         Route.GlobalMap ->
             GlobalMap.view

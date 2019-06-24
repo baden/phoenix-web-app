@@ -17,6 +17,7 @@ module Components.UI
         , text
         , qr_code
         , app_title
+        , app_logo
         , card_panel
         , card
         , modal
@@ -164,6 +165,11 @@ text value =
 qr_code : Html a
 qr_code =
     Html.img [ src "static/images/fx.navi.cc.png", class "nomobile" ] []
+
+
+app_logo : Html a
+app_logo =
+    Html.img [ src "static/images/Fenix logo.png" ] []
 
 
 app_title : Html a

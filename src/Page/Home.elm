@@ -3,7 +3,7 @@ module Page.Home exposing (..)
 import Html exposing (Html)
 import API
 import API.Account exposing (AccountDocumentInfo)
-import API.System exposing (SystemDocumentInfo, LastPosition)
+import API.System exposing (SystemDocumentInfo, LastPosition, SysState)
 import Dict exposing (Dict)
 import Time
 import Components.UI as UI exposing (text)
@@ -48,7 +48,7 @@ update msg model =
 view : Model -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Time.Zone -> Html Msg
 view model acc systems timeZone =
     UI.column12 <|
-        [ UI.app_title
+        [ UI.app_logo
         , UI.qr_code
         , auth_info acc systems timeZone
         , UI.button "/login" "Авторизация"
@@ -112,6 +112,7 @@ systemItem systems timeZone index sysId =
 
                 Just system ->
                     [ UI.info_2_10 "Название:" system.title
+                    , UI.info_2_10 "Состояние:" (sysState_of system.state timeZone)
                     , UI.info_2_10 "Последная известная позиция:" (position_of system.lastPosition timeZone)
                     ]
 
@@ -123,6 +124,16 @@ systemItem systems timeZone index sysId =
             ]
     in
         UI.card (title ++ body ++ footer)
+
+
+sysState_of : Maybe SysState -> Time.Zone -> String
+sysState_of sysState timeZone =
+    case sysState of
+        Nothing ->
+            "-"
+
+        Just state ->
+            (state.current)
 
 
 position_of : Maybe LastPosition -> Time.Zone -> String
