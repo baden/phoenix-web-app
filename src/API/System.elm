@@ -47,6 +47,12 @@ lastPositionDecoder =
         |> required "dt" JD.int
 
 
+type States
+    = Tracking
+    | Sleep
+    | Locked
+
+
 type alias SysState =
     { current : String
     , available : List String

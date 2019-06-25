@@ -1,4 +1,4 @@
-module Page.System.Info exposing (view)
+module Page.System.Info exposing (init, update, view, Model, Msg(..))
 
 import Html exposing (Html, div, text, a)
 import Html.Attributes exposing (class, href)
@@ -7,17 +7,40 @@ import Components.UI as UI
 import API.System exposing (SystemDocumentInfo, SysState)
 
 
-view : SystemDocumentInfo -> Html a
+type alias Model =
+    { showSomeDialog : Bool
+    }
+
+
+type Msg
+    = OnSysCmd String
+
+
+init : ( Model, Cmd Msg )
+init =
+    ( { showSomeDialog = False
+      }
+    , Cmd.none
+    )
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    ( model, Cmd.none )
+
+
+view : SystemDocumentInfo -> Html Msg
 view system =
     div []
-        [ div [] [ text "Информация о системе" ]
-        , div [] [ text <| "Id:" ++ system.id ]
-        , div [] [ ChartSvg.chartView "Батарея" 80 ]
-        , div [] [ text <| "Состояние: " ++ (sysState_of system.state) ]
-        , div [] [ text <| "Доступные состояния: " ++ (sysAvailable_of system.state) ]
-        , div [] [ text "Следующий сеанс связи через 04:25" ]
-        , UI.button ("/map/" ++ system.id) "Посмотреть последнее положение на карте"
-        , a [ class "button", href "/" ] [ text "На главную" ]
+        [ UI.row_item [ text system.title ]
+
+        -- , div [] [ text <| "Id:" ++ system.id ]
+        , UI.row_item [ ChartSvg.chartView "Батарея" 80 ]
+        , UI.row_item [ text <| "Состояние: " ++ (sysState_of system.state) ]
+        , UI.row_item (cmdPanel system.state)
+        , UI.row_item [ text "Следующий сеанс связи через 04:25" ]
+        , UI.button ("/map/" ++ system.id) "Смотреть на карте"
+        , UI.row_item [ UI.button "/" "На главную" ]
         ]
 
 
@@ -31,12 +54,16 @@ sysState_of sysState =
             (state.current)
 
 
-sysAvailable_of : Maybe SysState -> String
-sysAvailable_of sysState =
+cmdPanel : Maybe SysState -> List (Html Msg)
+cmdPanel sysState =
     case sysState of
         Nothing ->
-            "-"
+            []
 
         Just state ->
-            state.available
-                |> List.foldl (\i acc -> i ++ "," ++ acc) ""
+            let
+                b =
+                    \i -> UI.cmdButton i (OnSysCmd i)
+            in
+                state.available
+                    |> List.map b

@@ -37,6 +37,7 @@ type alias Model =
     , home : Home.Model
     , login : Login.Model
     , linkSys : LinkSys.Model
+    , info : SystemInfo.Model
     , globalMap : GlobalMap.Model
     , account : Maybe AccountDocumentInfo
     , systems : Dict String SystemDocumentInfo
@@ -53,6 +54,7 @@ type Msg
     | WebsocketOpened Bool
     | HomeMsg Home.Msg
     | LoginMsg Login.Msg
+    | SystemInfoMsg SystemInfo.Msg
     | GlobalMapMsg GlobalMap.Msg
     | LinkSysMsg LinkSys.Msg
     | TimeZoneDetected Time.Zone
@@ -80,6 +82,9 @@ init flags url key =
         ( linkSysModel, _ ) =
             LinkSys.init
 
+        ( infoModel, _ ) =
+            SystemInfo.init
+
         model =
             { token = flags.token
             , api_url = flags.api_url
@@ -90,6 +95,7 @@ init flags url key =
             , home = homeModel
             , login = loginModel
             , linkSys = linkSysModel
+            , info = infoModel
             , globalMap = globalMapModel
             , account = Nothing
             , systems = Dict.empty
@@ -165,6 +171,13 @@ update msg model =
                     GlobalMap.update globalMapMsg model.globalMap
             in
                 ( { model | globalMap = updatedGlobalMapModel }, Cmd.map GlobalMapMsg upstream )
+
+        SystemInfoMsg globalInfoMsg ->
+            let
+                ( updatedInfoModel, upstream ) =
+                    SystemInfo.update globalInfoMsg model.info
+            in
+                ( { model | info = updatedInfoModel }, Cmd.map SystemInfoMsg upstream )
 
         LinkClicked urlRequest ->
             case urlRequest of
@@ -330,7 +343,7 @@ viewPage model =
                     Html.div [] [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра." ]
 
                 Just system ->
-                    SystemInfo.view system
+                    SystemInfo.view system |> Html.map SystemInfoMsg
 
         Route.GlobalMap ->
             GlobalMap.view
