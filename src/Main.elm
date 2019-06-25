@@ -175,18 +175,22 @@ update msg model =
                     ( model, Nav.load href )
 
         UrlChanged url ->
-            case Parser.parse Route.routeParser url of
-                -- Just Route.BouncePage ->
-                --     ( model, Nav.load (Url.toString url) )
-                Just page ->
-                    ( { model | page = page }
-                        |> computeViewForPage page
-                    , Cmd.none
-                    )
+            let
+                _ =
+                    Debug.log "UrlChanged" url
+            in
+                case Parser.parse Route.routeParser url of
+                    -- Just Route.BouncePage ->
+                    --     ( model, Nav.load (Url.toString url) )
+                    Just page ->
+                        ( { model | page = page }
+                            |> computeViewForPage page
+                        , Cmd.none
+                        )
 
-                Nothing ->
-                    -- 404 would be nice
-                    ( model, Cmd.none )
+                    Nothing ->
+                        -- 404 would be nice
+                        ( model, Cmd.none )
 
         WebsocketIn message ->
             let
@@ -208,11 +212,21 @@ update msg model =
                         )
 
                     Just (API.Document (API.AccountDocument document)) ->
-                        ( { model | account = Just document }
-                        , Cmd.batch
-                            [ Nav.pushUrl model.key "/"
-                            ]
-                        )
+                        let
+                            _ =
+                                Debug.log "Account" ( model.page, document )
+
+                            next =
+                                case model.page of
+                                    Route.Login ->
+                                        Cmd.batch [ Nav.pushUrl model.key "/" ]
+
+                                    _ ->
+                                        Cmd.none
+                        in
+                            ( { model | account = Just document }
+                            , next
+                            )
 
                     Just (API.Document (API.SystemDocument document)) ->
                         ( { model | systems = Dict.insert document.id document model.systems }
