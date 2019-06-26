@@ -4,6 +4,7 @@ import Html exposing (Html, div, text, a)
 import Html.Attributes exposing (class, href)
 import Components.ChartSvg as ChartSvg
 import Components.UI as UI
+import API
 import API.System as System exposing (SystemDocumentInfo, SysState)
 
 
@@ -17,7 +18,7 @@ type Msg
     = OnSysCmd System.State
     | OnTitleChangeStart String
     | OnTitleChange String
-    | OnTitleConfirm
+    | OnTitleConfirm String String
     | OnTitleCancel
 
 
@@ -46,8 +47,13 @@ update msg model =
         OnTitleChange enteredTitle ->
             ( { model | newTitle = enteredTitle }, Cmd.none )
 
-        OnTitleConfirm ->
-            ( { model | showTitleChangeDialog = False }, Cmd.none )
+        OnTitleConfirm sysId newTitle ->
+            let
+                cmd =
+                    API.websocketOut <|
+                        System.setSystemTitle sysId newTitle
+            in
+                ( { model | showTitleChangeDialog = False }, Cmd.batch [ cmd ] )
 
         OnTitleCancel ->
             ( { model | showTitleChangeDialog = False }, Cmd.none )
@@ -58,7 +64,7 @@ view model system =
     div [] <|
         [ UI.row_item
             [ text system.title
-            , UI.cmdButton "+" (OnTitleChangeStart system.title)
+            , UI.cmdButton "…" (OnTitleChangeStart system.title)
             ]
 
         -- , div [] [ text <| "Id:" ++ system.id ]
@@ -69,7 +75,7 @@ view model system =
         , UI.button ("/map/" ++ system.id) "Смотреть на карте"
         , UI.row_item [ UI.button "/" "На главную" ]
         ]
-            ++ (titleChangeDialogView model)
+            ++ (titleChangeDialogView model system.id)
 
 
 sysState_of : Maybe SysState -> String
@@ -97,15 +103,15 @@ cmdPanel sysState =
                     |> List.map b
 
 
-titleChangeDialogView : Model -> List (Html Msg)
-titleChangeDialogView model =
+titleChangeDialogView : Model -> String -> List (Html Msg)
+titleChangeDialogView model sysId =
     if model.showTitleChangeDialog then
         [ UI.modal
             "Название"
-            [ "Отображаемое имя системы:"
+            [ UI.ModalText "Отображаемое имя системы:"
+            , UI.ModalHtml <| UI.formInput "Имя" model.newTitle OnTitleChange
             ]
-            [ UI.formInput "Имя" model.newTitle OnTitleChange
-            , UI.cmdButton "Применить" (OnTitleConfirm)
+            [ UI.cmdButton "Применить" (OnTitleConfirm sysId model.newTitle)
             , UI.cmdButton "Отменить" (OnTitleCancel)
             ]
         , UI.modal_overlay OnTitleCancel

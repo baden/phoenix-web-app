@@ -313,7 +313,7 @@ view model =
                 Just errorText ->
                     [ UI.modal
                         "Ошибка"
-                        [ errorText
+                        [ UI.ModalText errorText
                         ]
                         [ UI.cmdButton "Закрыть" (OnCloseModal)
                         ]

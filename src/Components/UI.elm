@@ -22,6 +22,7 @@ module Components.UI
         , card
         , modal
         , modal_overlay
+        , ModalElement(..)
         , title_item
         , smsLink
         , smsCodeInput
@@ -192,27 +193,38 @@ card child =
 
 type ModalElement m
     = ModalText String
-    | ModalInput m
+    | ModalHtml (Html m)
 
 
-modal : String -> List String -> List (Html m) -> Html m
+modal : String -> List (ModalElement m) -> List (Html m) -> Html m
 modal text_title content buttons =
-    Html.div
-        [ class "modal open"
-        , HA.tabindex 0
-        , HA.style "z-index" "1003"
-        , HA.style "display" "block"
-        , HA.style "opacity" "1"
-        , HA.style "top" "10%"
-        , HA.style "transform" "scaleX(1) scaleY(1)"
-        ]
-        [ Html.div [ class "modal-content" ] <|
-            [ Html.h4 []
-                [ Html.text text_title ]
+    let
+        element =
+            (\row_value ->
+                case row_value of
+                    ModalText text_value ->
+                        Html.p [] [ Html.text text_value ]
+
+                    ModalHtml html ->
+                        html
+            )
+    in
+        Html.div
+            [ class "modal open"
+            , HA.tabindex 0
+            , HA.style "z-index" "1003"
+            , HA.style "display" "block"
+            , HA.style "opacity" "1"
+            , HA.style "top" "10%"
+            , HA.style "transform" "scaleX(1) scaleY(1)"
             ]
-                ++ (content |> List.map (\row_value -> Html.p [] [ Html.text row_value ]))
-        , Html.div [ class "modal-footer" ] buttons
-        ]
+            [ Html.div [ class "modal-content" ] <|
+                [ Html.h4 []
+                    [ Html.text text_title ]
+                ]
+                    ++ (content |> List.map element)
+            , Html.div [ class "modal-footer" ] buttons
+            ]
 
 
 modal_overlay : m -> Html m

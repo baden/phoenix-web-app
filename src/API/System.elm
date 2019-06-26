@@ -8,10 +8,13 @@ module API.System
           -- , SysId
         , stateAsString
         , stateAsCmdString
+        , setSystemTitle
         )
 
 import Json.Decode as JD
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
+import Json.Encode as Encode
+import API.Document as Document
 
 
 -- type alias SysId =
@@ -125,3 +128,13 @@ sysStateDecoder =
 
 -- JD.map AccountDocumentInfo
 --     (JD.field "realname" JD.string)
+
+
+setSystemTitle : String -> String -> Encode.Value
+setSystemTitle sysId newTitle =
+    Document.updateDocumentRequest "system" <|
+        Encode.object
+            [ ( "key", Encode.string sysId )
+            , ( "path", Encode.string "title" )
+            , ( "value", Encode.string newTitle )
+            ]
