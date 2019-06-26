@@ -4,7 +4,10 @@ module API.System
         , systemDocumentDecoder
         , LastPosition
         , SysState
+        , State
           -- , SysId
+        , stateAsString
+        , stateAsCmdString
         )
 
 import Json.Decode as JD
@@ -47,23 +50,76 @@ lastPositionDecoder =
         |> required "dt" JD.int
 
 
-type States
+type State
     = Tracking
     | Sleep
     | Locked
+    | Unknown
+
+
+stateDecoder : JD.Decoder State
+stateDecoder =
+    JD.string
+        |> JD.andThen
+            (\t ->
+                case t of
+                    "tracking" ->
+                        JD.succeed Tracking
+
+                    "sleep" ->
+                        JD.succeed Sleep
+
+                    "locked" ->
+                        JD.succeed Locked
+
+                    _ ->
+                        JD.succeed Unknown
+            )
+
+
+stateAsString : State -> String
+stateAsString state =
+    case state of
+        Tracking ->
+            "Слежение"
+
+        Sleep ->
+            "Сон"
+
+        Locked ->
+            "Блокировка"
+
+        Unknown ->
+            "Неизвестно"
+
+
+stateAsCmdString : State -> String
+stateAsCmdString state =
+    case state of
+        Tracking ->
+            "Отследить"
+
+        Sleep ->
+            "Усыпить"
+
+        Locked ->
+            "Заблокировать"
+
+        Unknown ->
+            "В разработке..."
 
 
 type alias SysState =
-    { current : String
-    , available : List String
+    { current : State
+    , available : List State
     }
 
 
 sysStateDecoder : JD.Decoder SysState
 sysStateDecoder =
     JD.succeed SysState
-        |> required "current" JD.string
-        |> required "available" (JD.list JD.string)
+        |> required "current" stateDecoder
+        |> required "available" (JD.list stateDecoder)
 
 
 

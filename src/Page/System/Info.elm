@@ -4,21 +4,27 @@ import Html exposing (Html, div, text, a)
 import Html.Attributes exposing (class, href)
 import Components.ChartSvg as ChartSvg
 import Components.UI as UI
-import API.System exposing (SystemDocumentInfo, SysState)
+import API.System as System exposing (SystemDocumentInfo, SysState)
 
 
 type alias Model =
-    { showSomeDialog : Bool
+    { showTitleChangeDialog : Bool
+    , newTitle : String
     }
 
 
 type Msg
-    = OnSysCmd String
+    = OnSysCmd System.State
+    | OnTitleChangeStart String
+    | OnTitleChange String
+    | OnTitleConfirm
+    | OnTitleCancel
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { showSomeDialog = False
+    ( { showTitleChangeDialog = False
+      , newTitle = ""
       }
     , Cmd.none
     )
@@ -26,13 +32,34 @@ init =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        OnSysCmd state ->
+            let
+                _ =
+                    Debug.log "Make new state:" state
+            in
+                ( model, Cmd.none )
+
+        OnTitleChangeStart oldTitle ->
+            ( { model | showTitleChangeDialog = True, newTitle = oldTitle }, Cmd.none )
+
+        OnTitleChange enteredTitle ->
+            ( { model | newTitle = enteredTitle }, Cmd.none )
+
+        OnTitleConfirm ->
+            ( { model | showTitleChangeDialog = False }, Cmd.none )
+
+        OnTitleCancel ->
+            ( { model | showTitleChangeDialog = False }, Cmd.none )
 
 
-view : SystemDocumentInfo -> Html Msg
-view system =
-    div []
-        [ UI.row_item [ text system.title ]
+view : Model -> SystemDocumentInfo -> Html Msg
+view model system =
+    div [] <|
+        [ UI.row_item
+            [ text system.title
+            , UI.cmdButton "+" (OnTitleChangeStart system.title)
+            ]
 
         -- , div [] [ text <| "Id:" ++ system.id ]
         , UI.row_item [ ChartSvg.chartView "Батарея" 80 ]
@@ -42,6 +69,7 @@ view system =
         , UI.button ("/map/" ++ system.id) "Смотреть на карте"
         , UI.row_item [ UI.button "/" "На главную" ]
         ]
+            ++ (titleChangeDialogView model)
 
 
 sysState_of : Maybe SysState -> String
@@ -51,7 +79,7 @@ sysState_of sysState =
             "-"
 
         Just state ->
-            (state.current)
+            (System.stateAsString state.current)
 
 
 cmdPanel : Maybe SysState -> List (Html Msg)
@@ -63,7 +91,24 @@ cmdPanel sysState =
         Just state ->
             let
                 b =
-                    \i -> UI.cmdButton i (OnSysCmd i)
+                    \i -> UI.cmdButton (System.stateAsCmdString i) (OnSysCmd i)
             in
                 state.available
                     |> List.map b
+
+
+titleChangeDialogView : Model -> List (Html Msg)
+titleChangeDialogView model =
+    if model.showTitleChangeDialog then
+        [ UI.modal
+            "Название"
+            [ "Отображаемое имя системы:"
+            ]
+            [ UI.formInput "Имя" model.newTitle OnTitleChange
+            , UI.cmdButton "Применить" (OnTitleConfirm)
+            , UI.cmdButton "Отменить" (OnTitleCancel)
+            ]
+        , UI.modal_overlay OnTitleCancel
+        ]
+    else
+        []

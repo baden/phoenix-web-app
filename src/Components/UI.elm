@@ -190,6 +190,11 @@ card child =
         [ Html.div [ class "z-depth-2 shadow-demo" ] child ]
 
 
+type ModalElement m
+    = ModalText String
+    | ModalInput m
+
+
 modal : String -> List String -> List (Html m) -> Html m
 modal text_title content buttons =
     Html.div

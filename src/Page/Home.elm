@@ -3,7 +3,7 @@ module Page.Home exposing (..)
 import Html exposing (Html)
 import API
 import API.Account exposing (AccountDocumentInfo)
-import API.System exposing (SystemDocumentInfo, LastPosition, SysState)
+import API.System as System exposing (SystemDocumentInfo, LastPosition, SysState)
 import Dict exposing (Dict)
 import Time
 import Components.UI as UI exposing (text)
@@ -99,15 +99,14 @@ systemList sysIds systems timeZone =
 systemItem : Dict String SystemDocumentInfo -> Time.Zone -> Int -> String -> Html Msg
 systemItem systems timeZone index sysId =
     let
-        title =
-            [ UI.info_2_10 "Index:" (String.fromInt index)
-            , UI.info_2_10 "ID:" sysId
-            ]
-
+        -- title =
+        --     [ UI.info_2_10 "Index:" (String.fromInt index)
+        --     , UI.info_2_10 "ID:" sysId
+        --     ]
         body =
             case Dict.get sysId systems of
                 Nothing ->
-                    [ UI.row_item [ UI.text "Данные по трекеру еще не получены" ]
+                    [ UI.row_item [ UI.text "Данные по трекеру еще не получены или недостаточно прав для доступа к трекеру" ]
                     ]
 
                 Just system ->
@@ -123,7 +122,8 @@ systemItem systems timeZone index sysId =
                 ]
             ]
     in
-        UI.card (title ++ body ++ footer)
+        -- UI.card (title ++ body ++ footer)
+        UI.card (body ++ footer)
 
 
 sysState_of : Maybe SysState -> Time.Zone -> String
@@ -133,7 +133,7 @@ sysState_of sysState timeZone =
             "-"
 
         Just state ->
-            (state.current)
+            (System.stateAsString state.current)
 
 
 position_of : Maybe LastPosition -> Time.Zone -> String

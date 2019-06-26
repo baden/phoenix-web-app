@@ -343,7 +343,7 @@ viewPage model =
                     Html.div [] [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра." ]
 
                 Just system ->
-                    SystemInfo.view system |> Html.map SystemInfoMsg
+                    SystemInfo.view model.info system |> Html.map SystemInfoMsg
 
         Route.GlobalMap ->
             GlobalMap.view
