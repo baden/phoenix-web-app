@@ -9,6 +9,8 @@ module API.System
         , stateAsString
         , stateAsCmdString
         , setSystemTitle
+        , setSystemState
+        , cancelSystemState
         )
 
 import Json.Decode as JD
@@ -26,6 +28,7 @@ type alias SystemDocumentInfo =
     , title : String
     , lastPosition : Maybe LastPosition
     , state : Maybe SysState
+    , waitState : Maybe State
     }
 
 
@@ -36,6 +39,7 @@ systemDocumentDecoder =
         |> required "title" JD.string
         |> optional "last_position" (JD.maybe lastPositionDecoder) Nothing
         |> optional "state" (JD.maybe sysStateDecoder) Nothing
+        |> optional "wait_state" (JD.maybe stateDecoder) Nothing
 
 
 type alias LastPosition =
@@ -138,3 +142,39 @@ setSystemTitle sysId newTitle =
             , ( "path", Encode.string "title" )
             , ( "value", Encode.string newTitle )
             ]
+
+
+setSystemState : String -> State -> Encode.Value
+setSystemState sysId newState =
+    -- "cmd" : "system_mode",
+    -- "id" : "$SYS_ID1",
+    -- "mode" : "main",
+    -- "value" : "force"
+    Encode.object
+        [ ( "cmd", Encode.string "system_state" )
+        , ( "id", Encode.string sysId )
+        , ( "value"
+          , Encode.string <|
+                case newState of
+                    Tracking ->
+                        "tracking"
+
+                    Sleep ->
+                        "sleep"
+
+                    Locked ->
+                        "locked"
+
+                    Unknown ->
+                        "unknown"
+          )
+        ]
+
+
+cancelSystemState : String -> Encode.Value
+cancelSystemState sysId =
+    Encode.object
+        [ ( "cmd", Encode.string "system_state" )
+        , ( "id", Encode.string sysId )
+        , ( "value", Encode.string "" )
+        ]

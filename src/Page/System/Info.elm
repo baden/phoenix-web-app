@@ -5,7 +5,7 @@ import Html.Attributes exposing (class, href)
 import Components.ChartSvg as ChartSvg
 import Components.UI as UI
 import API
-import API.System as System exposing (SystemDocumentInfo, SysState)
+import API.System as System exposing (SystemDocumentInfo, SysState, State)
 
 
 type alias Model =
@@ -15,7 +15,8 @@ type alias Model =
 
 
 type Msg
-    = OnSysCmd System.State
+    = OnSysCmd String System.State
+    | OnSysCmdCancel String
     | OnTitleChangeStart String
     | OnTitleChange String
     | OnTitleConfirm String String
@@ -34,12 +35,15 @@ init =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        OnSysCmd state ->
+        OnSysCmd sysId state ->
             let
                 _ =
                     Debug.log "Make new state:" state
             in
-                ( model, Cmd.none )
+                ( model, Cmd.batch [ API.websocketOut <| System.setSystemState sysId state ] )
+
+        OnSysCmdCancel sysId ->
+            ( model, Cmd.batch [ API.websocketOut <| System.cancelSystemState sysId ] )
 
         OnTitleChangeStart oldTitle ->
             ( { model | showTitleChangeDialog = True, newTitle = oldTitle }, Cmd.none )
@@ -70,7 +74,7 @@ view model system =
         -- , div [] [ text <| "Id:" ++ system.id ]
         , UI.row_item [ ChartSvg.chartView "Батарея" 80 ]
         , UI.row_item [ text <| "Состояние: " ++ (sysState_of system.state) ]
-        , UI.row_item (cmdPanel system.state)
+        , UI.row_item (cmdPanel system.id system.state system.waitState)
         , UI.row_item [ text "Следующий сеанс связи через 04:25" ]
         , UI.button ("/map/" ++ system.id) "Смотреть на карте"
         , UI.row_item [ UI.button "/" "На главную" ]
@@ -88,19 +92,26 @@ sysState_of sysState =
             (System.stateAsString state.current)
 
 
-cmdPanel : Maybe SysState -> List (Html Msg)
-cmdPanel sysState =
-    case sysState of
+cmdPanel : String -> Maybe SysState -> Maybe State -> List (Html Msg)
+cmdPanel sysId sysState waitState =
+    case waitState of
         Nothing ->
-            []
+            case sysState of
+                Nothing ->
+                    []
 
-        Just state ->
-            let
-                b =
-                    \i -> UI.cmdButton (System.stateAsCmdString i) (OnSysCmd i)
-            in
-                state.available
-                    |> List.map b
+                Just state ->
+                    let
+                        b =
+                            \i -> UI.cmdButton (System.stateAsCmdString i) (OnSysCmd sysId i)
+                    in
+                        state.available
+                            |> List.map b
+
+        Just wState ->
+            [ text <| "При следуюем сеансе связи, система будет переведена в режим: " ++ (System.stateAsString wState)
+            , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+            ]
 
 
 titleChangeDialogView : Model -> String -> List (Html Msg)
