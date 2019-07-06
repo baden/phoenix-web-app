@@ -76,6 +76,7 @@ view model system =
         , UI.row_item [ text <| "Состояние: " ++ (sysState_of system.state) ]
         , UI.row_item (cmdPanel system.id system.state system.waitState)
         , UI.row_item [ text "Следующий сеанс связи через 04:25" ]
+        , UI.row_item (nextSession system.lastSession)
         , UI.button ("/map/" ++ system.id) "Смотреть на карте"
         , UI.row_item [ UI.button "/" "На главную" ]
         ]
@@ -111,6 +112,20 @@ cmdPanel sysId sysState waitState =
         Just wState ->
             [ text <| "При следуюем сеансе связи, система будет переведена в режим: " ++ (System.stateAsString wState)
             , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+            ]
+
+
+nextSession : Maybe System.LastSession -> List (Html Msg)
+nextSession maybeLastSession =
+    case maybeLastSession of
+        Nothing ->
+            [ text "TBD" ]
+
+        Just lastSession ->
+            [ text <|
+                "Следующий сеанс связи примерно через "
+                    ++ (lastSession.next |> Maybe.withDefault 0 |> String.fromInt)
+                    ++ " минут"
             ]
 
 

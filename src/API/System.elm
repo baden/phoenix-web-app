@@ -3,6 +3,7 @@ module API.System
         ( SystemDocumentInfo
         , systemDocumentDecoder
         , LastPosition
+        , LastSession
         , SysState
         , State
           -- , SysId
@@ -27,6 +28,7 @@ type alias SystemDocumentInfo =
     { id : String
     , title : String
     , lastPosition : Maybe LastPosition
+    , lastSession : Maybe LastSession
     , state : Maybe SysState
     , waitState : Maybe State
     }
@@ -38,6 +40,7 @@ systemDocumentDecoder =
         |> required "_id" JD.string
         |> required "title" JD.string
         |> optional "last_position" (JD.maybe lastPositionDecoder) Nothing
+        |> optional "last_session" (JD.maybe lastSessionDecoder) Nothing
         |> optional "state" (JD.maybe sysStateDecoder) Nothing
         |> optional "wait_state" (JD.maybe stateDecoder) Nothing
 
@@ -55,6 +58,21 @@ lastPositionDecoder =
         |> required "lat" JD.float
         |> required "lon" JD.float
         |> required "dt" JD.int
+
+
+type alias LastSession =
+    { dt : Int
+    , event : String
+    , next : Maybe Int
+    }
+
+
+lastSessionDecoder : JD.Decoder LastSession
+lastSessionDecoder =
+    JD.succeed LastSession
+        |> required "dt" JD.int
+        |> required "event" JD.string
+        |> optional "next" (JD.maybe JD.int) Nothing
 
 
 type State
