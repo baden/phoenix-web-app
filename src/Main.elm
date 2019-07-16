@@ -22,9 +22,18 @@ import API.Error exposing (errorMessageString)
 import Dict exposing (Dict)
 import Task
 import Time
+
+
+-- exposing (Month(..))
+
 import Msg as MsgT
 import List.Extra as ListExtra
 import Components.UI as UI
+
+
+-- import Date exposing (Date, Interval(..), Unit(..))
+
+import AppState
 
 
 type alias Model =
@@ -33,7 +42,6 @@ type alias Model =
     , key : Nav.Key
     , url : Url.Url
     , page : Route.Page
-    , timeZone : Time.Zone
     , home : Home.Model
     , login : Login.Model
     , linkSys : LinkSys.Model
@@ -42,6 +50,7 @@ type alias Model =
     , account : Maybe AccountDocumentInfo
     , systems : Dict String SystemDocumentInfo
     , errorMessage : Maybe String -- Надо бы расширить функцилнал
+    , appState : AppState.AppState
     }
 
 
@@ -57,8 +66,9 @@ type Msg
     | SystemInfoMsg SystemInfo.Msg
     | GlobalMapMsg GlobalMap.Msg
     | LinkSysMsg LinkSys.Msg
-    | TimeZoneDetected Time.Zone
     | OnCloseModal
+    | TimeZoneDetected Time.Zone
+    | ReceiveNow Time.Posix
 
 
 type alias Flags =
@@ -91,7 +101,6 @@ init flags url key =
             , key = key
             , url = url
             , page = Route.Home
-            , timeZone = Time.utc
             , home = homeModel
             , login = loginModel
             , linkSys = linkSysModel
@@ -100,20 +109,24 @@ init flags url key =
             , account = Nothing
             , systems = Dict.empty
             , errorMessage = Nothing
+            , appState = AppState.initModel
             }
 
         ( navedModel, navedCmd ) =
             update (UrlChanged url) model
     in
         ( navedModel
-        , Cmd.batch
+        , Cmd.batch <|
             [ -- Backend.fetchMe MeFetched
               navedCmd
 
             -- , API.websocketOpen Config.ws
             , flags.api_url |> Maybe.withDefault Config.ws |> API.websocketOpen
-            , Task.perform TimeZoneDetected Time.here
+
+            -- , Task.perform TimeZoneDetected Time.here
+            -- , Date.today |> Task.perform ReceiveDate
             ]
+                ++ (AppState.initCmd TimeZoneDetected ReceiveNow)
         )
 
 
@@ -280,11 +293,14 @@ update msg model =
                     [ authCmd ]
                 )
 
-        TimeZoneDetected zone ->
-            ( { model | timeZone = zone }, Cmd.none )
-
         OnCloseModal ->
             ( { model | errorMessage = Nothing }, Cmd.none )
+
+        TimeZoneDetected zone ->
+            ( { model | appState = model.appState |> AppState.updateTimeZone zone }, Cmd.none )
+
+        ReceiveNow time ->
+            ( { model | appState = model.appState |> AppState.updateNow time }, Cmd.none )
 
 
 computeViewForPage : Route.Page -> Model -> Model
@@ -329,7 +345,7 @@ viewPage : Model -> Html Msg
 viewPage model =
     case model.page of
         Route.Home ->
-            Home.view model.home model.account model.systems model.timeZone |> Html.map HomeMsg
+            Home.view model.appState model.home model.account model.systems |> Html.map HomeMsg
 
         Route.Login ->
             Login.loginView model.login |> Html.map LoginMsg
@@ -343,7 +359,7 @@ viewPage model =
                     Html.div [] [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра." ]
 
                 Just system ->
-                    SystemInfo.view model.info system |> Html.map SystemInfoMsg
+                    SystemInfo.view model.appState model.info system |> Html.map SystemInfoMsg
 
         Route.GlobalMap ->
             GlobalMap.view
@@ -386,4 +402,8 @@ port saveToken : String -> Cmd msg
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch [ API.websocketOpened WebsocketOpened, API.websocketIn WebsocketIn ]
+    Sub.batch
+        [ API.websocketOpened WebsocketOpened
+        , API.websocketIn WebsocketIn
+        , Time.every (1000.0) ReceiveNow
+        ]

@@ -9,6 +9,7 @@ import Time
 import Components.UI as UI exposing (text)
 import Components.DateTime as DT
 import Msg
+import AppState
 
 
 type alias Model =
@@ -45,12 +46,12 @@ update msg model =
             ( { model | showRemodeDialog = False }, Cmd.none, Just (Msg.RemoveSystemFromList model.removeIndex) )
 
 
-view : Model -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Time.Zone -> Html Msg
-view model acc systems timeZone =
+view : AppState.AppState -> Model -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Html Msg
+view appState model acc systems =
     UI.column12 <|
         [ UI.app_logo
         , UI.qr_code
-        , auth_info acc systems timeZone
+        , auth_info acc systems appState.timeZone
         , UI.button "/login" "Авторизация"
         , UI.button "/map" "Карта"
         ]
