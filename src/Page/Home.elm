@@ -10,6 +10,7 @@ import Components.UI as UI exposing (text)
 import Components.DateTime as DT
 import Msg
 import AppState
+import Types.Dt as DT
 
 
 type alias Model =
@@ -148,5 +149,10 @@ position_of last_position timeZone =
                 ++ ", "
                 ++ (String.fromFloat lastPosition.lon)
                 ++ "@"
-                ++ (lastPosition.dt * 1000 |> Time.millisToPosix |> DT.dateTimeFormat timeZone)
+                ++ (dtFormat lastPosition.dt timeZone)
             )
+
+
+dtFormat : DT.Dt -> Time.Zone -> String
+dtFormat v timeZone =
+    (DT.toInt v) * 1000 |> Time.millisToPosix |> DT.dateTimeFormat timeZone

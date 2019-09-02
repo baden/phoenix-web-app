@@ -18,7 +18,7 @@ import Json.Decode as JD
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Json.Encode as Encode
 import API.Document as Document
-import Types.Dt as Dt
+import Types.Dt as DT
 
 
 -- type alias SysId =
@@ -49,7 +49,7 @@ systemDocumentDecoder =
 type alias LastPosition =
     { lat : Float
     , lon : Float
-    , dt : Int
+    , dt : DT.Dt
     }
 
 
@@ -58,22 +58,22 @@ lastPositionDecoder =
     JD.succeed LastPosition
         |> required "lat" JD.float
         |> required "lon" JD.float
-        |> required "dt" JD.int
+        |> required "dt" DT.decoder
 
 
 type alias LastSession =
-    { dt : Int
+    { dt : DT.Dt
     , event : String
-    , next : Maybe Int
+    , next : Maybe DT.Dt
     }
 
 
 lastSessionDecoder : JD.Decoder LastSession
 lastSessionDecoder =
     JD.succeed LastSession
-        |> required "dt" JD.int
+        |> required "dt" DT.decoder
         |> required "event" JD.string
-        |> optional "next" (JD.maybe JD.int) Nothing
+        |> optional "next" (JD.maybe DT.decoder) Nothing
 
 
 type State

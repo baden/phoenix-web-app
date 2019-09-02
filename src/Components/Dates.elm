@@ -6,6 +6,7 @@ import API.System as System
 import AppState
 import DateFormat
 import Time exposing (Zone, Posix)
+import Types.Dt as DT
 
 
 -- import Date
@@ -26,14 +27,15 @@ nextSession appState maybeLastSession =
                     lastSession.dt
 
                 offset =
-                    lastSession.next |> Maybe.withDefault 0
+                    lastSession.next |> Maybe.withDefault (DT.fromInt 0)
 
                 tz =
                     appState.timeZone
 
                 next_session =
-                    last_session + offset * 60
+                    DT.addSecs last_session offset
 
+                -- (DT.fromInt last_session) + offset * 60
                 -- _ =
                 --     Debug.log "lastSession" lastSession
             in
@@ -45,14 +47,25 @@ nextSession appState maybeLastSession =
                   Html.table []
                     [ Html.tr []
                         [ Html.td [] [ text "Дата последнего сеанса: " ]
-                        , Html.td [] [ text <| (last_session |> dtToPosix |> dateTimeFormat tz) ]
+                        , Html.td [] [ text <| (last_session |> DT.toPosix |> dateTimeFormat tz) ]
                         ]
                     , Html.tr []
                         [ Html.td [] [ text "Ожидаемая дата следующего сеанса: " ]
-                        , Html.td [] [ text <| (next_session |> dtToPosix |> dateTimeFormat tz) ]
+                        , Html.td []
+                            [ text <|
+                                if (offset |> DT.toInt) == 0 then
+                                    "неизвестно"
+                                else
+                                    nextSessionText next_session tz
+                            ]
                         ]
                     ]
                 ]
+
+
+nextSessionText : DT.Dt -> Zone -> String
+nextSessionText next_session tz =
+    next_session |> DT.toPosix |> dateTimeFormat tz
 
 
 humanOffsetP : Int -> Int -> String
@@ -82,21 +95,6 @@ humanOffset before current =
             "давно"
         else
             "неизвестно"
-
-
-dtToPosix : Int -> Posix
-dtToPosix dt =
-    dt * 1000 |> Time.millisToPosix
-
-
-posixToDt : Posix -> Int
-posixToDt posix =
-    posix |> Time.posixToMillis |> millisToSesc
-
-
-millisToSesc : Int -> Int
-millisToSesc a =
-    a // 1000
 
 
 dateTimeFormat : Zone -> Posix -> String
