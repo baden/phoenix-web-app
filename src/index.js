@@ -44,6 +44,7 @@ function open(url) {
     };
     socket.onclose = () => {
         console.log("onclose");
+        app.ports.websocketOpened.send(false);
         socket = null;
         setTimeout(function() {
             open(url);

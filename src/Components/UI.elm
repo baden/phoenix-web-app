@@ -26,6 +26,7 @@ module Components.UI
         , title_item
         , smsLink
         , smsCodeInput
+        , connectionWidwet
         )
 
 import Html exposing (Html, h1, h5, div, a, text, i, input)
@@ -269,3 +270,18 @@ smsCodeInput code_ cmd_ start_ =
                    )
             )
         ]
+
+
+connectionWidwet : List (Html a)
+connectionWidwet =
+    [ div
+        [ class "modal-overlay"
+        , HA.style "z-index" "1002"
+        , HA.style "display" "block"
+        , HA.style "opacity" "0.5"
+        ]
+        []
+    , div [ class "connection", HA.style "z-index" "1003" ]
+        [ text "Нет соединения с сервером"
+        ]
+    ]

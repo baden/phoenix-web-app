@@ -51,7 +51,13 @@ type alias Model =
     , systems : Dict String SystemDocumentInfo
     , errorMessage : Maybe String -- Надо бы расширить функцилнал
     , appState : AppState.AppState
+    , connectionState : ConnectionState
     }
+
+
+type ConnectionState
+    = NotConnected
+    | Connected
 
 
 type Msg
@@ -110,6 +116,7 @@ init flags url key =
             , systems = Dict.empty
             , errorMessage = Nothing
             , appState = AppState.initModel
+            , connectionState = NotConnected
             }
 
         ( navedModel, navedCmd ) =
@@ -280,7 +287,14 @@ update msg model =
         OpenWebsocket url ->
             ( model, API.websocketOpen url )
 
-        WebsocketOpened _ ->
+        WebsocketOpened False ->
+            let
+                _ =
+                    Debug.log "WS closed?" False
+            in
+                ( { model | connectionState = NotConnected }, Cmd.none )
+
+        WebsocketOpened True ->
             let
                 authCmd =
                     case model.token of
@@ -290,7 +304,7 @@ update msg model =
                         Just token ->
                             API.websocketOut <| API.authRequest token
             in
-                ( model
+                ( { model | connectionState = Connected }
                 , Cmd.batch
                     [ authCmd ]
                 )
@@ -337,9 +351,17 @@ view model =
                         ]
                     , UI.modal_overlay OnCloseModal
                     ]
+
+        connection =
+            case model.connectionState of
+                Connected ->
+                    []
+
+                NotConnected ->
+                    UI.connectionWidwet
     in
         { title = "Fenix App"
-        , body = [ viewPage model ] ++ modal
+        , body = [ viewPage model ] ++ modal ++ connection
         }
 
 

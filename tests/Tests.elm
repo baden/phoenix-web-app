@@ -2,6 +2,7 @@ module Tests exposing (..)
 
 import Test exposing (..)
 import Expect
+import Types.Dt as DT
 
 
 -- Check out http://package.elm-lang.org/packages/elm-community/elm-test/latest to learn more about testing in Elm!
@@ -19,4 +20,13 @@ all =
         , test "This test should fail" <|
             \_ ->
                 Expect.fail "failed as expected!"
+        ]
+
+
+dt : Test
+dt =
+    describe "DateTime type"
+        [ test "Ass some seconds to date" <|
+            \() ->
+                Expect.equal 60 (DT.fromInt 0)
         ]

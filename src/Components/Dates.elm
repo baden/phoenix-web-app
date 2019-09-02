@@ -26,18 +26,8 @@ nextSession appState maybeLastSession =
                 last_session =
                     lastSession.dt
 
-                offset =
-                    lastSession.next |> Maybe.withDefault (DT.fromInt 0)
-
                 tz =
                     appState.timeZone
-
-                next_session =
-                    DT.addSecs last_session offset
-
-                -- (DT.fromInt last_session) + offset * 60
-                -- _ =
-                --     Debug.log "lastSession" lastSession
             in
                 [ --text <|
                   --     "Следующий сеанс связи примерно через "
@@ -52,20 +42,20 @@ nextSession appState maybeLastSession =
                     , Html.tr []
                         [ Html.td [] [ text "Ожидаемая дата следующего сеанса: " ]
                         , Html.td []
-                            [ text <|
-                                if (offset |> DT.toInt) == 0 then
-                                    "неизвестно"
-                                else
-                                    nextSessionText next_session tz
-                            ]
+                            [ text <| nextSessionText last_session lastSession.next tz ]
                         ]
                     ]
                 ]
 
 
-nextSessionText : DT.Dt -> Zone -> String
-nextSessionText next_session tz =
-    next_session |> DT.toPosix |> dateTimeFormat tz
+nextSessionText : DT.Dt -> Maybe DT.Offset -> Zone -> String
+nextSessionText last_session next_session tz =
+    case next_session of
+        Nothing ->
+            "неизвестно"
+
+        Just offset ->
+            DT.addSecs last_session offset |> DT.toPosix |> dateTimeFormat tz
 
 
 humanOffsetP : Int -> Int -> String

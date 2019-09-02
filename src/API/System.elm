@@ -64,7 +64,7 @@ lastPositionDecoder =
 type alias LastSession =
     { dt : DT.Dt
     , event : String
-    , next : Maybe DT.Dt
+    , next : Maybe DT.Offset
     }
 
 
@@ -73,7 +73,7 @@ lastSessionDecoder =
     JD.succeed LastSession
         |> required "dt" DT.decoder
         |> required "event" JD.string
-        |> optional "next" (JD.maybe DT.decoder) Nothing
+        |> optional "next" (JD.maybe DT.offsetDecoder) Nothing
 
 
 type State

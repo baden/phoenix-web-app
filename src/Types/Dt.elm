@@ -1,4 +1,15 @@
-module Types.Dt exposing (Dt, toInt, fromInt, toPosix, fromPosix, decoder, addSecs)
+module Types.Dt
+    exposing
+        ( Dt
+        , toInt
+        , fromInt
+        , toPosix
+        , fromPosix
+        , decoder
+        , Offset
+        , offsetDecoder
+        , addSecs
+        )
 
 import Json.Decode as JD
 import Time
@@ -40,6 +51,17 @@ decoder =
             (\t -> JD.succeed <| Dt t)
 
 
-addSecs : Dt -> Dt -> Dt
-addSecs (Dt a) (Dt b) =
+type Offset
+    = Offset Int
+
+
+offsetDecoder : JD.Decoder Offset
+offsetDecoder =
+    JD.int
+        |> JD.andThen
+            (\t -> JD.succeed <| Offset t)
+
+
+addSecs : Dt -> Offset -> Dt
+addSecs (Dt a) (Offset b) =
     Dt (a + b * 60)
