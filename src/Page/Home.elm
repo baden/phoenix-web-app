@@ -83,7 +83,7 @@ auth_info macc systems timeZone =
 
             Just acc ->
                 [ UI.row_item [ text <| "Вы авторизованы как " ++ acc.realname ]
-                , UI.row_item [ text <| "У вас в списке наблюдения " ++ (String.fromInt <| List.length acc.systems) ++ " систем" ]
+                , UI.row_item [ text <| "В списке наблюдения систем: " ++ (String.fromInt <| List.length acc.systems) ]
                 , systemList acc.systems systems timeZone
                 , UI.row_item [ UI.linkButton "Добавить систему в список наблюдения" "/linksys" ]
                 ]

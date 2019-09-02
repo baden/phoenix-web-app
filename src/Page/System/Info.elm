@@ -38,11 +38,11 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnSysCmd sysId state ->
-            let
-                _ =
-                    Debug.log "Make new state:" state
-            in
-                ( model, Cmd.batch [ API.websocketOut <| System.setSystemState sysId state ] )
+            -- let
+            --     _ =
+            --         Debug.log "Make new state:" state
+            -- in
+            ( model, Cmd.batch [ API.websocketOut <| System.setSystemState sysId state ] )
 
         OnSysCmdCancel sysId ->
             ( model, Cmd.batch [ API.websocketOut <| System.cancelSystemState sysId ] )
@@ -67,21 +67,25 @@ update msg model =
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 view appState model system =
-    div [] <|
-        [ UI.row_item
-            [ text system.title
-            , UI.cmdButton "…" (OnTitleChangeStart system.title)
-            ]
+    div [ class "container" ]
+        [ div [ class "row" ]
+            [ div [ class "col s12 m8 offset-m2 xl7 offset-xl2" ] <|
+                [ UI.row_item
+                    [ text system.title
+                    , UI.cmdButton "…" (OnTitleChangeStart system.title)
+                    ]
 
-        -- , div [] [ text <| "Id:" ++ system.id ]
-        , UI.row_item [ ChartSvg.chartView "Батарея" 80 ]
-        , UI.row_item [ text <| "Состояние: " ++ (sysState_of system.state) ]
-        , UI.row_item (cmdPanel system.id system.state system.waitState)
-        , UI.row_item (Dates.nextSession appState system.lastSession)
-        , UI.button ("/map/" ++ system.id) "Смотреть на карте"
-        , UI.row_item [ UI.button "/" "На главную" ]
+                -- , div [] [ text <| "Id:" ++ system.id ]
+                , UI.row_item [ ChartSvg.chartView "Батарея" 80 ]
+                , UI.row_item [ text <| "Состояние: " ++ (sysState_of system.state) ]
+                , UI.row_item (cmdPanel system.id system.state system.waitState)
+                , UI.row_item (Dates.nextSession appState system.lastSession)
+                , UI.button ("/map/" ++ system.id) "Смотреть на карте"
+                , UI.row_item [ UI.button "/" "На главную" ]
+                ]
+                    ++ (titleChangeDialogView model system.id)
+            ]
         ]
-            ++ (titleChangeDialogView model system.id)
 
 
 sysState_of : Maybe SysState -> String

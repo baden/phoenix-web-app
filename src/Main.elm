@@ -201,22 +201,22 @@ update msg model =
                     ( model, Nav.load href )
 
         UrlChanged url ->
-            let
-                _ =
-                    Debug.log "UrlChanged" url
-            in
-                case Parser.parse Route.routeParser url of
-                    -- Just Route.BouncePage ->
-                    --     ( model, Nav.load (Url.toString url) )
-                    Just page ->
-                        ( { model | page = page }
-                            |> computeViewForPage page
-                        , Cmd.none
-                        )
+            -- let
+            --     _ =
+            --         Debug.log "UrlChanged" url
+            -- in
+            case Parser.parse Route.routeParser url of
+                -- Just Route.BouncePage ->
+                --     ( model, Nav.load (Url.toString url) )
+                Just page ->
+                    ( { model | page = page }
+                        |> computeViewForPage page
+                    , Cmd.none
+                    )
 
-                    Nothing ->
-                        -- 404 would be nice
-                        ( model, Cmd.none )
+                Nothing ->
+                    -- 404 would be nice
+                    ( model, Cmd.none )
 
         WebsocketIn message ->
             let
@@ -239,12 +239,14 @@ update msg model =
 
                     Just (API.Document (API.AccountDocument document)) ->
                         let
-                            _ =
-                                Debug.log "Account" ( model.page, document )
-
+                            -- _ =
+                            --     Debug.log "Account" ( model.page, document )
                             next =
                                 case model.page of
                                     Route.Login ->
+                                        Cmd.batch [ Nav.pushUrl model.key "/" ]
+
+                                    Route.LinkSys ->
                                         Cmd.batch [ Nav.pushUrl model.key "/" ]
 
                                     _ ->
@@ -269,11 +271,11 @@ update msg model =
                                 ( { model | errorMessage = Just astext }, Cmd.none )
 
                     Just command ->
-                        let
-                            _ =
-                                Debug.log "???" command
-                        in
-                            ( model, Cmd.none )
+                        -- let
+                        --     _ =
+                        --         Debug.log "???" command
+                        -- in
+                        ( model, Cmd.none )
 
         OpenWebsocket url ->
             ( model, API.websocketOpen url )

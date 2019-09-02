@@ -18,6 +18,7 @@ import Json.Decode as JD
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Json.Encode as Encode
 import API.Document as Document
+import Types.Dt as Dt
 
 
 -- type alias SysId =

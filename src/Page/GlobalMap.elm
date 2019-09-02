@@ -1,6 +1,7 @@
 module Page.GlobalMap exposing (Model, Msg(..), init, update, view, viewSystem)
 
 import Html exposing (Html, div, img, a, h1)
+import Html.Lazy exposing (lazy, lazy2)
 import Html.Attributes exposing (class, src, href)
 import Html.Events exposing (onClick)
 import Json.Encode as Encode
@@ -25,9 +26,13 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        SetCenter x y ->
-            ( { model | center = ( x, y ) }, Cmd.none )
+    let
+        _ =
+            Debug.log "GlobalMap update" ( msg, model )
+    in
+        case msg of
+            SetCenter x y ->
+                ( { model | center = ( x, y ) }, Cmd.none )
 
 
 view : Html a
@@ -61,14 +66,13 @@ viewSystem model =
     let
         ( lat, lon ) =
             model.center
+
+        _ =
+            Debug.log "viewSystem" model
     in
         div []
             [ --div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []
-              Html.node "leaflet-map"
-                [ --Html.Attributes.attribute "data-map-center" (latLng2String model.center)
-                  Html.Attributes.property "center" (encodeLatLong lat lon)
-                ]
-                []
+              lazy2 mapAt lat lon
             , div [ class "control" ]
                 [ a [ href "/" ] [ Html.text "На главную" ]
                 , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.4226036 35.0252341) ]
@@ -77,3 +81,12 @@ viewSystem model =
                     [ Html.text "Домой" ]
                 ]
             ]
+
+
+mapAt : Float -> Float -> Html Msg
+mapAt lat lon =
+    Html.node "leaflet-map"
+        [ --Html.Attributes.attribute "data-map-center" (latLng2String model.center)
+          Html.Attributes.property "center" (encodeLatLong lat lon)
+        ]
+        []
