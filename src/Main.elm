@@ -244,7 +244,7 @@ update msg model =
                             ]
                         )
 
-                    Just (API.Document (API.AccountDocument document)) ->
+                    Just (API.Document _ (API.AccountDocument document)) ->
                         let
                             -- _ =
                             --     Debug.log "Account" ( model.page, document )
@@ -263,22 +263,26 @@ update msg model =
                             , next
                             )
 
-                    Just (API.Document (API.SystemDocument document)) ->
-                        ( { model | systems = Dict.insert document.id document model.systems }
+                    Just (API.Document sysId (API.SystemDocument document)) ->
+                        ( { model | systems = Dict.insert sysId document model.systems }
                         , Cmd.none
                         )
 
-                    Just (API.Document (API.SystemDocumentDynamic document)) ->
+                    Just (API.Document sysId (API.SystemDocumentDynamic document)) ->
                         let
                             _ =
-                                Debug.log "Update only dynamic part of system document" document
+                                Debug.log "Update only dynamic part of system document" ( sysId, document )
                         in
-                            -- case Dict.get sysId model.systems of
-                            --     Nothing ->
-                            --         Html.div [] [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра." ]
-                            --
-                            --     Just system ->
-                            ( model, Cmd.none )
+                            case Dict.get sysId model.systems of
+                                Nothing ->
+                                    ( model, Cmd.none )
+
+                                Just system ->
+                                    let
+                                        new_system =
+                                            { system | dynamic = Just document }
+                                    in
+                                        ( { model | systems = Dict.insert sysId new_system model.systems }, Cmd.none )
 
                     Just (API.Error error) ->
                         case errorMessageString error of

@@ -11,7 +11,7 @@ import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 type APIContent
     = Ping PingInfo
     | Token TokenInfo
-    | Document DocumentInfo
+    | Document String DocumentInfo
     | Error Error.ApiError
 
 
@@ -58,7 +58,9 @@ payloadDecoder =
                         JD.map Token tokenDecoder
 
                     "document" ->
-                        JD.map Document documentDecoder
+                        JD.map2 Document
+                            (JD.field "key" JD.string)
+                            documentDecoder
 
                     _ ->
                         JD.fail ("unexpected message " ++ t)
@@ -91,11 +93,31 @@ documentDecoder =
                             JD.map SystemDocument System.systemDocumentDecoder
 
                         "system.dynamic" ->
-                            JD.map SystemDocumentDynamic System.dynamicDecoder
+                            JD.map SystemDocumentDynamic
+                                System.dynamicDecoder
 
                         _ ->
                             JD.fail ("unexpected document " ++ c)
             )
+
+
+
+-- TODO: Нужно как-то понять как декодировать документ и поле key.
+-- https://github.com/NOLAnuffsaid/elm-quotes/blob/313d3de5236084edb1316e6baaffeefdef296f24/elm-stuff/packages/bendyworks/elm-action-cable/1.0.0/src/ActionCable/Decoder.elm
+
+
+documentIs : String -> JD.Decoder String
+documentIs documentName =
+    let
+        typeDecoder s =
+            if s == documentName then
+                JD.succeed documentName
+            else
+                JD.fail ""
+    in
+        JD.andThen
+            typeDecoder
+            JD.string
 
 
 
