@@ -28,6 +28,7 @@ type alias TokenInfo =
 type DocumentInfo
     = AccountDocument Account.AccountDocumentInfo
     | SystemDocument System.SystemDocumentInfo
+    | SystemDocumentDynamic System.Dynamic
 
 
 parsePayload : String -> Maybe APIContent
@@ -88,6 +89,9 @@ documentDecoder =
 
                         "system" ->
                             JD.map SystemDocument System.systemDocumentDecoder
+
+                        "system.dynamic" ->
+                            JD.map SystemDocumentDynamic System.dynamicDecoder
 
                         _ ->
                             JD.fail ("unexpected document " ++ c)

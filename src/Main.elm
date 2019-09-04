@@ -268,6 +268,18 @@ update msg model =
                         , Cmd.none
                         )
 
+                    Just (API.Document (API.SystemDocumentDynamic document)) ->
+                        let
+                            _ =
+                                Debug.log "Update only dynamic part of system document" document
+                        in
+                            -- case Dict.get sysId model.systems of
+                            --     Nothing ->
+                            --         Html.div [] [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра." ]
+                            --
+                            --     Just system ->
+                            ( model, Cmd.none )
+
                     Just (API.Error error) ->
                         case errorMessageString error of
                             Nothing ->

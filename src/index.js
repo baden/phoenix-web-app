@@ -36,7 +36,7 @@ function open(url) {
         app.ports.websocketOpened.send(true);
     }
     socket.onmessage = message => {
-        console.log("onmessage", [message.data]);
+        console.log("onmessage", [message.data, JSON.parse(message.data)]);
         app.ports.websocketIn.send(message.data);
     }
     socket.onerror = (error) => {

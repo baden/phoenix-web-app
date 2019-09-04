@@ -13,6 +13,7 @@ import AppState
 type alias Model =
     { showTitleChangeDialog : Bool
     , newTitle : String
+    , extendInfo : Bool
     }
 
 
@@ -23,12 +24,14 @@ type Msg
     | OnTitleChange String
     | OnTitleConfirm String String
     | OnTitleCancel
+    | OnExtendInfo
 
 
 init : ( Model, Cmd Msg )
 init =
     ( { showTitleChangeDialog = False
       , newTitle = ""
+      , extendInfo = False
       }
     , Cmd.none
     )
@@ -64,6 +67,9 @@ update msg model =
         OnTitleCancel ->
             ( { model | showTitleChangeDialog = False }, Cmd.none )
 
+        OnExtendInfo ->
+            ( { model | extendInfo = not model.extendInfo }, Cmd.none )
+
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 view appState model system =
@@ -74,17 +80,56 @@ view appState model system =
                     [ text system.title
                     , UI.cmdButton "…" (OnTitleChangeStart system.title)
                     ]
-
-                -- , div [] [ text <| "Id:" ++ system.id ]
-                , UI.row_item [ ChartSvg.chartView "Батарея" 80 ]
-                , UI.row_item [ text <| "Состояние: " ++ (sysState_of system.state) ]
-                , UI.row_item (cmdPanel system.id system.state system.waitState)
-                , UI.row_item (Dates.nextSession appState system.lastSession)
-                , UI.button ("/map/" ++ system.id) "Смотреть на карте"
-                , UI.row_item [ UI.button "/" "На главную" ]
                 ]
+                    ++ (viewInfo appState model system)
+                    ++ (if model.extendInfo then
+                            (viewInfoEntended appState model system)
+                        else
+                            [ UI.cmdButton "Больше информации…" OnExtendInfo ]
+                       )
+                    ++ [ -- , div [] [ text <| "Id:" ++ system.id ]
+                         UI.button ("/map/" ++ system.id) "Смотреть на карте"
+                       , UI.row_item [ UI.button "/" "На главную" ]
+                       ]
                     ++ (titleChangeDialogView model system.id)
             ]
+        ]
+
+
+viewInfo : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
+viewInfo appState model system =
+    [ UI.row_item [ ChartSvg.chartView "Батарея" 80 ]
+    , UI.row_item [ text <| "Состояние: " ++ (sysState_of system.state) ]
+    , UI.row_item (cmdPanel system.id system.state system.waitState)
+    , UI.row_item (Dates.nextSession appState system.dynamic)
+    ]
+
+
+viewNextSession : Maybe System.Dynamic -> Html Msg
+viewNextSession dynamic =
+    text "{DYNAMIC_TBD}"
+
+
+viewInfoEntended : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
+viewInfoEntended appState model system =
+    let
+        imei =
+            system.imei |> Maybe.withDefault "скрыт"
+
+        phone =
+            case system.phone of
+                Nothing ->
+                    "не задан или скрыт"
+
+                Just "" ->
+                    "не задан или скрыт"
+
+                Just any_ ->
+                    any_
+    in
+        [ UI.row_item [ text <| "IMEI: " ++ imei ]
+        , UI.row_item [ text <| "Номер телефона: " ++ phone ]
+        , UI.cmdButton "Меньше информации" OnExtendInfo
         ]
 
 

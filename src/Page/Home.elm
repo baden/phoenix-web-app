@@ -3,7 +3,7 @@ module Page.Home exposing (..)
 import Html exposing (Html)
 import API
 import API.Account exposing (AccountDocumentInfo)
-import API.System as System exposing (SystemDocumentInfo, LastPosition, SysState)
+import API.System as System exposing (SystemDocumentInfo, SysState)
 import Dict exposing (Dict)
 import Time
 import Components.UI as UI exposing (text)
@@ -114,7 +114,7 @@ systemItem systems timeZone index sysId =
                 Just system ->
                     [ UI.info_2_10 "Название:" system.title
                     , UI.info_2_10 "Состояние:" (sysState_of system.state timeZone)
-                    , UI.info_2_10 "Последная известная позиция:" (position_of system.lastPosition timeZone)
+                    , UI.info_2_10 "Последная известная позиция:" (position_of system.dynamic timeZone)
                     ]
 
         footer =
@@ -138,19 +138,20 @@ sysState_of sysState timeZone =
             (System.stateAsString state.current)
 
 
-position_of : Maybe LastPosition -> Time.Zone -> String
-position_of last_position timeZone =
-    case last_position of
+position_of : Maybe System.Dynamic -> Time.Zone -> String
+position_of maybe_system_dynamic timeZone =
+    case maybe_system_dynamic of
         Nothing ->
             "неизвестно"
 
-        Just lastPosition ->
-            ((String.fromFloat lastPosition.lat)
-                ++ ", "
-                ++ (String.fromFloat lastPosition.lon)
-                ++ "@"
-                ++ (dtFormat lastPosition.dt timeZone)
-            )
+        Just dynamic ->
+            -- ((String.fromFloat lastPosition.lat)
+            --     ++ ", "
+            --     ++ (String.fromFloat lastPosition.lon)
+            --     ++ "@"
+            --     ++ (dtFormat lastPosition.dt timeZone)
+            -- )
+            ("{TBD}, {TBD}")
 
 
 dtFormat : DT.Dt -> Time.Zone -> String

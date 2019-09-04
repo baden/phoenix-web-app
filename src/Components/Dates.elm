@@ -12,19 +12,24 @@ import Types.Dt as DT
 -- import Date
 
 
-nextSession : AppState.AppState -> Maybe System.LastSession -> List (Html msg)
-nextSession appState maybeLastSession =
-    case maybeLastSession of
+nextSession : AppState.AppState -> Maybe System.Dynamic -> List (Html msg)
+nextSession appState maybeSystemDynamic =
+    case maybeSystemDynamic of
         Nothing ->
-            [ text "TBD" ]
+            [ text "{TBD_SYSTEM_DYNAMIC}" ]
 
-        Just lastSession ->
+        Just dynamic ->
             let
                 now =
                     appState.now
 
                 last_session =
-                    lastSession.dt
+                    case dynamic.lastping of
+                        Nothing ->
+                            DT.fromInt 0
+
+                        Just lastping ->
+                            lastping
 
                 tz =
                     appState.timeZone
@@ -42,7 +47,7 @@ nextSession appState maybeLastSession =
                     , Html.tr []
                         [ Html.td [] [ text "Ожидаемая дата следующего сеанса: " ]
                         , Html.td []
-                            [ text <| nextSessionText last_session lastSession.next tz ]
+                            [ text <| nextSessionText last_session dynamic.next tz ]
                         ]
                     ]
                 ]

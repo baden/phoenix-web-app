@@ -2,8 +2,10 @@ module API.System
     exposing
         ( SystemDocumentInfo
         , systemDocumentDecoder
-        , LastPosition
-        , LastSession
+        , dynamicDecoder
+          -- , LastPosition
+          -- , LastSession
+        , Dynamic
         , SysState
         , State
           -- , SysId
@@ -28,52 +30,79 @@ import Types.Dt as DT
 type alias SystemDocumentInfo =
     { id : String
     , title : String
-    , lastPosition : Maybe LastPosition
-    , lastSession : Maybe LastSession
+    , imei : Maybe String
+    , phone : Maybe String
+
+    -- , lastPosition : Maybe LastPosition
+    -- , lastSession : Maybe LastSession
     , state : Maybe SysState
     , waitState : Maybe State
+    , dynamic : Maybe Dynamic
     }
 
 
 systemDocumentDecoder : JD.Decoder SystemDocumentInfo
 systemDocumentDecoder =
     JD.succeed SystemDocumentInfo
-        |> required "_id" JD.string
+        |> required "id" JD.string
         |> required "title" JD.string
-        |> optional "last_position" (JD.maybe lastPositionDecoder) Nothing
-        |> optional "last_session" (JD.maybe lastSessionDecoder) Nothing
+        |> optional "imei" (JD.maybe JD.string) Nothing
+        |> optional "phone" (JD.maybe JD.string) Nothing
+        -- |> optional "last_position" (JD.maybe lastPositionDecoder) Nothing
+        -- |> optional "last_session" (JD.maybe lastSessionDecoder) Nothing
         |> optional "state" (JD.maybe sysStateDecoder) Nothing
         |> optional "wait_state" (JD.maybe stateDecoder) Nothing
+        |> optional "dynamic" (JD.maybe dynamicDecoder) Nothing
 
 
-type alias LastPosition =
-    { lat : Float
-    , lon : Float
-    , dt : DT.Dt
-    }
-
-
-lastPositionDecoder : JD.Decoder LastPosition
-lastPositionDecoder =
-    JD.succeed LastPosition
-        |> required "lat" JD.float
-        |> required "lon" JD.float
-        |> required "dt" DT.decoder
-
-
-type alias LastSession =
-    { dt : DT.Dt
-    , event : String
+type alias Dynamic =
+    { lastping : Maybe DT.Dt
+    , method : Maybe String
     , next : Maybe DT.Offset
+    , vin : Maybe Float
+    , vout : Maybe Float
     }
 
 
-lastSessionDecoder : JD.Decoder LastSession
-lastSessionDecoder =
-    JD.succeed LastSession
-        |> required "dt" DT.decoder
-        |> required "event" JD.string
+dynamicDecoder : JD.Decoder Dynamic
+dynamicDecoder =
+    JD.succeed Dynamic
+        |> optional "lastping" (JD.maybe DT.decoder) Nothing
+        |> optional "method" (JD.maybe JD.string) Nothing
         |> optional "next" (JD.maybe DT.offsetDecoder) Nothing
+        |> optional "vin" (JD.maybe JD.float) Nothing
+        |> optional "vout" (JD.maybe JD.float) Nothing
+
+
+
+-- type alias LastPosition =
+--     { lat : Float
+--     , lon : Float
+--     , dt : DT.Dt
+--     }
+--
+--
+-- lastPositionDecoder : JD.Decoder LastPosition
+-- lastPositionDecoder =
+--     JD.succeed LastPosition
+--         |> required "lat" JD.float
+--         |> required "lon" JD.float
+--         |> required "dt" DT.decoder
+--
+--
+-- type alias LastSession =
+--     { dt : DT.Dt
+--     , event : String
+--     , next : Maybe DT.Offset
+--     }
+--
+--
+-- lastSessionDecoder : JD.Decoder LastSession
+-- lastSessionDecoder =
+--     JD.succeed LastSession
+--         |> required "dt" DT.decoder
+--         |> required "event" JD.string
+--         |> optional "next" (JD.maybe DT.offsetDecoder) Nothing
 
 
 type State
