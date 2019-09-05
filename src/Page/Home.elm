@@ -3,7 +3,7 @@ module Page.Home exposing (..)
 import Html exposing (Html)
 import API
 import API.Account exposing (AccountDocumentInfo)
-import API.System as System exposing (SystemDocumentInfo, SysState)
+import API.System as System exposing (SystemDocumentInfo)
 import Dict exposing (Dict)
 import Time
 import Components.UI as UI exposing (text)
@@ -113,7 +113,7 @@ systemItem systems timeZone index sysId =
 
                 Just system ->
                     [ UI.info_2_10 "Название:" system.title
-                    , UI.info_2_10 "Состояние:" (sysState_of system.state timeZone)
+                    , UI.info_2_10 "Состояние:" (sysState_of system.dynamic timeZone)
                     , UI.info_2_10 "Последная известная позиция:" (position_of system.dynamic timeZone)
                     ]
 
@@ -128,14 +128,19 @@ systemItem systems timeZone index sysId =
         UI.card (body ++ footer)
 
 
-sysState_of : Maybe SysState -> Time.Zone -> String
-sysState_of sysState timeZone =
-    case sysState of
+sysState_of : Maybe System.Dynamic -> Time.Zone -> String
+sysState_of dynamic timeZone =
+    case dynamic of
         Nothing ->
             "-"
 
-        Just state ->
-            (System.stateAsString state.current)
+        Just d ->
+            case d.state of
+                Nothing ->
+                    "-"
+
+                Just state ->
+                    (System.stateAsString state)
 
 
 position_of : Maybe System.Dynamic -> Time.Zone -> String

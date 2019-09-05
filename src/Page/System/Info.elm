@@ -6,7 +6,7 @@ import Components.ChartSvg as ChartSvg
 import Components.UI as UI
 import Components.Dates as Dates
 import API
-import API.System as System exposing (SystemDocumentInfo, SysState, State)
+import API.System as System exposing (SystemDocumentInfo, State)
 import AppState
 
 
@@ -99,8 +99,8 @@ view appState model system =
 viewInfo : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
 viewInfo appState model system =
     [ UI.row_item [ ChartSvg.chartView "Батарея" 80 ]
-    , UI.row_item [ text <| "Состояние: " ++ (sysState_of system.state) ]
-    , UI.row_item (cmdPanel system.id system.state system.waitState)
+    , UI.row_item [ text <| "Состояние: " ++ (sysState_of system.dynamic) ]
+    , UI.row_item (cmdPanel system.id system.dynamic)
     , UI.row_item (Dates.nextSession appState system.dynamic)
     ]
 
@@ -133,36 +133,46 @@ viewInfoEntended appState model system =
         ]
 
 
-sysState_of : Maybe SysState -> String
-sysState_of sysState =
-    case sysState of
+sysState_of : Maybe System.Dynamic -> String
+sysState_of maybe_dynamic =
+    case maybe_dynamic of
         Nothing ->
             "-"
 
-        Just state ->
-            (System.stateAsString state.current)
-
-
-cmdPanel : String -> Maybe SysState -> Maybe State -> List (Html Msg)
-cmdPanel sysId sysState waitState =
-    case waitState of
-        Nothing ->
-            case sysState of
+        Just dynamic ->
+            case dynamic.state of
                 Nothing ->
-                    []
+                    "-"
 
                 Just state ->
-                    let
-                        b =
-                            \i -> UI.cmdButton (System.stateAsCmdString i) (OnSysCmd sysId i)
-                    in
-                        state.available
-                            |> List.map b
+                    System.stateAsString state
 
-        Just wState ->
-            [ text <| "При следуюем сеансе связи, система будет переведена в режим: " ++ (System.stateAsString wState)
-            , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
-            ]
+
+cmdPanel : String -> Maybe System.Dynamic -> List (Html Msg)
+cmdPanel sysId maybe_dynamic =
+    case maybe_dynamic of
+        Nothing ->
+            []
+
+        Just dynamic ->
+            case dynamic.waitState of
+                Nothing ->
+                    case dynamic.state of
+                        Nothing ->
+                            []
+
+                        Just state ->
+                            let
+                                b =
+                                    \i -> UI.cmdButton (System.stateAsCmdString i) (OnSysCmd sysId i)
+                            in
+                                dynamic.available
+                                    |> List.map b
+
+                Just wState ->
+                    [ text <| "При следуюем сеансе связи, система будет переведена в режим: " ++ (System.stateAsString wState)
+                    , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+                    ]
 
 
 titleChangeDialogView : Model -> String -> List (Html Msg)

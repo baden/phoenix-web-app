@@ -6,7 +6,7 @@ module API.System
           -- , LastPosition
           -- , LastSession
         , Dynamic
-        , SysState
+          -- , SysState
         , State
           -- , SysId
         , stateAsString
@@ -35,8 +35,6 @@ type alias SystemDocumentInfo =
 
     -- , lastPosition : Maybe LastPosition
     -- , lastSession : Maybe LastSession
-    , state : Maybe SysState
-    , waitState : Maybe State
     , dynamic : Maybe Dynamic
     }
 
@@ -50,8 +48,6 @@ systemDocumentDecoder =
         |> optional "phone" (JD.maybe JD.string) Nothing
         -- |> optional "last_position" (JD.maybe lastPositionDecoder) Nothing
         -- |> optional "last_session" (JD.maybe lastSessionDecoder) Nothing
-        |> optional "state" (JD.maybe sysStateDecoder) Nothing
-        |> optional "wait_state" (JD.maybe stateDecoder) Nothing
         |> optional "dynamic" (JD.maybe dynamicDecoder) Nothing
 
 
@@ -61,6 +57,9 @@ type alias Dynamic =
     , next : Maybe DT.Offset
     , vin : Maybe Float
     , vout : Maybe Float
+    , state : Maybe State
+    , available : List State
+    , waitState : Maybe State
     }
 
 
@@ -69,9 +68,13 @@ dynamicDecoder =
     JD.succeed Dynamic
         |> optional "lastping" (JD.maybe DT.decoder) Nothing
         |> optional "method" (JD.maybe JD.string) Nothing
-        |> optional "next" (JD.maybe DT.offsetDecoder) Nothing
+        |> optional "next_session" (JD.maybe DT.offsetDecoder) Nothing
         |> optional "vin" (JD.maybe JD.float) Nothing
         |> optional "vout" (JD.maybe JD.float) Nothing
+        -- |> optional "state" (JD.maybe sysStateDecoder) Nothing
+        |> optional "state" (JD.maybe stateDecoder) Nothing
+        |> optional "available" statesListDecoder []
+        |> optional "wait_state" (JD.maybe stateDecoder) Nothing
 
 
 
@@ -112,23 +115,47 @@ type State
     | Unknown
 
 
+stateFromChar : String -> State
+stateFromChar t =
+    case t of
+        "T" ->
+            Tracking
+
+        "S" ->
+            Sleep
+
+        "L" ->
+            Locked
+
+        _ ->
+            Unknown
+
+
 stateDecoder : JD.Decoder State
 stateDecoder =
     JD.string
         |> JD.andThen
             (\t ->
-                case t of
-                    "tracking" ->
-                        JD.succeed Tracking
+                t |> stateFromChar |> JD.succeed
+            )
 
-                    "sleep" ->
-                        JD.succeed Sleep
 
-                    "locked" ->
-                        JD.succeed Locked
-
-                    _ ->
-                        JD.succeed Unknown
+statesListDecoder : JD.Decoder (List State)
+statesListDecoder =
+    JD.string
+        |> JD.andThen
+            (\t ->
+                -- TBD
+                let
+                    states =
+                        String.foldl
+                            (\c acc ->
+                                (c |> String.fromChar |> stateFromChar) :: acc
+                            )
+                            []
+                            t
+                in
+                    JD.succeed states
             )
 
 
@@ -164,20 +191,22 @@ stateAsCmdString state =
             "В разработке..."
 
 
-type alias SysState =
-    { current : State
-    , available : List State
-    }
 
-
-sysStateDecoder : JD.Decoder SysState
-sysStateDecoder =
-    JD.succeed SysState
-        |> required "current" stateDecoder
-        |> required "available" (JD.list stateDecoder)
-
-
-
+-- type alias SysState =
+--     { current : State
+--     , available : List State
+--     }
+--
+--
+--
+-- -- type SysState
+--
+--
+-- sysStateDecoder : JD.Decoder SysState
+-- sysStateDecoder =
+--     JD.succeed SysState
+--         |> required "current" stateDecoder
+--         |> required "available" (JD.list stateDecoder)
 -- JD.map AccountDocumentInfo
 --     (JD.field "realname" JD.string)
 
