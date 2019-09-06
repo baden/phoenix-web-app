@@ -73,7 +73,8 @@ dynamicDecoder =
         |> optional "vout" (JD.maybe JD.float) Nothing
         -- |> optional "state" (JD.maybe sysStateDecoder) Nothing
         |> optional "state" (JD.maybe stateDecoder) Nothing
-        |> optional "available" statesListDecoder []
+        -- |> optional "available" statesListDecoder []
+        |> optional "available" (JD.list stateDecoder) []
         |> optional "wait_state" (JD.maybe stateDecoder) Nothing
 
 
@@ -115,48 +116,44 @@ type State
     | Unknown
 
 
-stateFromChar : String -> State
-stateFromChar t =
-    case t of
-        "T" ->
-            Tracking
-
-        "S" ->
-            Sleep
-
-        "L" ->
-            Locked
-
-        _ ->
-            Unknown
-
-
 stateDecoder : JD.Decoder State
 stateDecoder =
     JD.string
         |> JD.andThen
             (\t ->
-                t |> stateFromChar |> JD.succeed
+                case t of
+                    "tracking" ->
+                        JD.succeed Tracking
+
+                    "sleep" ->
+                        JD.succeed Sleep
+
+                    "locked" ->
+                        JD.succeed Locked
+
+                    _ ->
+                        JD.succeed Unknown
             )
 
 
-statesListDecoder : JD.Decoder (List State)
-statesListDecoder =
-    JD.string
-        |> JD.andThen
-            (\t ->
-                -- TBD
-                let
-                    states =
-                        String.foldl
-                            (\c acc ->
-                                (c |> String.fromChar |> stateFromChar) :: acc
-                            )
-                            []
-                            t
-                in
-                    JD.succeed states
-            )
+
+-- statesListDecoder : JD.Decoder (List State)
+-- statesListDecoder =
+--     JD.string
+--         |> JD.andThen
+--             (\t ->
+--                 -- TBD
+--                 let
+--                     states =
+--                         String.foldl
+--                             (\c acc ->
+--                                 (c |> String.fromChar |> stateFromChar) :: acc
+--                             )
+--                             []
+--                             t
+--                 in
+--                     JD.succeed states
+--             )
 
 
 stateAsString : State -> String
