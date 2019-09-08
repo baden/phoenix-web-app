@@ -269,20 +269,16 @@ update msg model =
                         )
 
                     Just (API.Document sysId (API.SystemDocumentDynamic document)) ->
-                        let
-                            _ =
-                                Debug.log "Update only dynamic part of system document" ( sysId, document )
-                        in
-                            case Dict.get sysId model.systems of
-                                Nothing ->
-                                    ( model, Cmd.none )
+                        case Dict.get sysId model.systems of
+                            Nothing ->
+                                ( model, Cmd.none )
 
-                                Just system ->
-                                    let
-                                        new_system =
-                                            { system | dynamic = Just document }
-                                    in
-                                        ( { model | systems = Dict.insert sysId new_system model.systems }, Cmd.none )
+                            Just system ->
+                                let
+                                    new_system =
+                                        { system | dynamic = Just document }
+                                in
+                                    ( { model | systems = Dict.insert sysId new_system model.systems }, Cmd.none )
 
                     Just (API.Error error) ->
                         case errorMessageString error of
@@ -304,11 +300,7 @@ update msg model =
             ( model, API.websocketOpen url )
 
         WebsocketOpened False ->
-            let
-                _ =
-                    Debug.log "WS closed?" False
-            in
-                ( { model | connectionState = NotConnected }, Cmd.none )
+            ( { model | connectionState = NotConnected }, Cmd.none )
 
         WebsocketOpened True ->
             let

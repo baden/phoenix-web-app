@@ -26,13 +26,9 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    let
-        _ =
-            Debug.log "GlobalMap update" ( msg, model )
-    in
-        case msg of
-            SetCenter x y ->
-                ( { model | center = ( x, y ) }, Cmd.none )
+    case msg of
+        SetCenter x y ->
+            ( { model | center = ( x, y ) }, Cmd.none )
 
 
 view : Html a
@@ -66,9 +62,6 @@ viewSystem model =
     let
         ( lat, lon ) =
             model.center
-
-        _ =
-            Debug.log "viewSystem" model
     in
         div []
             [ --div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []

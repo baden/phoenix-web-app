@@ -11,13 +11,15 @@ const hostname = location.hostname;
 const api_path = "/api/v1/websocket";
 const local_api_endpoint = "ws://localhost:8080" + api_path;
 const global_api_endpoint = "wss://" + hostname + api_path;
+const fx_api_endpoint = "wss://fx.navi.cc"  + api_path;
 
 var app = Elm.Main.init({
   // node: document.getElementById('root'),
   //
   flags: {
       token: localStorage.getItem(tokenKey),
-      api_url: (hostname=="localhost") ? local_api_endpoint : global_api_endpoint
+      // api_url: (hostname=="localhost") ? local_api_endpoint : global_api_endpoint
+      api_url: fx_api_endpoint
       // api_url: global_api_endpoint
   }
 });

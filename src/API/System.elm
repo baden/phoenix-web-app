@@ -113,7 +113,8 @@ type State
     = Tracking
     | Sleep
     | Locked
-    | Unknown
+    | Off
+    | Unknown String
 
 
 stateDecoder : JD.Decoder State
@@ -131,8 +132,11 @@ stateDecoder =
                     "locked" ->
                         JD.succeed Locked
 
-                    _ ->
-                        JD.succeed Unknown
+                    "off" ->
+                        JD.succeed Off
+
+                    other ->
+                        JD.succeed (Unknown other)
             )
 
 
@@ -168,8 +172,11 @@ stateAsString state =
         Locked ->
             "Блокировка"
 
-        Unknown ->
-            "Неизвестно"
+        Off ->
+            "Выключен"
+
+        Unknown c ->
+            "Неизвестно:" ++ c
 
 
 stateAsCmdString : State -> String
@@ -184,7 +191,10 @@ stateAsCmdString state =
         Locked ->
             "Заблокировать"
 
-        Unknown ->
+        Off ->
+            "Выключить"
+
+        Unknown _ ->
             "В разработке..."
 
 
@@ -239,8 +249,11 @@ setSystemState sysId newState =
                     Locked ->
                         "locked"
 
-                    Unknown ->
-                        "unknown"
+                    Off ->
+                        "off"
+
+                    Unknown c ->
+                        c
           )
         ]
 
