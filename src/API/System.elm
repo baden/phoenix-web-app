@@ -7,7 +7,8 @@ module API.System
           -- , LastSession
         , Dynamic
           -- , SysState
-        , State
+          -- , State
+        , State(..)
           -- , SysId
         , stateAsString
         , stateAsCmdString

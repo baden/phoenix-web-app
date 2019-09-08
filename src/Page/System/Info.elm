@@ -6,7 +6,7 @@ import Components.ChartSvg as ChartSvg
 import Components.UI as UI
 import Components.Dates as Dates
 import API
-import API.System as System exposing (SystemDocumentInfo, State)
+import API.System as System exposing (SystemDocumentInfo, State, State(..))
 import AppState
 
 
@@ -14,6 +14,8 @@ type alias Model =
     { showTitleChangeDialog : Bool
     , newTitle : String
     , extendInfo : Bool
+    , showConfirmOffDialog : Bool
+    , offId : String
     }
 
 
@@ -25,6 +27,8 @@ type Msg
     | OnTitleConfirm String String
     | OnTitleCancel
     | OnExtendInfo
+    | OnConfirmOff
+    | OnCancelOff
 
 
 init : ( Model, Cmd Msg )
@@ -32,6 +36,8 @@ init =
     ( { showTitleChangeDialog = False
       , newTitle = ""
       , extendInfo = False
+      , showConfirmOffDialog = False
+      , offId = ""
       }
     , Cmd.none
     )
@@ -40,6 +46,9 @@ init =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        OnSysCmd sysId Off ->
+            ( { model | offId = sysId, showConfirmOffDialog = True }, Cmd.none )
+
         OnSysCmd sysId state ->
             -- let
             --     _ =
@@ -70,10 +79,16 @@ update msg model =
         OnExtendInfo ->
             ( { model | extendInfo = not model.extendInfo }, Cmd.none )
 
+        OnConfirmOff ->
+            ( { model | showConfirmOffDialog = False }, Cmd.batch [ API.websocketOut <| System.setSystemState model.offId Off ] )
+
+        OnCancelOff ->
+            ( { model | showConfirmOffDialog = False }, Cmd.none )
+
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 view appState model system =
-    div [ class "container" ]
+    div [ class "container" ] <|
         [ div [ class "row" ]
             [ div [ class "col s12 m8 offset-m2 xl7 offset-xl2" ] <|
                 [ UI.row_item
@@ -94,6 +109,21 @@ view appState model system =
                     ++ (titleChangeDialogView model system.id)
             ]
         ]
+            ++ (if model.showConfirmOffDialog then
+                    [ UI.modal
+                        "Выключение"
+                        [ UI.ModalText "Предупреждение! Это действие необратимо."
+                        , UI.ModalText "Включить трекер можно будет только нажатием кнопки на плате прибора."
+                        , UI.ModalText "Вы действительно хотите выключить трекер?"
+                        ]
+                        [ UI.cmdButton "Да" (OnConfirmOff)
+                        , UI.cmdButton "Нет" (OnCancelOff)
+                        ]
+                    , UI.modal_overlay OnCancelOff
+                    ]
+                else
+                    []
+               )
 
 
 viewInfo : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
