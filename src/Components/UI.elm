@@ -17,7 +17,6 @@ module Components.UI
         , text
         , qr_code
         , app_title
-        , app_logo
         , card_panel
         , card
         , modal
@@ -27,6 +26,7 @@ module Components.UI
         , smsLink
         , smsCodeInput
         , connectionWidwet
+        , header
         )
 
 import Html exposing (Html, h1, h5, div, a, text, i, input)
@@ -164,19 +164,55 @@ text value =
     Html.text value
 
 
-qr_code : Html a
-qr_code =
-    Html.img [ src "static/images/fx.navi.cc.png", class "nomobile" ] []
+qr_code : msg -> Html msg
+qr_code msg =
+    div [ onClick msg ]
+        [ Html.img [ src "static/images/fx.navi.cc.png" ] []
+        ]
 
 
-app_logo : Html a
-app_logo =
-    Html.img [ src "static/images/Fenix logo.png" ] []
+video : Html a
+video =
+    Html.node "video"
+        [ src "http://f-x.com.ua/wp-content/uploads/2019/08/Project-5-convert-video-online.com_.mp4"
+        , HA.autoplay True
+        , HA.loop False
+
+        -- , HA.muted ""
+        -- , HA.playsinline ""
+        -- , HA.uk - cover ""
+        , HA.class "uk-cover"
+        , HA.style "width" "875px"
+        , HA.style "height" "492px"
+        ]
+        []
 
 
 app_title : Html a
 app_title =
     Html.h1 [] [ Html.text "Феникс" ]
+
+
+header : Bool -> msg -> msg -> List (Html msg)
+header showQrCode msg1 msg2 =
+    [ div [ HA.style "background-color" "rgba(14,38,67,0.8)" ]
+        [ Html.img [ src "static/images/logo.png", HA.style "margin-left" "20px" ] []
+        , Html.i
+            [ HA.class "fas fa-qrcode"
+            , HA.style "color" "white"
+            , HA.style "float" "right"
+            , HA.style "margin" "20px"
+            , HA.style "font-size" "24px"
+            , onClick msg1
+            ]
+            []
+        ]
+    ]
+        ++ (if showQrCode then
+                [ qr_code msg2 ]
+            else
+                []
+           )
 
 
 card_panel : List (Html a) -> Html a
@@ -258,6 +294,7 @@ smsCodeInput code_ cmd_ start_ =
                 [ HA.class "sms_code"
                 , HA.placeholder "Введите код из SMS"
                 , HA.value code_
+                , HA.autofocus True
                 , onInput cmd_
                 , HA.pattern "[A-Za-z0-9]{3}"
                 ]

@@ -50,26 +50,29 @@ update msg model =
 view : AppState.AppState -> Model -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Html Msg
 view appState model acc systems =
     UI.column12 <|
-        [ UI.app_logo
-        , UI.qr_code
-        , auth_info acc systems appState.timeZone
-        , UI.button "/login" "Авторизация"
-        , UI.button "/map" "Карта"
+        [ auth_info acc systems appState.timeZone
+
+        -- , UI.button "/login" "Авторизация"
+        -- , UI.button "/map" "Карта"
         ]
-            ++ (if model.showRemodeDialog then
-                    [ UI.modal
-                        "Удаление"
-                        [ UI.ModalText "Вы уверены что хотите удалить систему из списка наблюдения?"
-                        , UI.ModalText "Напоминаю, что вы не можете просто добавить систему в список наблюдения, необходимо проделать определенную процедуру."
-                        ]
-                        [ UI.cmdButton "Да" (OnConfirmRemove)
-                        , UI.cmdButton "Нет" (OnCancelRemove)
-                        ]
-                    , UI.modal_overlay OnCancelRemove
-                    ]
-                else
-                    []
-               )
+            ++ (viewRemoveWidget model)
+
+
+viewRemoveWidget : Model -> List (Html Msg)
+viewRemoveWidget model =
+    if model.showRemodeDialog then
+        [ UI.modal
+            "Удаление"
+            [ UI.ModalText "Вы уверены что хотите удалить систему из списка наблюдения?"
+            , UI.ModalText "Напоминаю, что вы не можете просто добавить систему в список наблюдения, необходимо проделать определенную процедуру."
+            ]
+            [ UI.cmdButton "Да" (OnConfirmRemove)
+            , UI.cmdButton "Нет" (OnCancelRemove)
+            ]
+        , UI.modal_overlay OnCancelRemove
+        ]
+    else
+        []
 
 
 auth_info : Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Time.Zone -> Html Msg
@@ -83,11 +86,17 @@ auth_info macc systems timeZone =
                 ]
 
             Just acc ->
-                [ UI.row_item [ text <| "Вы авторизованы как " ++ acc.realname ]
-                , UI.row_item [ text <| "В списке наблюдения систем: " ++ (String.fromInt <| List.length acc.systems) ]
-                , systemList acc.systems systems timeZone
-                , UI.row_item [ UI.linkButton "Добавить систему в список наблюдения" "/linksys" ]
-                ]
+                if List.length acc.systems == 0 then
+                    [ UI.row_item [ text <| "Добро пожаловать!" ]
+                    , UI.row_item [ text <| "Добавьте систему в список наблюдения" ]
+                    , UI.row_item [ UI.linkButton "Добавить систему" "/linksys" ]
+                    ]
+                else
+                    [ -- UI.row_item [ text <| "Вы авторизованы как " ++ acc.realname ]
+                      -- UI.row_item [ text <| "В списке наблюдения систем: " ++ (String.fromInt <| List.length acc.systems) ]
+                      systemList acc.systems systems timeZone
+                    , UI.row_item [ UI.linkButton "Добавить систему" "/linksys" ]
+                    ]
 
 
 systemList : List String -> Dict String SystemDocumentInfo -> Time.Zone -> Html Msg

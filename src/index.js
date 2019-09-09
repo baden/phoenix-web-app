@@ -18,8 +18,8 @@ var app = Elm.Main.init({
   //
   flags: {
       token: localStorage.getItem(tokenKey),
-      // api_url: (hostname=="localhost") ? local_api_endpoint : global_api_endpoint
-      api_url: fx_api_endpoint
+      api_url: (hostname=="localhost") ? local_api_endpoint : global_api_endpoint
+      // api_url: fx_api_endpoint
       // api_url: global_api_endpoint
   }
 });

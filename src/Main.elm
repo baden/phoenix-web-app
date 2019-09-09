@@ -52,6 +52,7 @@ type alias Model =
     , errorMessage : Maybe String -- Надо бы расширить функцилнал
     , appState : AppState.AppState
     , connectionState : ConnectionState
+    , showQrCode : Bool
     }
 
 
@@ -75,6 +76,8 @@ type Msg
     | OnCloseModal
     | TimeZoneDetected Time.Zone
     | ReceiveNow Time.Posix
+    | ShowQrCode
+    | HideQrCode
 
 
 type alias Flags =
@@ -117,6 +120,7 @@ init flags url key =
             , errorMessage = Nothing
             , appState = AppState.initModel
             , connectionState = NotConnected
+            , showQrCode = False
             }
 
         ( navedModel, navedCmd ) =
@@ -326,6 +330,12 @@ update msg model =
         ReceiveNow time ->
             ( { model | appState = model.appState |> AppState.updateNow time }, Cmd.none )
 
+        ShowQrCode ->
+            ( { model | showQrCode = not model.showQrCode }, Cmd.none )
+
+        HideQrCode ->
+            ( { model | showQrCode = False }, Cmd.none )
+
 
 computeViewForPage : Route.Page -> Model -> Model
 computeViewForPage page model =
@@ -369,7 +379,7 @@ view model =
                     UI.connectionWidwet
     in
         { title = "Fenix App"
-        , body = [ viewPage model ] ++ modal ++ connection
+        , body = (viewHeader model) ++ [ viewPage model ] ++ modal ++ connection
         }
 
 
@@ -404,6 +414,16 @@ viewPage model =
 
         _ ->
             NotFound.view
+
+
+viewHeader : Model -> List (Html Msg)
+viewHeader model =
+    case model.page of
+        Route.Home ->
+            UI.header model.showQrCode ShowQrCode HideQrCode
+
+        _ ->
+            []
 
 
 
