@@ -56,6 +56,8 @@ type alias Dynamic =
     { lastping : Maybe DT.Dt
     , method : Maybe String
     , next : Maybe DT.Offset
+    , latitude : Maybe Float
+    , longitude : Maybe Float
     , vin : Maybe Float
     , vout : Maybe Float
     , state : Maybe State
@@ -70,6 +72,8 @@ dynamicDecoder =
         |> optional "lastping" (JD.maybe DT.decoder) Nothing
         |> optional "method" (JD.maybe JD.string) Nothing
         |> optional "next_session" (JD.maybe DT.offsetDecoder) Nothing
+        |> optional "latitude" (JD.maybe JD.float) Nothing
+        |> optional "longitude" (JD.maybe JD.float) Nothing
         |> optional "vin" (JD.maybe JD.float) Nothing
         |> optional "vout" (JD.maybe JD.float) Nothing
         -- |> optional "state" (JD.maybe sysStateDecoder) Nothing
@@ -114,6 +118,7 @@ type State
     = Tracking
     | Sleep
     | Locked
+    | Beacon
     | Off
     | Unknown String
 
@@ -132,6 +137,9 @@ stateDecoder =
 
                     "locked" ->
                         JD.succeed Locked
+
+                    "beacon" ->
+                        JD.succeed Beacon
 
                     "off" ->
                         JD.succeed Off
@@ -173,6 +181,9 @@ stateAsString state =
         Locked ->
             "Блокировка"
 
+        Beacon ->
+            "Сон (маяк)"
+
         Off ->
             "Выключен"
 
@@ -191,6 +202,9 @@ stateAsCmdString state =
 
         Locked ->
             "Заблокировать"
+
+        Beacon ->
+            "Усыпить"
 
         Off ->
             "Выключить"
@@ -249,6 +263,9 @@ setSystemState sysId newState =
 
                     Locked ->
                         "locked"
+
+                    Beacon ->
+                        "beacon"
 
                     Off ->
                         "off"

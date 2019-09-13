@@ -123,7 +123,7 @@ systemItem systems timeZone index sysId =
                 Just system ->
                     [ UI.info_2_10 "Название:" system.title
                     , UI.info_2_10 "Состояние:" (sysState_of system.dynamic timeZone)
-                    , UI.info_2_10 "Последная известная позиция:" (position_of system.dynamic timeZone)
+                    , UI.info_2_10 "Позиция:" (position_of system.dynamic timeZone)
                     ]
 
         footer =
@@ -159,13 +159,27 @@ position_of maybe_system_dynamic timeZone =
             "неизвестно"
 
         Just dynamic ->
-            -- ((String.fromFloat lastPosition.lat)
-            --     ++ ", "
-            --     ++ (String.fromFloat lastPosition.lon)
-            --     ++ "@"
-            --     ++ (dtFormat lastPosition.dt timeZone)
-            -- )
-            ("{TBD}, {TBD}")
+            maybeLatLong dynamic.latitude dynamic.longitude
+
+
+maybeLatLong : Maybe Float -> Maybe Float -> String
+maybeLatLong mlatitude mlongitude =
+    case ( mlatitude, mlongitude ) of
+        -- ( Nothing, _ ) ->
+        --     "данные не получены"
+        --
+        -- ( _, Nothing ) ->
+        --     "данные не получены"
+        ( Just latitude, Just longitude ) ->
+            ((String.fromFloat latitude)
+                ++ ", "
+                ++ (String.fromFloat longitude)
+             -- ++ "@"
+             -- ++ (dtFormat lastPosition.dt timeZone)
+            )
+
+        ( _, _ ) ->
+            "данные не получены"
 
 
 dtFormat : DT.Dt -> Time.Zone -> String

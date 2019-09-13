@@ -16,7 +16,7 @@ nextSession : AppState.AppState -> Maybe System.Dynamic -> List (Html msg)
 nextSession appState maybeSystemDynamic =
     case maybeSystemDynamic of
         Nothing ->
-            [ text "{TBD_SYSTEM_DYNAMIC}" ]
+            [ text "Информация будет доступна после выхода трекера на связь." ]
 
         Just dynamic ->
             let

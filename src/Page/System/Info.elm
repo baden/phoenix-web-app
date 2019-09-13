@@ -129,10 +129,31 @@ view appState model system =
 viewInfo : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
 viewInfo appState model system =
     [ UI.row_item [ ChartSvg.chartView "Батарея" 80 ]
-    , UI.row_item [ text <| "Состояние: " ++ (sysState_of system.dynamic) ]
-    , UI.row_item (cmdPanel system.id system.dynamic)
-    , UI.row_item (Dates.nextSession appState system.dynamic)
     ]
+        ++ (sysState_of system.dynamic)
+        ++ [ UI.row_item (cmdPanel system.id system.dynamic)
+           , UI.row_item (Dates.nextSession appState system.dynamic)
+           ]
+
+
+sysState_of : Maybe System.Dynamic -> List (Html Msg)
+sysState_of maybe_dynamic =
+    case maybe_dynamic of
+        Nothing ->
+            [ UI.row_item [ text <| "Данные о состоянии еще не получены" ] ]
+
+        Just dynamic ->
+            case dynamic.state of
+                Nothing ->
+                    [ UI.row_item [ text <| "Состояние: -" ] ]
+
+                Just Off ->
+                    [ UI.row_item [ text <| "Трекер выключен." ]
+                    , UI.row_item [ text <| "Для включения трекера, нажмите кнопку на плате прибора." ]
+                    ]
+
+                Just state ->
+                    [ UI.row_item [ text <| "Состояние: " ++ (System.stateAsString state) ] ]
 
 
 viewNextSession : Maybe System.Dynamic -> Html Msg
@@ -161,21 +182,6 @@ viewInfoEntended appState model system =
         , UI.row_item [ text <| "Номер телефона: " ++ phone ]
         , UI.cmdButton "Меньше информации" OnExtendInfo
         ]
-
-
-sysState_of : Maybe System.Dynamic -> String
-sysState_of maybe_dynamic =
-    case maybe_dynamic of
-        Nothing ->
-            "-"
-
-        Just dynamic ->
-            case dynamic.state of
-                Nothing ->
-                    "-"
-
-                Just state ->
-                    System.stateAsString state
 
 
 cmdPanel : String -> Maybe System.Dynamic -> List (Html Msg)
