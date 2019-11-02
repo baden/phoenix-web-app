@@ -119,6 +119,8 @@ type State
     | Sleep
     | Locked
     | Beacon
+    | Hidden
+    | Point
     | Off
     | Unknown String
 
@@ -140,6 +142,12 @@ stateDecoder =
 
                     "beacon" ->
                         JD.succeed Beacon
+
+                    "hidden" ->
+                        JD.succeed Hidden
+
+                    "point" ->
+                        JD.succeed Point
 
                     "off" ->
                         JD.succeed Off
@@ -184,6 +192,12 @@ stateAsString state =
         Beacon ->
             "Сон (маяк)"
 
+        Hidden ->
+            "Сон (маяк)"
+
+        Point ->
+            "Точка"
+
         Off ->
             "Выключен"
 
@@ -205,6 +219,12 @@ stateAsCmdString state =
 
         Beacon ->
             "Усыпить"
+
+        Hidden ->
+            "Усыпить"
+
+        Point ->
+            "Запросить положение"
 
         Off ->
             "Выключить"
@@ -266,6 +286,12 @@ setSystemState sysId newState =
 
                     Beacon ->
                         "beacon"
+
+                    Hidden ->
+                        "hidden"
+
+                    Point ->
+                        "point"
 
                     Off ->
                         "off"

@@ -205,6 +205,11 @@ cmdPanel sysId maybe_dynamic =
                                 dynamic.available
                                     |> List.map b
 
+                Just Point ->
+                    [ text <| "При следуюем сеансе связи, будет определено текущее местоположение системы"
+                    , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+                    ]
+
                 Just wState ->
                     [ text <| "При следуюем сеансе связи, система будет переведена в режим: " ++ (System.stateAsString wState)
                     , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
