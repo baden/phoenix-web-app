@@ -8,6 +8,8 @@ import Components.Dates as Dates
 import API
 import API.System as System exposing (SystemDocumentInfo, State, State(..))
 import AppState
+import Components.DateTime exposing (dateTimeFormat)
+import Types.Dt as DT
 
 
 type alias Model =
@@ -103,8 +105,7 @@ view appState model system =
                             [ UI.cmdButton "Больше информации…" OnExtendInfo ]
                        )
                     ++ [ -- , div [] [ text <| "Id:" ++ system.id ]
-                         UI.button ("/map/" ++ system.id) "Смотреть на карте"
-                       , UI.row_item [ UI.button "/" "На главную" ]
+                         UI.row_item [ UI.button "/" "На главную" ]
                        ]
                     ++ (titleChangeDialogView model system.id)
             ]
@@ -134,6 +135,26 @@ viewInfo appState model system =
         ++ [ UI.row_item (cmdPanel system.id system.dynamic)
            , UI.row_item (Dates.nextSession appState system.dynamic)
            ]
+        ++ (sysPosition appState system.id system.dynamic)
+
+
+sysPosition : AppState.AppState -> String -> Maybe System.Dynamic -> List (Html Msg)
+sysPosition appState sid maybe_dynamic =
+    case maybe_dynamic of
+        Nothing ->
+            []
+
+        Just dynamic ->
+            case ( dynamic.latitude, dynamic.longitude, dynamic.dt ) of
+                ( Just latitude, Just longitude, Just dt ) ->
+                    [ UI.row_item
+                        [ text <| "Последнее положение определено " ++ (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ++ " "
+                        , UI.button ("/map/" ++ sid) "Смотреть на карте"
+                        ]
+                    ]
+
+                ( _, _, _ ) ->
+                    [ UI.row_item [ text <| "Положение неизвестно" ] ]
 
 
 sysState_of : Maybe System.Dynamic -> List (Html Msg)
@@ -150,6 +171,11 @@ sysState_of maybe_dynamic =
                 Just Off ->
                     [ UI.row_item [ text <| "Трекер выключен." ]
                     , UI.row_item [ text <| "Для включения трекера, нажмите кнопку на плате прибора." ]
+                    ]
+
+                Just Point ->
+                    [ UI.row_item [ text <| "Идет определение местоположения..." ]
+                    , UI.row_item [ text <| "Это может занять до 15 минут." ]
                     ]
 
                 Just state ->

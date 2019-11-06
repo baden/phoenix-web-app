@@ -58,6 +58,7 @@ type alias Dynamic =
     , next : Maybe DT.Offset
     , latitude : Maybe Float
     , longitude : Maybe Float
+    , dt : Maybe DT.Dt
     , vin : Maybe Float
     , vout : Maybe Float
     , state : Maybe State
@@ -74,6 +75,7 @@ dynamicDecoder =
         |> optional "next_session" (JD.maybe DT.offsetDecoder) Nothing
         |> optional "latitude" (JD.maybe JD.float) Nothing
         |> optional "longitude" (JD.maybe JD.float) Nothing
+        |> optional "dt" (JD.maybe DT.decoder) Nothing
         |> optional "vin" (JD.maybe JD.float) Nothing
         |> optional "vout" (JD.maybe JD.float) Nothing
         -- |> optional "state" (JD.maybe sysStateDecoder) Nothing
