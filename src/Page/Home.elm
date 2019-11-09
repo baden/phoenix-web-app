@@ -114,8 +114,11 @@ systemItem systems timeZone index sysId =
         --     [ UI.info_2_10 "Index:" (String.fromInt index)
         --     , UI.info_2_10 "ID:" sysId
         --     ]
+        maybe_system =
+            Dict.get sysId systems
+
         body =
-            case Dict.get sysId systems of
+            case maybe_system of
                 Nothing ->
                     [ UI.row_item [ UI.text "Данные по трекеру еще не получены или недостаточно прав для доступа к трекеру" ]
                     ]
@@ -123,18 +126,38 @@ systemItem systems timeZone index sysId =
                 Just system ->
                     [ UI.info_2_10 "Название:" system.title
                     , UI.info_2_10 "Состояние:" (sysState_of system.dynamic timeZone)
-                    , UI.info_2_10 "Позиция:" (position_of system.dynamic timeZone)
                     ]
 
         footer =
-            [ UI.row_item
-                [ UI.linkButton "Управление" ("/system/" ++ sysId)
-                , UI.cmdButton "Удалить" (OnRemove index)
-                ]
+            [ UI.row_item <|
+                [ UI.linkButton "Управление" ("/system/" ++ sysId) ]
+                    ++ (ifPosition maybe_system)
+                    ++ [ UI.cmdButton "Удалить" (OnRemove index)
+                       ]
             ]
     in
         -- UI.card (title ++ body ++ footer)
         UI.card (body ++ footer)
+
+
+ifPosition : Maybe SystemDocumentInfo -> List (Html Msg)
+ifPosition maybe_system =
+    case maybe_system of
+        Nothing ->
+            []
+
+        Just system ->
+            case system.dynamic of
+                Nothing ->
+                    []
+
+                Just dynamic ->
+                    case ( dynamic.latitude, dynamic.longitude ) of
+                        ( Just latitude, Just longitude ) ->
+                            [ UI.linkButton "Смотреть на карте" ("/map/" ++ system.id) ]
+
+                        _ ->
+                            []
 
 
 sysState_of : Maybe System.Dynamic -> Time.Zone -> String

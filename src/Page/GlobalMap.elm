@@ -1,10 +1,15 @@
-module Page.GlobalMap exposing (Model, Msg(..), init, update, view, viewSystem)
+module Page.GlobalMap exposing (Model, Msg(..), init, update, view, viewSystem, setCenter)
 
 import Html exposing (Html, div, img, a, h1)
 import Html.Lazy exposing (lazy, lazy2)
 import Html.Attributes exposing (class, src, href)
 import Html.Events exposing (onClick)
 import Json.Encode as Encode
+import API.System as System exposing (SystemDocumentInfo, State, State(..))
+import AppState
+import Components.UI as UI
+import Components.DateTime exposing (dateTimeFormat)
+import Types.Dt as DT
 
 
 type alias Model =
@@ -22,6 +27,11 @@ init =
 
 type Msg
     = SetCenter Float Float
+
+
+setCenter : ( Float, Float ) -> Model -> Model
+setCenter newPos model =
+    { model | center = newPos }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -57,23 +67,60 @@ encodeLatLong lat lon =
     Encode.list Encode.float [ lat, lon ]
 
 
-viewSystem : Model -> Html Msg
-viewSystem model =
+viewSystem : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
+viewSystem appState model system =
     let
         ( lat, lon ) =
-            model.center
+            case system.dynamic of
+                Nothing ->
+                    model.center
+
+                Just dynamic ->
+                    case ( dynamic.latitude, dynamic.longitude ) of
+                        ( Just latitude, Just longitude ) ->
+                            ( latitude, longitude )
+
+                        _ ->
+                            model.center
     in
         div []
             [ --div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []
               lazy2 mapAt lat lon
             , div [ class "control" ]
-                [ a [ href "/" ] [ Html.text "На главную" ]
-                , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.4226036 35.0252341) ]
-                    [ Html.text "На высоковольтную" ]
-                , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.5013798 34.6234255) ]
-                    [ Html.text "Домой" ]
+                [ a [ class "btn", href <| "/system/" ++ system.id ] [ Html.text "Управление" ]
+                , a [ class "btn", href "/" ] [ Html.text "На главную" ]
+
+                -- , div [] [ Html.text <| "Центр: " ++ (String.fromFloat lat) ++ ", " ++ (String.fromFloat lon) ]
+                -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.4226036 35.0252341) ]
+                --     [ Html.text "На высоковольтную" ]
+                -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.5013798 34.6234255) ]
+                --     [ Html.text "Домой" ]
+                , div []
+                    [ Html.text system.title
+                    , div [] (sysPosition appState system.id system.dynamic)
+                    ]
                 ]
             ]
+
+
+sysPosition : AppState.AppState -> String -> Maybe System.Dynamic -> List (Html Msg)
+sysPosition appState sid maybe_dynamic =
+    case maybe_dynamic of
+        Nothing ->
+            []
+
+        Just dynamic ->
+            case ( dynamic.latitude, dynamic.longitude, dynamic.dt ) of
+                ( Just latitude, Just longitude, Just dt ) ->
+                    [ UI.row_item
+                        [ Html.text <| "Последнее положение определено " ++ (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ++ " "
+
+                        -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter latitude longitude) ] [ Html.text "Центровать" ]
+                        ]
+                    ]
+
+                ( _, _, _ ) ->
+                    [ UI.row_item [ Html.text <| "Положение неизвестно" ] ]
 
 
 mapAt : Float -> Float -> Html Msg

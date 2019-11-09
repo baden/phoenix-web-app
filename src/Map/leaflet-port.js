@@ -2,11 +2,47 @@ import L from 'leaflet';
 // import 'leaflet.css';
 import '../../node_modules/leaflet/dist/leaflet.css';
 
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
+
+// import greenIconUrl from 'static/images/markers/leaf-green.png';
+
 var maps = {};
 
 // const tileUrl = 'http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png';
-const tileUrl = 'http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}';
+const tileUrl = 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}';
 const attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+
+// FIX leaflet's default icon path problems with webpack
+let DefaultIcon = L.icon({
+      iconUrl: icon,
+      // iconRetinaUrl: iconRetinaUrl,
+      shadowUrl: iconShadow,
+      iconSize: [24,36],
+      iconAnchor: [12,16]
+    });
+
+let greenIcon = L.icon({
+	iconUrl: '/static/images/markers/leaf-green.png',
+	shadowUrl: '/static/images/markers/leaf-shadow.png',
+
+	iconSize:     [38, 95], // size of the icon
+	shadowSize:   [50, 64], // size of the shadow
+	iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+	shadowAnchor: [4, 62],  // the same for the shadow
+	popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
+
+// L.Marker.prototype.options.icon = DefaultIcon;
+
+// FIX leaflet's default icon path problems with webpack
+// delete L.Icon.Default.prototype._getIconUrl
+// L.Icon.Default.mergeOptions({
+//   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+//   iconUrl: require('leaflet/dist/images/marker-icon.png'),
+//   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+// })
 
 // function init(id)
 // {
@@ -30,7 +66,12 @@ export default function map() {
 function addMap(element) {
     console.log("add map element (TBD)", [element]);
     if(element.hasOwnProperty('_leaflet_id')) return;
-    var map = L.map(element, {minZoom: 2}).fitWorld();
+    var map = L.map(element, {
+        minZoom: 2,
+        zoomAnimation: true,
+        fadeAnimation: false,
+        markerZoomAnimation: false
+    }).fitWorld();
     L.tileLayer(tileUrl, {
         attribution,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
@@ -91,7 +132,7 @@ const minScaleAttr = 'min-scale';
 class LeafletMap extends HTMLElement {
     constructor() {
         super();
-        console.log("LeafletMap:constructor", this);
+        console.log("LeafletMap:constructor", this, L);
 
         this._center = [48.5013798, 34.6234255];
 
@@ -126,6 +167,8 @@ class LeafletMap extends HTMLElement {
         var lng = this._center ? this._center[1] : 0.0;
         this._map = addMap(container);
         this._map.setView(L.latLng(lat, lng), 15);
+        this._center_marker = L.marker([lat, lng], {icon: DefaultIcon}).addTo(this._map);
+
         this._leaflet_id = container._leaflet_id;
     }
 
@@ -143,12 +186,13 @@ class LeafletMap extends HTMLElement {
     }
     set center(value) {
         // this.htmlElement.setAttribute("cx", value);
-        if(!this._map) return;
         console.log("set center", value);
         this._center = value;
+        if(!this._map) return;
         var lat = this._center[0];
         var lng = this._center[1];
         this._map.flyTo(L.latLng(lat, lng), 15);
+        this._center_marker.setLatLng(L.latLng(lat, lng));
     }
 
     _stageElChange(mutations) {

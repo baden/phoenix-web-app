@@ -3,7 +3,8 @@ import { Elm } from './Main.elm';
 import Map from './Map/leaflet-port.js';
 import registerServiceWorker from './registerServiceWorker';
 import "../node_modules/materialize-css/dist/css/materialize.css";
-// import materialize from 'materialize';
+// import fontawesome from '@fortawesome/fontawesome-free';
+// import '@fortawesome/fontawesome-free';
 
 const tokenKey = 'auth_token';
 

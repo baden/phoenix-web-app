@@ -7,6 +7,7 @@ import Url
 import Url.Parser as Parser
 import Page.Route as Route
 import Html exposing (Html)
+import Html.Attributes as HA
 import Json.Encode as Encode
 import Components.ChartSvg as ChartSvg
 import Page.Home as Home
@@ -212,22 +213,49 @@ update msg model =
                     ( model, Nav.load href )
 
         UrlChanged url ->
-            -- let
-            --     _ =
-            --         Debug.log "UrlChanged" url
-            -- in
-            case Parser.parse Route.routeParser url of
-                -- Just Route.BouncePage ->
-                --     ( model, Nav.load (Url.toString url) )
-                Just page ->
-                    ( { model | page = page }
-                        |> computeViewForPage page
-                    , Cmd.none
-                    )
+            let
+                setModel4Page page oldModel =
+                    { oldModel | page = page } |> computeViewForPage page
+            in
+                case Parser.parse Route.routeParser url of
+                    -- Just (Route.SystemOnMap sysId) ->
+                    --     -- TODO: Потом сделать это цивилизованно
+                    --     -- В том числе добавить это в получение документа System если уже открыта страница SystemOnMap
+                    --     -- TODO: Черт, это не работает.
+                    --     case Dict.get sysId model.systems of
+                    --         Nothing ->
+                    --             ( setModel4Page (Route.SystemOnMap sysId) model
+                    --             , Cmd.none
+                    --             )
+                    --
+                    --         Just system ->
+                    --             case system.dynamic of
+                    --                 Nothing ->
+                    --                     ( setModel4Page (Route.SystemOnMap sysId) model, Cmd.none )
+                    --
+                    --                 Just dynamic ->
+                    --                     case ( dynamic.latitude, dynamic.longitude ) of
+                    --                         ( Just latitude, Just longitude ) ->
+                    --                             let
+                    --                                 _ =
+                    --                                     Debug.log "TBD must be set center of map for" ( latitude, longitude )
+                    --
+                    --                                 pagedModel =
+                    --                                     setModel4Page (Route.SystemOnMap sysId) model
+                    --                             in
+                    --                                 ( { pagedModel | globalMap = pagedModel.globalMap |> GlobalMap.setCenter ( latitude, longitude ) }, Cmd.none )
+                    --
+                    --                         _ ->
+                    --                             ( setModel4Page (Route.SystemOnMap sysId) model, Cmd.none )
+                    --
+                    -- SystemInfo.view model.appState model.info system |> Html.map SystemInfoMsg
+                    -- ( model, Nav.load (Url.toString url) )
+                    Just page ->
+                        ( setModel4Page page model, Cmd.none )
 
-                Nothing ->
-                    -- 404 would be nice
-                    ( model, Cmd.none )
+                    Nothing ->
+                        -- 404 would be nice
+                        ( model, Cmd.none )
 
         WebsocketIn message ->
             let
@@ -396,24 +424,36 @@ viewPage model =
             Login.authView model.login |> Html.map LoginMsg
 
         Route.SystemInfo sysId ->
-            case Dict.get sysId model.systems of
-                Nothing ->
-                    Html.div [] [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра." ]
-
-                Just system ->
-                    SystemInfo.view model.appState model.info system |> Html.map SystemInfoMsg
+            view4System sysId model (SystemInfo.view model.appState model.info >> Html.map SystemInfoMsg)
 
         Route.GlobalMap ->
             GlobalMap.view
 
-        Route.SystemOnMap id_ ->
-            GlobalMap.viewSystem model.globalMap |> Html.map GlobalMapMsg
+        Route.SystemOnMap sysId ->
+            view4System sysId model (GlobalMap.viewSystem model.appState model.globalMap >> Html.map GlobalMapMsg)
 
         Route.LinkSys ->
             LinkSys.view model.linkSys |> Html.map LinkSysMsg
 
         _ ->
             NotFound.view
+
+
+view4System : String -> Model -> (SystemDocumentInfo -> Html Msg) -> Html Msg
+view4System sysId model pageView =
+    case Dict.get sysId model.systems of
+        Nothing ->
+            Html.div []
+                [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра."
+                , Html.a [ HA.class "btn", HA.href "/" ] [ Html.text "Вернуться на главную" ]
+                ]
+
+        Just system ->
+            pageView system
+
+
+
+-- SystemInfo.view model.appState model.info system |> Html.map SystemInfoMsg
 
 
 viewHeader : Model -> List (Html Msg)

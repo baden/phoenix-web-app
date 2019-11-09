@@ -7,8 +7,9 @@
     "test": "tests"
   },
   "dependencies": {
-    "leaflet": "^1.4.0",
-    "materialize-css": "^1.0.0-rc.2"
+    "@fortawesome/fontawesome-free": "5.11.2",
+    "leaflet": "^1.5.1",
+    "materialize-css": "1.0.0"
   },
   "devDependencies": {},
   "scripts": {
