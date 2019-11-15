@@ -197,15 +197,10 @@ header : Bool -> msg -> msg -> List (Html msg)
 header showQrCode msg1 msg2 =
     [ div [ HA.style "background-color" "rgba(14,38,67,0.8)" ]
         [ Html.img [ src "static/images/logo.png", HA.style "margin-left" "20px" ] []
-        , Html.i
-            [ HA.class "fas fa-qrcode"
-            , HA.style "color" "white"
-            , HA.style "float" "right"
-            , HA.style "margin" "20px"
-            , HA.style "font-size" "24px"
-            , onClick msg1
+        , Html.div [ HA.class "head-control" ]
+            [ Html.a [ HA.href "/properties" ] [ Html.i [ HA.class "fas fa-cogs" ] [] ]
+            , Html.i [ HA.class "fas fa-qrcode", onClick msg1 ] []
             ]
-            []
         ]
     ]
         ++ (if showQrCode then

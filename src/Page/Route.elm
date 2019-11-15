@@ -12,6 +12,7 @@ type Page
     | Auth
     | Login
     | User
+    | Properties
     | GlobalMap
     | SystemOnMap SysId
     | Config
@@ -27,6 +28,7 @@ routeParser =
         [ map Home top
         , map Home (s "home")
         , map User (s "user")
+        , map Properties (s "properties")
         , map GlobalMap (s "map")
         , map SystemOnMap (s "map" </> string)
         , map Config (s "config")

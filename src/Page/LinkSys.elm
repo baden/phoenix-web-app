@@ -11,17 +11,19 @@ import Regex
 
 type alias Model =
     { code : String
+    , alt : Bool
     }
 
 
 type Msg
     = OnCode String
     | StartLink
+    | AltMode
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model "", Cmd.none )
+    ( Model "" False, Cmd.none )
 
 
 splitAtCouple pos str =
@@ -67,21 +69,43 @@ update msg model =
                 ]
             )
 
+        AltMode ->
+            ( { model | alt = not model.alt }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ UI.title_item "Мастер добавления систем"
-        , UI.master
-            [ page_1
-            , page_2
+    let
+        master =
+            case model.alt of
+                False ->
+                    [ UI.master
+                        [ page_1
+                        , page_2
+                        ]
+                    , div [ class "row nodesktop" ]
+                        [ div [ class "col s4 offset-s4" ]
+                            [ UI.smsLink "" "link" ]
+                        ]
+                    ]
+
+                True ->
+                    [ UI.master
+                        [ page_alt_1 model
+                        ]
+                    , div [ class "row nodesktop" ]
+                        [ div [ class "col s4 offset-s4" ]
+                            [ UI.smsLink "" "link" ]
+                        ]
+                    ]
+    in
+        div [] <|
+            [ UI.title_item "Мастер добавления систем"
             ]
-        , div [ class "row nodesktop" ]
-            [ div [ class "col s4 offset-s4" ]
-                [ UI.smsLink "" "link" ]
-            ]
-        , UI.smsCodeInput model.code OnCode StartLink
-        ]
+                ++ master
+                ++ [ UI.smsCodeInput model.code OnCode StartLink
+                   , UI.row [ UI.cmdButton "Альтернативный способ" AltMode ]
+                   ]
 
 
 page_1 : UI.MasterItem
@@ -97,4 +121,14 @@ page_2 =
     UI.MasterItem "2. Начните процедуру привязки"
         [ "Отправьте на телефонный номер карточки трекера SMS: link."
         , "В ответ придёт уникальный код, введите код в поле ниже."
+        ]
+
+
+page_alt_1 : Model -> UI.MasterItem
+page_alt_1 model =
+    UI.MasterItem "1. Укажите телефонный номер карточки системы"
+        [ "Данный способ регистрации менее защищенный, так как идет передача номера карточки."
+        , "Данный способ регистрации пока на стадии разработки..."
+
+        -- , UI.smsCodeInput model.code OnCode StartLink
         ]
