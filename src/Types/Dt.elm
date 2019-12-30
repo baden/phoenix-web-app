@@ -3,6 +3,7 @@ module Types.Dt
         ( Dt
         , toInt
         , fromInt
+        , fromMinutes
         , toPosix
         , fromPosix
         , decoder
@@ -65,3 +66,8 @@ offsetDecoder =
 addSecs : Dt -> Offset -> Dt
 addSecs (Dt a) (Offset b) =
     Dt (a + b * 60)
+
+
+fromMinutes : Int -> Offset
+fromMinutes i =
+    Offset (i)

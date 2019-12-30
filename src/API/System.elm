@@ -64,6 +64,7 @@ type alias Dynamic =
     , state : Maybe State
     , available : List State
     , waitState : Maybe State
+    , autosleep : Maybe Int
     }
 
 
@@ -83,6 +84,7 @@ dynamicDecoder =
         -- |> optional "available" statesListDecoder []
         |> optional "available" (JD.list stateDecoder) []
         |> optional "wait_state" (JD.maybe stateDecoder) Nothing
+        |> optional "autosleep" (JD.maybe JD.int) Nothing
 
 
 
@@ -125,6 +127,7 @@ type State
     | Point
     | Off
     | Unknown String
+    | Config
 
 
 stateDecoder : JD.Decoder State
@@ -153,6 +156,9 @@ stateDecoder =
 
                     "off" ->
                         JD.succeed Off
+
+                    "config" ->
+                        JD.succeed Config
 
                     other ->
                         JD.succeed (Unknown other)
@@ -203,6 +209,9 @@ stateAsString state =
         Off ->
             "Выключен"
 
+        Config ->
+            "Конфигурация"
+
         Unknown c ->
             "Неизвестно:" ++ c
 
@@ -230,6 +239,9 @@ stateAsCmdString state =
 
         Off ->
             "Выключить"
+
+        Config ->
+            "Конфигурация"
 
         Unknown _ ->
             "В разработке..."
@@ -297,6 +309,9 @@ setSystemState sysId newState =
 
                     Off ->
                         "off"
+
+                    Config ->
+                        "config"
 
                     Unknown c ->
                         c

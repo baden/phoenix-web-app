@@ -31,6 +31,7 @@ type Msg
     | OnExtendInfo
     | OnConfirmOff
     | OnCancelOff
+    | OnNoCmd
 
 
 init : ( Model, Cmd Msg )
@@ -87,6 +88,9 @@ update msg model =
         OnCancelOff ->
             ( { model | showConfirmOffDialog = False }, Cmd.none )
 
+        OnNoCmd ->
+            ( model, Cmd.none )
+
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 view appState model system =
@@ -96,6 +100,7 @@ view appState model system =
                 [ UI.row_item
                     [ text system.title
                     , UI.cmdButton "…" (OnTitleChangeStart system.title)
+                    , UI.cmdIconButton "cog" (OnSysCmd system.id Config)
                     ]
                 ]
                     ++ (viewInfo appState model system)
@@ -131,7 +136,7 @@ viewInfo : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
 viewInfo appState model system =
     [ UI.row_item [ ChartSvg.chartView "Батарея" 80 ]
     ]
-        ++ (sysState_of system.dynamic)
+        ++ (sysState_of appState system.dynamic)
         ++ [ UI.row_item (cmdPanel system.id system.dynamic)
            , UI.row_item (Dates.nextSession appState system.dynamic)
            ]
@@ -157,8 +162,8 @@ sysPosition appState sid maybe_dynamic =
                     [ UI.row_item [ text <| "Положение неизвестно" ] ]
 
 
-sysState_of : Maybe System.Dynamic -> List (Html Msg)
-sysState_of maybe_dynamic =
+sysState_of : AppState.AppState -> Maybe System.Dynamic -> List (Html Msg)
+sysState_of appState maybe_dynamic =
     case maybe_dynamic of
         Nothing ->
             [ UI.row_item [ text <| "Данные о состоянии еще не получены" ] ]
@@ -177,6 +182,28 @@ sysState_of maybe_dynamic =
                     [ UI.row_item [ text <| "Идет определение местоположения..." ]
                     , UI.row_item [ text <| "Это может занять до 15 минут." ]
                     ]
+
+                Just Tracking ->
+                    let
+                        autosleep =
+                            dynamic.autosleep |> Maybe.withDefault 0 |> String.fromInt
+
+                        last_session =
+                            case dynamic.lastping of
+                                Nothing ->
+                                    DT.fromInt 0
+
+                                Just lastping ->
+                                    lastping
+
+                        autosleepText =
+                            DT.addSecs last_session (DT.fromMinutes (Maybe.withDefault 0 dynamic.autosleep)) |> DT.toPosix |> dateTimeFormat appState.timeZone
+                    in
+                        [ UI.row_item [ text <| "Трекер под наблюдением." ]
+                        , UI.row_item [ text <| "Трекер автоматически уснет через (минут): " ++ autosleep ++ "(TBD)" ]
+                        , UI.row_item [ text <| "Трекер автоматически уснет: " ++ autosleepText ++ "(TBD)" ]
+                        , UI.row_item [ UI.cmdButton "Отложить засыпание на четыре часа (TBD)" OnNoCmd ]
+                        ]
 
                 Just state ->
                     [ UI.row_item [ text <| "Состояние: " ++ (System.stateAsString state) ] ]

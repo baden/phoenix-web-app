@@ -2,6 +2,7 @@ module Components.UI
     exposing
         ( button
         , cmdButton
+        , cmdIconButton
         , formHeader
         , formInput
         , formPassword
@@ -38,6 +39,12 @@ cmdButton : String -> m -> Html m
 cmdButton label cmd =
     Html.button [ class "waves-effect waves-light btn", onClick cmd ]
         [ text label ]
+
+
+cmdIconButton : String -> m -> Html m
+cmdIconButton label cmd =
+    Html.button [ class "waves-effect waves-light btn", onClick cmd ]
+        [ Html.i [ HA.class ("fas fa-" ++ label) ] [] ]
 
 
 button : String -> String -> Html a
