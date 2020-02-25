@@ -1,4 +1,4 @@
-module Page.System.Info exposing (init, update, view, Model, Msg(..))
+module Page.System.Info exposing (init, update, view)
 
 import Html exposing (Html, div, text, a)
 import Html.Attributes exposing (class, href)
@@ -10,28 +10,7 @@ import API.System as System exposing (SystemDocumentInfo, State, State(..))
 import AppState
 import Components.DateTime exposing (dateTimeFormat)
 import Types.Dt as DT
-
-
-type alias Model =
-    { showTitleChangeDialog : Bool
-    , newTitle : String
-    , extendInfo : Bool
-    , showConfirmOffDialog : Bool
-    , offId : String
-    }
-
-
-type Msg
-    = OnSysCmd String System.State
-    | OnSysCmdCancel String
-    | OnTitleChangeStart String
-    | OnTitleChange String
-    | OnTitleConfirm String String
-    | OnTitleCancel
-    | OnExtendInfo
-    | OnConfirmOff
-    | OnCancelOff
-    | OnNoCmd
+import Page.System.Info.Types exposing (Model, Msg, Msg(..))
 
 
 init : ( Model, Cmd Msg )
@@ -53,10 +32,6 @@ update msg model =
             ( { model | offId = sysId, showConfirmOffDialog = True }, Cmd.none )
 
         OnSysCmd sysId state ->
-            -- let
-            --     _ =
-            --         Debug.log "Make new state:" state
-            -- in
             ( model, Cmd.batch [ API.websocketOut <| System.setSystemState sysId state ] )
 
         OnSysCmdCancel sysId ->
@@ -94,49 +69,50 @@ update msg model =
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 view appState model system =
-    div [ class "container" ] <|
-        [ div [ class "row" ]
-            [ div [ class "col s12 m8 offset-m2 xl7 offset-xl2" ] <|
-                [ UI.row_item
-                    [ text system.title
-                    , UI.cmdButton "…" (OnTitleChangeStart system.title)
-                    , UI.cmdIconButton "cog" (OnSysCmd system.id Config)
-                    ]
-                ]
-                    ++ (viewInfo appState model system)
-                    ++ (if model.extendInfo then
-                            (viewInfoEntended appState model system)
-                        else
-                            [ UI.cmdButton "Больше информации…" OnExtendInfo ]
-                       )
-                    ++ [ -- , div [] [ text <| "Id:" ++ system.id ]
-                         UI.row_item [ UI.button "/" "На главную" ]
-                       ]
-                    ++ (titleChangeDialogView model system.id)
-            ]
+    UI.container <|
+        [ UI.widget <|
+            (viewHeader appState model system)
+                ++ (viewInfo appState model system)
+                ++ (viewInfoEntended appState model system)
+                ++ [ UI.row_item [ UI.button "/" "На главную" ] ]
+                ++ (titleChangeDialogView model system.id)
         ]
-            ++ (if model.showConfirmOffDialog then
-                    [ UI.modal
-                        "Выключение"
-                        [ UI.ModalText "Предупреждение! Это действие необратимо."
-                        , UI.ModalText "Включить трекер можно будет только нажатием кнопки на плате прибора."
-                        , UI.ModalText "Вы действительно хотите выключить трекер?"
-                        ]
-                        [ UI.cmdButton "Да" (OnConfirmOff)
-                        , UI.cmdButton "Нет" (OnCancelOff)
-                        ]
-                    , UI.modal_overlay OnCancelOff
-                    ]
-                else
-                    []
-               )
+            ++ (viewModalDialogs model)
+
+
+viewHeader : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
+viewHeader appState model system =
+    [ UI.row_item
+        [ text system.title
+        , text " "
+        , UI.cmdButton "…" (OnTitleChangeStart system.title)
+
+        -- , UI.cmdIconButton "cog" (OnSysCmd system.id Config)
+        ]
+    ]
+
+
+viewModalDialogs : Model -> List (Html Msg)
+viewModalDialogs model =
+    if model.showConfirmOffDialog then
+        [ UI.modal
+            "Выключение"
+            [ UI.ModalText "Предупреждение! Это действие необратимо."
+            , UI.ModalText "Включить трекер можно будет только нажатием кнопки на плате прибора."
+            , UI.ModalText "Вы действительно хотите выключить трекер?"
+            ]
+            [ UI.cmdButton "Да" (OnConfirmOff)
+            , UI.cmdButton "Нет" (OnCancelOff)
+            ]
+        , UI.modal_overlay OnCancelOff
+        ]
+    else
+        []
 
 
 viewInfo : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
 viewInfo appState model system =
-    [ UI.row_item [ ChartSvg.chartView "Батарея" 80 ]
-    ]
-        ++ (sysState_of appState system.dynamic)
+    (sysState_of appState system.dynamic)
         ++ [ UI.row_item (cmdPanel system.id system.dynamic)
            , UI.row_item (Dates.nextSession appState system.dynamic)
            ]
@@ -200,9 +176,10 @@ sysState_of appState maybe_dynamic =
                             DT.addSecs last_session (DT.fromMinutes (Maybe.withDefault 0 dynamic.autosleep)) |> DT.toPosix |> dateTimeFormat appState.timeZone
                     in
                         [ UI.row_item [ text <| "Трекер под наблюдением." ]
-                        , UI.row_item [ text <| "Трекер автоматически уснет через (минут): " ++ autosleep ++ "(TBD)" ]
-                        , UI.row_item [ text <| "Трекер автоматически уснет: " ++ autosleepText ++ "(TBD)" ]
-                        , UI.row_item [ UI.cmdButton "Отложить засыпание на четыре часа (TBD)" OnNoCmd ]
+                        , UI.row_item [ text <| "Трекер автоматически уснет через (минут): " ++ autosleep ]
+
+                        -- , UI.row_item [ text <| "Трекер автоматически уснет: " ++ autosleepText ++ "(TBD)" ]
+                        , UI.row_item [ UI.cmdButton "Отложить засыпание на 4 часа" OnNoCmd ]
                         ]
 
                 Just state ->
@@ -214,27 +191,39 @@ viewNextSession dynamic =
     text "{DYNAMIC_TBD}"
 
 
+
+-- ++ (if model.extendInfo then
+--         (viewInfoEntended appState model system)
+--     else
+--         [ UI.cmdButton "Больше информации…" OnExtendInfo ]
+--    )
+
+
 viewInfoEntended : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
 viewInfoEntended appState model system =
-    let
-        imei =
-            system.imei |> Maybe.withDefault "скрыт"
+    if model.extendInfo then
+        let
+            imei =
+                system.imei |> Maybe.withDefault "скрыт"
 
-        phone =
-            case system.phone of
-                Nothing ->
-                    "не задан или скрыт"
+            phone =
+                case system.phone of
+                    Nothing ->
+                        "не задан или скрыт"
 
-                Just "" ->
-                    "не задан или скрыт"
+                    Just "" ->
+                        "не задан или скрыт"
 
-                Just any_ ->
-                    any_
-    in
-        [ UI.row_item [ text <| "IMEI: " ++ imei ]
-        , UI.row_item [ text <| "Номер телефона: " ++ phone ]
-        , UI.cmdButton "Меньше информации" OnExtendInfo
-        ]
+                    Just any_ ->
+                        any_
+        in
+            [ UI.row_item [ ChartSvg.chartView "Батарея" 80 ]
+            , UI.row_item [ text <| "IMEI: " ++ imei ]
+            , UI.row_item [ text <| "Номер телефона: " ++ phone ]
+            , UI.cmdButton "Меньше информации" OnExtendInfo
+            ]
+    else
+        [ UI.cmdButton "Больше информации…" OnExtendInfo ]
 
 
 cmdPanel : String -> Maybe System.Dynamic -> List (Html Msg)
@@ -249,6 +238,9 @@ cmdPanel sysId maybe_dynamic =
                     case dynamic.state of
                         Nothing ->
                             []
+
+                        Just Config ->
+                            cmdPanelConfig sysId
 
                         Just state ->
                             let
@@ -267,6 +259,12 @@ cmdPanel sysId maybe_dynamic =
                     [ text <| "При следуюем сеансе связи, система будет переведена в режим: " ++ (System.stateAsString wState)
                     , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
                     ]
+
+
+cmdPanelConfig : String -> List (Html Msg)
+cmdPanelConfig sysId =
+    [ text <| "В разработке..."
+    ]
 
 
 titleChangeDialogView : Model -> String -> List (Html Msg)

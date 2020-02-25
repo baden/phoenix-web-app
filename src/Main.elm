@@ -13,6 +13,7 @@ import Components.ChartSvg as ChartSvg
 import Page.Home as Home
 import Page.Login as Login
 import Page.System.Info as SystemInfo
+import Page.System.Info.Types as SystemInfoTypes
 import Page.NotFound as NotFound
 import Page.GlobalMap as GlobalMap
 import Page.LinkSys as LinkSys
@@ -46,7 +47,7 @@ type alias Model =
     , home : Home.Model
     , login : Login.Model
     , linkSys : LinkSys.Model
-    , info : SystemInfo.Model
+    , info : SystemInfoTypes.Model
     , globalMap : GlobalMap.Model
     , account : Maybe AccountDocumentInfo
     , systems : Dict String SystemDocumentInfo
@@ -71,7 +72,7 @@ type Msg
     | WebsocketOpened Bool
     | HomeMsg Home.Msg
     | LoginMsg Login.Msg
-    | SystemInfoMsg SystemInfo.Msg
+    | SystemInfoMsg SystemInfoTypes.Msg
     | GlobalMapMsg GlobalMap.Msg
     | LinkSysMsg LinkSys.Msg
     | OnCloseModal

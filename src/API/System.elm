@@ -124,10 +124,14 @@ type State
     | Locked
     | Beacon
     | Hidden
-    | Point
     | Off
-    | Unknown String
     | Config
+      -- Дальше не совсем состояния, это скорее команды
+    | Point
+    | Lock
+    | Unlock
+      -- Неподдерживаемые приложением команды и состояния
+    | Unknown String
 
 
 stateDecoder : JD.Decoder State
@@ -151,14 +155,20 @@ stateDecoder =
                     "hidden" ->
                         JD.succeed Hidden
 
-                    "point" ->
-                        JD.succeed Point
-
                     "off" ->
                         JD.succeed Off
 
                     "config" ->
                         JD.succeed Config
+
+                    "point" ->
+                        JD.succeed Point
+
+                    "lock" ->
+                        JD.succeed Lock
+
+                    "unlock" ->
+                        JD.succeed Unlock
 
                     other ->
                         JD.succeed (Unknown other)
@@ -203,14 +213,20 @@ stateAsString state =
         Hidden ->
             "Сон (маяк)"
 
-        Point ->
-            "Точка"
-
         Off ->
             "Выключен"
 
         Config ->
             "Конфигурация"
+
+        Point ->
+            "Точка"
+
+        Lock ->
+            "Блокировка"
+
+        Unlock ->
+            "Разблокировка"
 
         Unknown c ->
             "Неизвестно:" ++ c
@@ -232,10 +248,7 @@ stateAsCmdString state =
             "Усыпить"
 
         Hidden ->
-            "Усыпить"
-
-        Point ->
-            "Запросить положение"
+            "Усыпить сейчас"
 
         Off ->
             "Выключить"
@@ -243,8 +256,17 @@ stateAsCmdString state =
         Config ->
             "Конфигурация"
 
-        Unknown _ ->
-            "В разработке..."
+        Point ->
+            "Запросить положение"
+
+        Lock ->
+            "Заблокировать"
+
+        Unlock ->
+            "Разблокировать"
+
+        Unknown s ->
+            ("В разработке..." ++ s)
 
 
 
@@ -304,14 +326,20 @@ setSystemState sysId newState =
                     Hidden ->
                         "hidden"
 
-                    Point ->
-                        "point"
-
                     Off ->
                         "off"
 
                     Config ->
                         "config"
+
+                    Point ->
+                        "point"
+
+                    Lock ->
+                        "lock"
+
+                    Unlock ->
+                        "unlock"
 
                     Unknown c ->
                         c

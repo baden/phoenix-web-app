@@ -28,6 +28,8 @@ module Components.UI
         , smsCodeInput
         , connectionWidwet
         , header
+        , container
+        , widget
         )
 
 import Html exposing (Html, h1, h5, div, a, text, i, input)
@@ -152,8 +154,8 @@ row_item child =
 info_2_10 : String -> String -> Html a
 info_2_10 text_title value =
     row
-        [ Html.div [ class "col s2" ] [ text text_title ]
-        , Html.div [ class "col s10" ] [ text value ]
+        [ -- Html.div [ class "col s2" ] [ text text_title ]
+          Html.div [ class "col s12" ] [ text value ]
         ]
 
 
@@ -324,3 +326,14 @@ connectionWidwet =
         [ text "Нет соединения с сервером"
         ]
     ]
+
+
+container : List (Html a) -> Html a
+container =
+    div [ class "container" ]
+
+
+widget : List (Html a) -> Html a
+widget child =
+    div [ class "row" ]
+        [ div [ class "col s12 m8 offset-m2 xl7 offset-xl2" ] child ]

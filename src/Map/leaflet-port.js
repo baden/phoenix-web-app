@@ -6,6 +6,8 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 
+import {MapTiles} from './tile_layers';
+
 // import greenIconUrl from 'static/images/markers/leaf-green.png';
 
 var maps = {};
@@ -13,6 +15,9 @@ var maps = {};
 // const tileUrl = 'http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png';
 const tileUrl = 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}';
 const attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+
+const tileLayers = MapTiles();
+console.log('tileLayers = ', tileLayers);
 
 // FIX leaflet's default icon path problems with webpack
 let DefaultIcon = L.icon({
@@ -64,22 +69,81 @@ export default function map() {
 // https://github.com/lifemapper/rutabaga/blob/c86857c81f7f827c5bb6f1eef366b74a6e39ddf8/mcpa/statsHeatMapMain.js
 
 function addMap(element) {
+    var expanded = false;
     console.log("add map element (TBD)", [element]);
     if(element.hasOwnProperty('_leaflet_id')) return;
-    var map = L.map(element, {
+    var defaultLayer = tileLayers.defaultLayer;
+    var myOptions = {
+        layers: tileLayers.baseLayers[defaultLayer],
         minZoom: 2,
         zoomAnimation: true,
         fadeAnimation: false,
         markerZoomAnimation: false
-    }).fitWorld();
-    L.tileLayer(tileUrl, {
-        attribution,
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-        minZoom:1,
-        maxZoom: 18
-    }).addTo(map);
+    };
+    var map = L.map(element, myOptions).fitWorld();
+    // L.tileLayer(tileUrl, {
+    //     attribution,
+    //     subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+    //     minZoom:1,
+    //     maxZoom: 18
+    // }).addTo(map);
     // var tandemMoveHandler = tandemMove(map);
     // map.on('moveend', tandemMoveHandler).on('zoomend', tandemMoveHandler);
+
+    // tileLayers.baseLayers[defaultLayer].addTo(map);
+
+    var ExLayers = L.Control.Layers.extend({
+        onAdd: function(map) {
+            var that = this;
+            var container = L.Control.Layers.prototype.onAdd.call(this, map);
+
+            // var expand = function() {
+            // };
+            //
+            // if (expanded) {
+            //     expand();
+            //     return container;
+            // }
+            // var parent =
+            var expander = L.DomUtil.create('div', 'expander');
+
+
+            expander.title = "Дополнительные типы карт.";
+            // container.setAttribute('aria-haspopup', true);
+            L.DomEvent.disableClickPropagation(expander);
+            L.DomEvent.disableScrollPropagation(expander);
+            expander.innerHTML = "...";
+            L.DomEvent.on(expander, 'click', function() {
+                console.log("TBD.");
+                // expandControl();
+                // expand();
+                var ex_layers = tileLayers.extendLayers;
+
+                for (var i in ex_layers) {
+                    // that._addLayer(ex_layers[i], i);
+                    that.addBaseLayer(ex_layers[i], i);
+                }
+                expander.remove();
+            });
+
+            console.log("container=", container);
+            container.querySelector('.leaflet-control-layers-list').appendChild(expander);
+            return container;
+        }
+    });
+
+
+    var layersControl;
+    if (expanded) {
+        layersControl = new L.Control.Layers(tileLayers.baseLayers);
+    } else {
+        layersControl = new ExLayers(tileLayers.baseLayers);
+    }
+    var expandControl = function() {
+        layersControl.addBaseLayer(tileLayers.extendLayers);
+    };
+    layersControl.addTo(map);
+
     maps[element._leaflet_id] = map;
     console.log("added leaflet id", element._leaflet_id);
     // configureMap(element);
