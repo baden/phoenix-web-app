@@ -137,43 +137,4 @@ dd {
     text-transform: initial !important;
 }
 
-
-
-.leaflet-control-layers-base label div, .leaflet-control-layers-overlays label div {
-    /* font-weight: normal; */
-    input[type="radio"], input[type="checkbox"] {
-        -webkit-appearance: none;
-        outline: none;
-        width: 12px;
-        height: 12px;
-        border-radius: 100%;
-        & + span {
-            padding-left: 0;
-            padding-right: 8px;
-        }
-        &:checked {
-            /* // background-color: green; */
-        }
-
-        &:checked + span {
-          /*some styles here*/
-          // background-color: green;
-          border-bottom: 2px solid green;
-        }
-
-        &:disabled {
-            background-color: red;
-        }
-    }
-    padding-right: 8px;
-    padding-top: 6px;
-    padding-bottom: 6px;
-    &:hover {
-        background-color: #ddd;
-    }
-}
-
-.expander {
-    text-align: center;
-    cursor: pointer;
-}
+/* @import './leaflet.scss';*/

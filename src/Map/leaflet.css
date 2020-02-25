@@ -1,0 +1,17 @@
+.leaflet-control-layers-base label div, .leaflet-control-layers-overlays label div {
+    /* font-weight: normal; */
+    padding-right: 8px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+
+    text-align: left;
+}
+
+.leaflet-control-layers-base label div:hover, .leaflet-control-layers-overlays label div:hover {
+    background-color: #ddd;
+}
+
+.expander {
+    text-align: center;
+    cursor: pointer;
+}
