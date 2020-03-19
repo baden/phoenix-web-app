@@ -12,7 +12,9 @@
     "materialize-css": "1.0.0",
     "node-sass-chokidar": "^1.4.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "leaflet-extra-markers": "^1.2.1"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",

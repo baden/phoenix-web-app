@@ -41,16 +41,60 @@ nextSession appState maybeSystemDynamic =
                   -- div [] [ text <| "Текущее дата-время: " ++ (now |> dateTimeFormat tz) ]
                   Html.table []
                     [ Html.tr []
-                        [ Html.td [] [ text "Дата последнего сеанса: " ]
+                        [ Html.td [] [ text "Последний сеанс связи: " ]
                         , Html.td [] [ text <| (last_session |> DT.toPosix |> dateTimeFormat tz) ]
                         ]
                     , Html.tr []
-                        [ Html.td [] [ text "Ожидаемая дата следующего сеанса: " ]
+                        [ Html.td [] [ text "Следующий сеанс связи: " ]
                         , Html.td []
                             [ text <| nextSessionText last_session dynamic.next tz ]
                         ]
                     ]
                 ]
+
+
+expectSleepIn : AppState.AppState -> System.Dynamic -> List (Html msg)
+expectSleepIn appState dynamic =
+    let
+        now =
+            appState.now
+
+        last_session =
+            case dynamic.lastping of
+                Nothing ->
+                    DT.fromInt 0
+
+                Just lastping ->
+                    lastping
+
+        autosleep =
+            case dynamic.autosleep of
+                Nothing ->
+                    "-"
+
+                Just offset ->
+                    -- offset
+                    DT.addSecs last_session offset |> DT.toPosix |> dateTimeFormat tz
+
+        tz =
+            appState.timeZone
+    in
+        [ --text <|
+          --     "Следующий сеанс связи примерно через "
+          --         ++ (offset |> String.fromInt)
+          --         ++ " минут"
+          -- div [] [ text <| "Текущее дата-время: " ++ (now |> dateTimeFormat tz) ]
+          Html.table []
+            [ Html.tr []
+                [ Html.td [] [ text "Трекер уснет: " ]
+
+                -- , Html.td [] [ text <| (autosleep |> DT.toPosix |> dateTimeFormat tz) ]
+                , Html.td [] [ text <| (autosleep) ]
+
+                -- , Html.td [] [ text "TBD" ]
+                ]
+            ]
+        ]
 
 
 nextSessionText : DT.Dt -> Maybe DT.Offset -> Zone -> String

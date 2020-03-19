@@ -1,6 +1,9 @@
 import L from 'leaflet';
+import Lem from 'leaflet-extra-markers';
+// import '.css';
 // import 'leaflet.css';
 import '../../node_modules/leaflet/dist/leaflet.css';
+import '../../node_modules/leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css';
 
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -22,6 +25,8 @@ const tileLayers = MapTiles();
 const settings = MapSettings();
 console.log("settings = ", settings);
 console.log('tileLayers = ', tileLayers);
+
+console.log("Lem = ", Lem);
 
 // FIX leaflet's default icon path problems with webpack
 let DefaultIcon = L.icon({
@@ -192,7 +197,18 @@ class LeafletMap extends HTMLElement {
         var lng = this._center ? this._center[1] : 0.0;
         this._map = addMap(container);
         this._map.setView(L.latLng(lat, lng), 15);
-        this._center_marker = L.marker([lat, lng], {icon: DefaultIcon}).addTo(this._map);
+
+
+        var redMarker = L.ExtraMarkers.icon({
+            icon: 'fa-car',
+            markerColor: 'pink',
+            shape: 'square',
+            prefix: 'fa'
+          });
+        console.log("redMarker = ", redMarker);
+
+        // this._center_marker = L.marker([lat, lng], {icon: DefaultIcon}).addTo(this._map);
+        L.marker([lat, lng], {icon: redMarker}).addTo(this._map);
 
         this._leaflet_id = container._leaflet_id;
     }

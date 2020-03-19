@@ -11,6 +11,7 @@ import AppState
 import Components.DateTime exposing (dateTimeFormat)
 import Types.Dt as DT
 import Page.System.Info.Types exposing (Model, Msg, Msg(..))
+import Page.System.Info.Dialogs exposing (..)
 
 
 init : ( Model, Cmd Msg )
@@ -19,6 +20,7 @@ init =
       , newTitle = ""
       , extendInfo = False
       , showConfirmOffDialog = False
+      , showSleepProlongDialog = False
       , offId = ""
       }
     , Cmd.none
@@ -76,6 +78,7 @@ view appState model system =
                 ++ (viewInfoEntended appState model system)
                 ++ [ UI.row_item [ UI.button "/" "На главную" ] ]
                 ++ (titleChangeDialogView model system.id)
+                ++ (prolongSleepDialogView model system.id)
         ]
             ++ (viewModalDialogs model)
 
@@ -85,29 +88,13 @@ viewHeader appState model system =
     [ UI.row_item
         [ text system.title
         , text " "
-        , UI.cmdButton "…" (OnTitleChangeStart system.title)
+
+        -- , UI.cmdButton "…" (OnTitleChangeStart system.title)
+        , UI.cmdIconButton "cog" (OnTitleChangeStart system.title)
 
         -- , UI.cmdIconButton "cog" (OnSysCmd system.id Config)
         ]
     ]
-
-
-viewModalDialogs : Model -> List (Html Msg)
-viewModalDialogs model =
-    if model.showConfirmOffDialog then
-        [ UI.modal
-            "Выключение"
-            [ UI.ModalText "Предупреждение! Это действие необратимо."
-            , UI.ModalText "Включить трекер можно будет только нажатием кнопки на плате прибора."
-            , UI.ModalText "Вы действительно хотите выключить трекер?"
-            ]
-            [ UI.cmdButton "Да" (OnConfirmOff)
-            , UI.cmdButton "Нет" (OnCancelOff)
-            ]
-        , UI.modal_overlay OnCancelOff
-        ]
-    else
-        []
 
 
 viewInfo : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
@@ -161,9 +148,8 @@ sysState_of appState maybe_dynamic =
 
                 Just Tracking ->
                     let
-                        autosleep =
-                            dynamic.autosleep |> Maybe.withDefault 0 |> String.fromInt
-
+                        -- autosleep =
+                        --     dynamic.autosleep |> Maybe.withDefault 0 |> String.fromInt
                         last_session =
                             case dynamic.lastping of
                                 Nothing ->
@@ -172,14 +158,15 @@ sysState_of appState maybe_dynamic =
                                 Just lastping ->
                                     lastping
 
-                        autosleepText =
-                            DT.addSecs last_session (DT.fromMinutes (Maybe.withDefault 0 dynamic.autosleep)) |> DT.toPosix |> dateTimeFormat appState.timeZone
+                        -- autosleepText =
+                        --     DT.addSecs last_session (DT.fromMinutes (Maybe.withDefault 0 dynamic.autosleep)) |> DT.toPosix |> dateTimeFormat appState.timeZone
                     in
                         [ UI.row_item [ text <| "Трекер под наблюдением." ]
-                        , UI.row_item [ text <| "Трекер автоматически уснет через (минут): " ++ autosleep ]
+                        , UI.row_item (Dates.expectSleepIn appState dynamic)
 
+                        -- , UI.row_item [ text <| "Трекер автоматически уснет через (минут): " ++ autosleep ]
                         -- , UI.row_item [ text <| "Трекер автоматически уснет: " ++ autosleepText ++ "(TBD)" ]
-                        , UI.row_item [ UI.cmdButton "Отложить засыпание на 4 часа" OnNoCmd ]
+                        -- , UI.row_item [ UI.cmdButton "Отложить засыпание на 4 часа" OnNoCmd ]
                         ]
 
                 Just state ->
@@ -265,20 +252,3 @@ cmdPanelConfig : String -> List (Html Msg)
 cmdPanelConfig sysId =
     [ text <| "В разработке..."
     ]
-
-
-titleChangeDialogView : Model -> String -> List (Html Msg)
-titleChangeDialogView model sysId =
-    if model.showTitleChangeDialog then
-        [ UI.modal
-            "Название"
-            [ UI.ModalText "Отображаемое имя системы:"
-            , UI.ModalHtml <| UI.formInput "Имя" model.newTitle OnTitleChange
-            ]
-            [ UI.cmdButton "Применить" (OnTitleConfirm sysId model.newTitle)
-            , UI.cmdButton "Отменить" (OnTitleCancel)
-            ]
-        , UI.modal_overlay OnTitleCancel
-        ]
-    else
-        []

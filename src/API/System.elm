@@ -64,7 +64,9 @@ type alias Dynamic =
     , state : Maybe State
     , available : List State
     , waitState : Maybe State
-    , autosleep : Maybe Int
+    , autosleep : Maybe DT.Offset
+
+    -- , autosleep : Maybe Int
     }
 
 
@@ -84,10 +86,11 @@ dynamicDecoder =
         -- |> optional "available" statesListDecoder []
         |> optional "available" (JD.list stateDecoder) []
         |> optional "wait_state" (JD.maybe stateDecoder) Nothing
-        |> optional "autosleep" (JD.maybe JD.int) Nothing
+        |> optional "autosleep" (JD.maybe DT.offsetDecoder) Nothing
 
 
 
+-- |> optional "autosleep" (JD.maybe JD.int) Nothing
 -- type alias LastPosition =
 --     { lat : Float
 --     , lon : Float

@@ -8,6 +8,7 @@ type alias Model =
     , newTitle : String
     , extendInfo : Bool
     , showConfirmOffDialog : Bool
+    , showSleepProlongDialog : Bool
     , offId : String
     }
 

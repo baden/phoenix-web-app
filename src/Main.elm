@@ -2,7 +2,6 @@ port module Main exposing (..)
 
 import Browser
 import Browser.Navigation as Nav
-import Config
 import Url
 import Url.Parser as Parser
 import Page.Route as Route
@@ -40,7 +39,7 @@ import AppState
 
 type alias Model =
     { token : Maybe String
-    , api_url : Maybe String
+    , api_url : String
     , key : Nav.Key
     , url : Url.Url
     , page : Route.Page
@@ -84,7 +83,7 @@ type Msg
 
 type alias Flags =
     { token : Maybe String
-    , api_url : Maybe String
+    , api_url : String
     }
 
 
@@ -134,7 +133,8 @@ init flags url key =
               navedCmd
 
             -- , API.websocketOpen Config.ws
-            , flags.api_url |> Maybe.withDefault Config.ws |> API.websocketOpen
+            -- , flags.api_url |> Maybe.withDefault Config.ws |> API.websocketOpen
+            , API.websocketOpen flags.api_url
 
             -- , Task.perform TimeZoneDetected Time.here
             -- , Date.today |> Task.perform ReceiveDate

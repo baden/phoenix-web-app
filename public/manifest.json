@@ -1,6 +1,6 @@
 {
-  "short_name": "FX-360",
-  "name": "Phoenix WEB application",
+  "short_name": "FX-400",
+  "name": "Fenix App",
   "icons": [{
           "src": "static/icons/res/mipmap-hdpi/fx400.png",
           "sizes": "72x72",
@@ -31,5 +31,5 @@
   "display": "standalone",
   "orientation": "portrait-primary",
   "theme_color": "#000000",
-  "background_color": "#ff00ff"
+  "background_color": "#cccccc"
 }
