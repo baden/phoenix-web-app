@@ -33,23 +33,32 @@ nextSession appState maybeSystemDynamic =
 
                 tz =
                     appState.timeZone
+
+                nextSessionTextRow =
+                    case dynamic.state of
+                        Just System.Off ->
+                            []
+
+                        _ ->
+                            [ Html.tr []
+                                [ Html.td [] [ text "Следующий сеанс связи: " ]
+                                , Html.td []
+                                    [ text <| nextSessionText last_session dynamic.next tz ]
+                                ]
+                            ]
             in
                 [ --text <|
                   --     "Следующий сеанс связи примерно через "
                   --         ++ (offset |> String.fromInt)
                   --         ++ " минут"
                   -- div [] [ text <| "Текущее дата-время: " ++ (now |> dateTimeFormat tz) ]
-                  Html.table []
+                  Html.table [] <|
                     [ Html.tr []
                         [ Html.td [] [ text "Последний сеанс связи: " ]
                         , Html.td [] [ text <| (last_session |> DT.toPosix |> dateTimeFormat tz) ]
                         ]
-                    , Html.tr []
-                        [ Html.td [] [ text "Следующий сеанс связи: " ]
-                        , Html.td []
-                            [ text <| nextSessionText last_session dynamic.next tz ]
-                        ]
                     ]
+                        ++ nextSessionTextRow
                 ]
 
 
