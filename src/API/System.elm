@@ -14,6 +14,7 @@ module API.System
         , stateAsCmdString
         , setSystemTitle
         , setSystemState
+        , prolongSleep
         , cancelSystemState
         )
 
@@ -133,6 +134,7 @@ type State
     | Point
     | Lock
     | Unlock
+    | ProlongSleep Int
       -- Неподдерживаемые приложением команды и состояния
     | Unknown String
 
@@ -172,6 +174,15 @@ stateDecoder =
 
                     "unlock" ->
                         JD.succeed Unlock
+
+                    "prolong_2" ->
+                        JD.succeed <| ProlongSleep 2
+
+                    "prolong_12" ->
+                        JD.succeed <| ProlongSleep 12
+
+                    "prolong_24" ->
+                        JD.succeed <| ProlongSleep 24
 
                     other ->
                         JD.succeed (Unknown other)
@@ -231,6 +242,9 @@ stateAsString state =
         Unlock ->
             "Разблокировка"
 
+        ProlongSleep hours ->
+            ("Отложить засыпание на " ++ (String.fromInt hours) ++ " ч")
+
         Unknown c ->
             "Неизвестно:" ++ c
 
@@ -267,6 +281,9 @@ stateAsCmdString state =
 
         Unlock ->
             "Разблокировать"
+
+        ProlongSleep hours ->
+            ("Отложить засыпание на " ++ (String.fromInt hours) ++ " ч")
 
         Unknown s ->
             ("В разработке..." ++ s)
@@ -344,6 +361,9 @@ setSystemState sysId newState =
                     Unlock ->
                         "unlock"
 
+                    ProlongSleep hours ->
+                        ("prolong_" ++ (String.fromInt hours))
+
                     Unknown c ->
                         c
           )
@@ -357,3 +377,17 @@ cancelSystemState sysId =
         , ( "id", Encode.string sysId )
         , ( "value", Encode.string "" )
         ]
+
+
+prolongSleep : String -> Int -> Encode.Value
+prolongSleep sysId hours =
+    setSystemState sysId (ProlongSleep hours)
+
+
+
+--     Document.updateDocumentRequest "system" <|
+--         Encode.object
+--             [ ( "key", Encode.string sysId )
+--             , ( "path", Encode.string "title" )
+--             , ( "value", Encode.string newTitle )
+--             ]

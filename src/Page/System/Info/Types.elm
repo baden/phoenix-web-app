@@ -23,4 +23,7 @@ type Msg
     | OnExtendInfo
     | OnConfirmOff
     | OnCancelOff
+    | OnShowProlongSleepDialog
+    | OnHideProlongSleepDialog
+    | OnProlongSleep String Int
     | OnNoCmd

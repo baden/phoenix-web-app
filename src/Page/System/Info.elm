@@ -65,6 +65,15 @@ update msg model =
         OnCancelOff ->
             ( { model | showConfirmOffDialog = False }, Cmd.none )
 
+        OnShowProlongSleepDialog ->
+            ( { model | showSleepProlongDialog = True }, Cmd.none )
+
+        OnHideProlongSleepDialog ->
+            ( { model | showSleepProlongDialog = False }, Cmd.none )
+
+        OnProlongSleep sysId hours ->
+            ( { model | showSleepProlongDialog = False }, Cmd.batch [ API.websocketOut <| System.prolongSleep sysId hours ] )
+
         OnNoCmd ->
             ( model, Cmd.none )
 
@@ -103,26 +112,27 @@ viewInfo appState model system =
         ++ [ UI.row_item (cmdPanel system.id system.dynamic)
            , UI.row_item (Dates.nextSession appState system.dynamic)
            ]
-        ++ (sysPosition appState system.id system.dynamic)
+        ++ (Dates.sysPosition appState system.id system.dynamic)
 
 
-sysPosition : AppState.AppState -> String -> Maybe System.Dynamic -> List (Html Msg)
-sysPosition appState sid maybe_dynamic =
-    case maybe_dynamic of
-        Nothing ->
-            []
 
-        Just dynamic ->
-            case ( dynamic.latitude, dynamic.longitude, dynamic.dt ) of
-                ( Just latitude, Just longitude, Just dt ) ->
-                    [ UI.row_item
-                        [ text <| "Последнее положение определено " ++ (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ++ " "
-                        , UI.button ("/map/" ++ sid) "Смотреть на карте"
-                        ]
-                    ]
-
-                ( _, _, _ ) ->
-                    [ UI.row_item [ text <| "Положение неизвестно" ] ]
+-- sysPosition : AppState.AppState -> String -> Maybe System.Dynamic -> List (Html Msg)
+-- sysPosition appState sid maybe_dynamic =
+--     case maybe_dynamic of
+--         Nothing ->
+--             []
+--
+--         Just dynamic ->
+--             case ( dynamic.latitude, dynamic.longitude, dynamic.dt ) of
+--                 ( Just latitude, Just longitude, Just dt ) ->
+--                     [ UI.row_item
+--                         [ text <| "Последнее положение определено " ++ (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ++ " "
+--                         , UI.button ("/map/" ++ sid) "Смотреть на карте"
+--                         ]
+--                     ]
+--
+--                 ( _, _, _ ) ->
+--                     [ UI.row_item [ text <| "Положение неизвестно" ] ]
 
 
 sysState_of : AppState.AppState -> Maybe System.Dynamic -> List (Html Msg)
@@ -160,14 +170,18 @@ sysState_of appState maybe_dynamic =
 
                         -- autosleepText =
                         --     DT.addSecs last_session (DT.fromMinutes (Maybe.withDefault 0 dynamic.autosleep)) |> DT.toPosix |> dateTimeFormat appState.timeZone
+                        prolongCmd =
+                            case dynamic.waitState of
+                                Nothing ->
+                                    [ UI.row_item [ UI.cmdButton "Отложить засыпание" OnShowProlongSleepDialog ] ]
+
+                                _ ->
+                                    []
                     in
                         [ UI.row_item [ text <| "Трекер под наблюдением." ]
                         , UI.row_item (Dates.expectSleepIn appState dynamic)
-
-                        -- , UI.row_item [ text <| "Трекер автоматически уснет через (минут): " ++ autosleep ]
-                        -- , UI.row_item [ text <| "Трекер автоматически уснет: " ++ autosleepText ++ "(TBD)" ]
-                        -- , UI.row_item [ UI.cmdButton "Отложить засыпание на 4 часа" OnNoCmd ]
                         ]
+                            ++ prolongCmd
 
                 Just state ->
                     [ UI.row_item [ text <| "Состояние: " ++ (System.stateAsString state) ] ]
@@ -239,6 +253,11 @@ cmdPanel sysId maybe_dynamic =
 
                 Just Point ->
                     [ text <| "При следуюем сеансе связи, будет определено текущее местоположение системы"
+                    , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+                    ]
+
+                Just (ProlongSleep duration) ->
+                    [ text <| "При следуюем сеансе связи, будет продлена работа прибора в режиме Трекер на " ++ (String.fromInt duration) ++ "ч."
                     , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
                     ]
 

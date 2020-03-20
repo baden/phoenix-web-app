@@ -79,19 +79,10 @@ expectSleepIn appState dynamic =
         tz =
             appState.timeZone
     in
-        [ --text <|
-          --     "Следующий сеанс связи примерно через "
-          --         ++ (offset |> String.fromInt)
-          --         ++ " минут"
-          -- div [] [ text <| "Текущее дата-время: " ++ (now |> dateTimeFormat tz) ]
-          Html.table []
+        [ Html.table []
             [ Html.tr []
                 [ Html.td [] [ text "Трекер уснет: " ]
-
-                -- , Html.td [] [ text <| (autosleep |> DT.toPosix |> dateTimeFormat tz) ]
                 , Html.td [] [ text <| (autosleep) ]
-
-                -- , Html.td [] [ text "TBD" ]
                 ]
             ]
         ]
@@ -105,6 +96,31 @@ nextSessionText last_session next_session tz =
 
         Just offset ->
             DT.addSecs last_session offset |> DT.toPosix |> dateTimeFormat tz
+
+
+sysPosition : AppState.AppState -> String -> Maybe System.Dynamic -> List (Html msg)
+sysPosition appState sid maybe_dynamic =
+    case maybe_dynamic of
+        Nothing ->
+            []
+
+        Just dynamic ->
+            case ( dynamic.latitude, dynamic.longitude, dynamic.dt ) of
+                ( Just latitude, Just longitude, Just dt ) ->
+                    [ UI.row_item
+                        [ --text <| "Последнее положение определено: " ++ (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ++ " "
+                          Html.table []
+                            [ Html.tr []
+                                [ Html.td [] [ text "Последнее положение определено:" ]
+                                , Html.td [] [ text <| (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ]
+                                ]
+                            ]
+                        , UI.button ("/map/" ++ sid) "Смотреть на карте"
+                        ]
+                    ]
+
+                ( _, _, _ ) ->
+                    [ UI.row_item [ text <| "Положение неизвестно" ] ]
 
 
 humanOffsetP : Int -> Int -> String
