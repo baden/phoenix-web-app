@@ -16,9 +16,7 @@ import Page.System.Info.Dialogs exposing (..)
 
 init : ( Model, Cmd Msg )
 init =
-    ( { showTitleChangeDialog = False
-      , newTitle = ""
-      , extendInfo = False
+    ( { extendInfo = False
       , showConfirmOffDialog = False
       , showSleepProlongDialog = False
       , offId = ""
@@ -38,23 +36,6 @@ update msg model =
 
         OnSysCmdCancel sysId ->
             ( model, Cmd.batch [ API.websocketOut <| System.cancelSystemState sysId ] )
-
-        OnTitleChangeStart oldTitle ->
-            ( { model | showTitleChangeDialog = True, newTitle = oldTitle }, Cmd.none )
-
-        OnTitleChange enteredTitle ->
-            ( { model | newTitle = enteredTitle }, Cmd.none )
-
-        OnTitleConfirm sysId newTitle ->
-            let
-                cmd =
-                    API.websocketOut <|
-                        System.setSystemTitle sysId newTitle
-            in
-                ( { model | showTitleChangeDialog = False }, Cmd.batch [ cmd ] )
-
-        OnTitleCancel ->
-            ( { model | showTitleChangeDialog = False }, Cmd.none )
 
         OnExtendInfo ->
             ( { model | extendInfo = not model.extendInfo }, Cmd.none )
@@ -85,8 +66,7 @@ view appState model system =
             (viewHeader appState model system)
                 ++ (viewInfo appState model system)
                 ++ (viewInfoEntended appState model system)
-                ++ [ UI.row_item [ UI.button "/" "На главную" ] ]
-                ++ (titleChangeDialogView model system.id)
+                ++ [ UI.row [ UI.linkIconTextButton "clone" "Выбрать другой объект" "/" ] ]
                 ++ (prolongSleepDialogView model system.id)
         ]
             ++ (viewModalDialogs model)
@@ -99,7 +79,6 @@ viewHeader appState model system =
         , text " "
 
         -- , UI.cmdButton "…" (OnTitleChangeStart system.title)
-        , UI.cmdIconButton "cog" (OnTitleChangeStart system.title)
         , UI.iconButton "cog" ("/system/" ++ system.id ++ "/config")
 
         -- , UI.cmdIconButton "cog" (OnSysCmd system.id Config)
@@ -222,10 +201,10 @@ viewInfoEntended appState model system =
             [ UI.row_item [ ChartSvg.chartView "Батарея" 80 ]
             , UI.row_item [ text <| "IMEI: " ++ imei ]
             , UI.row_item [ text <| "Номер телефона: " ++ phone ]
-            , UI.cmdButton "Меньше информации" OnExtendInfo
+            , UI.row [ UI.cmdTextIconButton "arrow-up" "Меньше информации" OnExtendInfo ]
             ]
     else
-        [ UI.cmdButton "Больше информации…" OnExtendInfo ]
+        [ UI.row [ UI.cmdTextIconButton "arrow-down" "Больше информации…" OnExtendInfo ] ]
 
 
 cmdPanel : String -> Maybe System.Dynamic -> List (Html Msg)

@@ -1,9 +1,11 @@
 module Components.UI
     exposing
-        ( button
+        ( UI
+        , button
         , iconButton
         , cmdButton
         , cmdIconButton
+        , cmdTextIconButton
         , formHeader
         , formInput
         , formPassword
@@ -16,6 +18,7 @@ module Components.UI
         , row_item
         , info_2_10
         , linkButton
+        , linkIconTextButton
         , text
         , qr_code
         , app_title
@@ -31,11 +34,16 @@ module Components.UI
         , header
         , container
         , widget
+        , stitle
         )
 
 import Html exposing (Html, h1, h5, div, a, text, i, input)
 import Html.Attributes as HA exposing (class, href, placeholder, value, type_, src)
 import Html.Events exposing (onInput, onClick)
+
+
+type alias UI msg =
+    Html msg
 
 
 cmdButton : String -> m -> Html m
@@ -48,6 +56,12 @@ cmdIconButton : String -> m -> Html m
 cmdIconButton label cmd =
     Html.button [ class "waves-effect waves-light btn", onClick cmd ]
         [ Html.i [ HA.class ("fas fa-" ++ label) ] [] ]
+
+
+cmdTextIconButton : String -> String -> m -> Html m
+cmdTextIconButton icon label cmd =
+    Html.button [ class "waves-effect waves-light btn", onClick cmd ]
+        [ Html.i [ HA.class ("left fas fa-" ++ icon) ] [], Html.text label ]
 
 
 button : String -> String -> Html a
@@ -169,10 +183,15 @@ info_2_10 text_title value =
 linkButton : String -> String -> Html a
 linkButton text_title link_ref =
     Html.a
-        [ class "waves-effect waves-light btn"
-        , href link_ref
-        ]
+        [ class "waves-effect waves-light btn", href link_ref ]
         [ text text_title ]
+
+
+linkIconTextButton : String -> String -> String -> Html a
+linkIconTextButton icon text_title link_ref =
+    Html.a
+        [ class "waves-effect waves-light btn", href link_ref ]
+        [ Html.i [ HA.class ("left fas fa-" ++ icon) ] [], text text_title ]
 
 
 text : String -> Html a
@@ -236,7 +255,7 @@ card_panel childs =
 card : List (Html a) -> Html a
 card child =
     Html.div [ class "col s12 m4 l2" ]
-        [ Html.div [ class "z-depth-2 shadow-demo" ] child ]
+        [ Html.div [ class "z-depth-2 shadow-demo scard" ] child ]
 
 
 type ModalElement m
@@ -344,3 +363,8 @@ widget : List (Html a) -> Html a
 widget child =
     div [ class "row" ]
         [ div [ class "col s12 m8 offset-m2 xl7 offset-xl2" ] child ]
+
+
+stitle : String -> Html a
+stitle t =
+    Html.span [ HA.class "title" ] [ text t ]

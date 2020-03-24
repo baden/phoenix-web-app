@@ -1,31 +1,9 @@
-module Page.System.Info.Dialogs
-    exposing
-        ( titleChangeDialogView
-        , prolongSleepDialogView
-        , viewModalDialogs
-        )
+module Page.System.Info.Dialogs exposing (..)
 
 import Page.System.Info.Types exposing (Model, Msg, Msg(..))
 import Html exposing (Html, div, text, a)
 import Html.Attributes exposing (class, href)
 import Components.UI as UI
-
-
-titleChangeDialogView : Model -> String -> List (Html Msg)
-titleChangeDialogView model sysId =
-    if model.showTitleChangeDialog then
-        [ UI.modal
-            "Название"
-            [ UI.ModalText "Отображаемое имя системы:"
-            , UI.ModalHtml <| UI.formInput "Имя" model.newTitle OnTitleChange
-            ]
-            [ UI.cmdButton "Применить" (OnTitleConfirm sysId model.newTitle)
-            , UI.cmdButton "Отменить" (OnTitleCancel)
-            ]
-        , UI.modal_overlay OnTitleCancel
-        ]
-    else
-        []
 
 
 prolongSleepDialogView : Model -> String -> List (Html Msg)

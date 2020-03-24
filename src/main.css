@@ -138,3 +138,29 @@ dd {
 }
 
 /* @import './leaflet.scss';*/
+
+span.title {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* i.fas {
+    margin-left: 5px;
+    margin-right: 5px;
+} */
+
+.scard {
+    margin-top: 10px;
+    min-width: 175px;
+}
+
+.scard .row:last-child {
+    padding-bottom:14px;
+}
+
+.scard button {
+    width: 95%;
+}
+.scard a {
+    width: 95%;
+}

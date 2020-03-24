@@ -49,7 +49,8 @@ update msg model =
 
 view : AppState.AppState -> Model -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Html Msg
 view appState model acc systems =
-    UI.column12 <|
+    -- UI.column12 <|
+    UI.container <|
         [ auth_info acc systems appState.timeZone
 
         -- , UI.button "/login" "Авторизация"
@@ -77,7 +78,8 @@ viewRemoveWidget model =
 
 auth_info : Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Time.Zone -> Html Msg
 auth_info macc systems timeZone =
-    UI.card_panel <|
+    UI.row <|
+        -- UI.card_panel <|
         case macc of
             Nothing ->
                 [ text "Чтобы пользоваться сервисом, вы должны "
@@ -88,14 +90,14 @@ auth_info macc systems timeZone =
             Just acc ->
                 if List.length acc.systems == 0 then
                     [ UI.row_item [ text <| "Добро пожаловать!" ]
-                    , UI.row_item [ text <| "Добавьте систему в список наблюдения" ]
-                    , UI.row_item [ UI.linkButton "Добавить систему" "/linksys" ]
+                    , UI.row_item [ text <| "Добавьте объект в список наблюдения" ]
+                    , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить объект" "/linksys" ]
                     ]
                 else
                     [ -- UI.row_item [ text <| "Вы авторизованы как " ++ acc.realname ]
                       -- UI.row_item [ text <| "В списке наблюдения систем: " ++ (String.fromInt <| List.length acc.systems) ]
                       systemList acc.systems systems timeZone
-                    , UI.row_item [ UI.linkButton "Добавить систему" "/linksys" ]
+                    , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить объект" "/linksys" ]
                     ]
 
 
@@ -120,7 +122,7 @@ systemItem systems timeZone index sysId =
         body =
             case maybe_system of
                 Nothing ->
-                    [ UI.row_item [ UI.text "Данные по трекеру еще не получены или недостаточно прав для доступа к трекеру" ]
+                    [ UI.row_item [ UI.text "Данные по объекту еще не получены или недостаточно прав для доступа" ]
                     ]
 
                 Just system ->
@@ -130,9 +132,11 @@ systemItem systems timeZone index sysId =
 
         footer =
             [ UI.row_item <|
-                [ UI.linkButton "Управление" ("/system/" ++ sysId) ]
+                [ UI.linkIconTextButton "gamepad" "Управление" ("/system/" ++ sysId)
+                , UI.linkIconTextButton "cog" "Настройка" ("/system/" ++ sysId ++ "/config")
+                ]
                     ++ (ifPosition maybe_system)
-                    ++ [ UI.cmdButton "Удалить" (OnRemove index)
+                    ++ [ UI.cmdTextIconButton "trash" "Удалить" (OnRemove index)
                        ]
             ]
     in
@@ -154,7 +158,7 @@ ifPosition maybe_system =
                 Just dynamic ->
                     case ( dynamic.latitude, dynamic.longitude ) of
                         ( Just latitude, Just longitude ) ->
-                            [ UI.linkButton "Смотреть на карте" ("/map/" ++ system.id) ]
+                            [ UI.linkIconTextButton "map" "На карте" ("/map/" ++ system.id) ]
 
                         _ ->
                             []

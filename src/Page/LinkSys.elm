@@ -105,6 +105,7 @@ view model =
                 ++ master
                 ++ [ UI.smsCodeInput model.code OnCode StartLink
                    , UI.row [ UI.cmdButton "Альтернативный способ" AltMode ]
+                   , UI.row [ UI.linkIconTextButton "clone" "Вернуться к списку объектов" "/" ]
                    ]
 
 

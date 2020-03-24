@@ -124,7 +124,7 @@ sysPosition appState sid maybe_dynamic =
                                 , Html.td [] [ text <| (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ]
                                 ]
                             ]
-                        , UI.button ("/map/" ++ sid) "Смотреть на карте"
+                        , UI.linkIconTextButton "map" "Смотреть на карте" ("/map/" ++ sid)
                         ]
                     ]
 

@@ -14,6 +14,7 @@ import Page.Login as Login
 import Page.System.Info as SystemInfo
 import Page.System.Info.Types as SystemInfoTypes
 import Page.System.Config as SystemConfig
+import Page.System.Config.Types as SystemConfigTypes
 import Page.NotFound as NotFound
 import Page.GlobalMap as GlobalMap
 import Page.LinkSys as LinkSys
@@ -48,7 +49,7 @@ type alias Model =
     , login : Login.Model
     , linkSys : LinkSys.Model
     , info : SystemInfoTypes.Model
-    , systemConfig : SystemConfig.Model
+    , systemConfig : SystemConfigTypes.Model
     , globalMap : GlobalMap.Model
     , account : Maybe AccountDocumentInfo
     , systems : Dict String SystemDocumentInfo
@@ -92,7 +93,7 @@ type PageMsg
     = HomeMsg Home.Msg
     | LoginMsg Login.Msg
     | SystemInfoMsg SystemInfoTypes.Msg
-    | SystemConfigMsg SystemConfig.Msg
+    | SystemConfigMsg SystemConfigTypes.Msg
     | GlobalMapMsg GlobalMap.Msg
     | LinkSysMsg LinkSys.Msg
 
@@ -205,7 +206,7 @@ systemInfoRec =
     }
 
 
-systemConfigRec : PageRec SystemConfig.Model SystemConfig.Msg
+systemConfigRec : PageRec SystemConfigTypes.Model SystemConfigTypes.Msg
 systemConfigRec =
     { get = .systemConfig
     , set = \newModel model -> { model | systemConfig = newModel }
