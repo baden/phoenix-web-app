@@ -100,6 +100,7 @@ viewHeader appState model system =
 
         -- , UI.cmdButton "…" (OnTitleChangeStart system.title)
         , UI.cmdIconButton "cog" (OnTitleChangeStart system.title)
+        , UI.iconButton "cog" ("/system/" ++ system.id ++ "/config")
 
         -- , UI.cmdIconButton "cog" (OnSysCmd system.id Config)
         ]

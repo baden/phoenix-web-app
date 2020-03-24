@@ -1,6 +1,7 @@
 module Components.UI
     exposing
         ( button
+        , iconButton
         , cmdButton
         , cmdIconButton
         , formHeader
@@ -53,6 +54,12 @@ button : String -> String -> Html a
 button url label =
     a [ class "waves-effect waves-light btn", href url ]
         [ text label ]
+
+
+iconButton : String -> String -> Html a
+iconButton label url =
+    a [ class "waves-effect waves-light btn", href url ]
+        [ Html.i [ HA.class ("fas fa-" ++ label) ] [] ]
 
 
 formHeader : String -> Html m

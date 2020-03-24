@@ -13,6 +13,7 @@ import Page.Home as Home
 import Page.Login as Login
 import Page.System.Info as SystemInfo
 import Page.System.Info.Types as SystemInfoTypes
+import Page.System.Config as SystemConfig
 import Page.NotFound as NotFound
 import Page.GlobalMap as GlobalMap
 import Page.LinkSys as LinkSys
@@ -47,6 +48,7 @@ type alias Model =
     , login : Login.Model
     , linkSys : LinkSys.Model
     , info : SystemInfoTypes.Model
+    , systemConfig : SystemConfig.Model
     , globalMap : GlobalMap.Model
     , account : Maybe AccountDocumentInfo
     , systems : Dict String SystemDocumentInfo
@@ -69,16 +71,30 @@ type Msg
     | WebsocketIn String
     | OpenWebsocket String
     | WebsocketOpened Bool
-    | HomeMsg Home.Msg
-    | LoginMsg Login.Msg
-    | SystemInfoMsg SystemInfoTypes.Msg
-    | GlobalMapMsg GlobalMap.Msg
-    | LinkSysMsg LinkSys.Msg
+      -- | HomeMsg Home.Msg
+      -- | LoginMsg Login.Msg
+      -- | SystemInfoMsg SystemInfoTypes.Msg
+      -- | GlobalMapMsg GlobalMap.Msg
+      -- | LinkSysMsg LinkSys.Msg
     | OnCloseModal
     | TimeZoneDetected Time.Zone
     | ReceiveNow Time.Posix
     | ShowQrCode
     | HideQrCode
+    | OnPageMsg PageMsg
+
+
+
+-- | PageMsg Page Msg
+
+
+type PageMsg
+    = HomeMsg Home.Msg
+    | LoginMsg Login.Msg
+    | SystemInfoMsg SystemInfoTypes.Msg
+    | SystemConfigMsg SystemConfig.Msg
+    | GlobalMapMsg GlobalMap.Msg
+    | LinkSysMsg LinkSys.Msg
 
 
 type alias Flags =
@@ -105,6 +121,9 @@ init flags url key =
         ( infoModel, _ ) =
             SystemInfo.init
 
+        ( systemConfigModel, _ ) =
+            SystemConfig.init
+
         model =
             { token = flags.token
             , api_url = flags.api_url
@@ -115,6 +134,7 @@ init flags url key =
             , login = loginModel
             , linkSys = linkSysModel
             , info = infoModel
+            , systemConfig = systemConfigModel
             , globalMap = globalMapModel
             , account = Nothing
             , systems = Dict.empty
@@ -162,19 +182,59 @@ upmessageUpdate msg ( model, cmd ) =
                         ( model, Cmd.batch [ API.websocketOut <| fixSysListRequest newSysList ] )
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        NoOp ->
-            ( model, Cmd.none )
 
+-- updatePage :
+
+
+type alias PageRec pageModel pageMsg =
+    { get : Model -> pageModel
+    , set : pageModel -> Model -> Model
+    , update : pageMsg -> pageModel -> ( pageModel, Cmd pageMsg )
+    , view : AppState.AppState -> pageModel -> SystemDocumentInfo -> Html pageMsg
+    , msg : pageMsg -> PageMsg
+    }
+
+
+systemInfoRec : PageRec SystemInfoTypes.Model SystemInfoTypes.Msg
+systemInfoRec =
+    { get = .info
+    , set = \newModel model -> { model | info = newModel }
+    , update = SystemInfo.update
+    , view = SystemInfo.view
+    , msg = SystemInfoMsg
+    }
+
+
+systemConfigRec : PageRec SystemConfig.Model SystemConfig.Msg
+systemConfigRec =
+    { get = .systemConfig
+    , set = \newModel model -> { model | systemConfig = newModel }
+    , update = SystemConfig.update
+    , view = SystemConfig.view
+    , msg = SystemConfigMsg
+    }
+
+
+systemOnMapRec : PageRec GlobalMap.Model GlobalMap.Msg
+systemOnMapRec =
+    { get = .globalMap
+    , set = \newModel model -> { model | globalMap = newModel }
+    , update = GlobalMap.update
+    , view = GlobalMap.viewSystem
+    , msg = GlobalMapMsg
+    }
+
+
+updatePage : PageMsg -> Model -> ( Model, Cmd Msg )
+updatePage pageMsg model =
+    case pageMsg of
         HomeMsg homeMsg ->
             let
                 ( updatedHomeModel, upstream, upmessage ) =
                     Home.update homeMsg model.home
             in
                 -- TODO: Move to UP
-                ( { model | home = updatedHomeModel }, Cmd.map HomeMsg upstream )
+                ( { model | home = updatedHomeModel }, Cmd.map (HomeMsg >> OnPageMsg) upstream )
                     |> upmessageUpdate upmessage
 
         LoginMsg loginMsg ->
@@ -182,28 +242,41 @@ update msg model =
                 ( updatedLoginModel, upstream ) =
                     Login.update loginMsg model.login
             in
-                ( { model | login = updatedLoginModel }, Cmd.map LoginMsg upstream )
+                ( { model | login = updatedLoginModel }, Cmd.map (LoginMsg >> OnPageMsg) upstream )
 
         LinkSysMsg linkSysMsg ->
             let
                 ( updatedLinkSysModel, upstream ) =
                     LinkSys.update linkSysMsg model.linkSys
             in
-                ( { model | linkSys = updatedLinkSysModel }, Cmd.map LinkSysMsg upstream )
+                ( { model | linkSys = updatedLinkSysModel }, Cmd.map (LinkSysMsg >> OnPageMsg) upstream )
 
         GlobalMapMsg globalMapMsg ->
-            let
-                ( updatedGlobalMapModel, upstream ) =
-                    GlobalMap.update globalMapMsg model.globalMap
-            in
-                ( { model | globalMap = updatedGlobalMapModel }, Cmd.map GlobalMapMsg upstream )
+            updateOverRec globalMapMsg systemOnMapRec model
 
         SystemInfoMsg globalInfoMsg ->
-            let
-                ( updatedInfoModel, upstream ) =
-                    SystemInfo.update globalInfoMsg model.info
-            in
-                ( { model | info = updatedInfoModel }, Cmd.map SystemInfoMsg upstream )
+            updateOverRec globalInfoMsg systemInfoRec model
+
+        SystemConfigMsg msg ->
+            updateOverRec msg systemConfigRec model
+
+
+updateOverRec msg rec model =
+    let
+        ( updatedModel, upstream ) =
+            rec.update msg (rec.get model)
+    in
+        ( (rec.set updatedModel model), Cmd.map (rec.msg >> OnPageMsg) upstream )
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        NoOp ->
+            ( model, Cmd.none )
+
+        OnPageMsg pageMsg ->
+            updatePage pageMsg model
 
         LinkClicked urlRequest ->
             case urlRequest of
@@ -416,28 +489,36 @@ viewPage : Model -> Html Msg
 viewPage model =
     case model.page of
         Route.Home ->
-            Home.view model.appState model.home model.account model.systems |> Html.map HomeMsg
+            Home.view model.appState model.home model.account model.systems |> Html.map (HomeMsg >> OnPageMsg)
 
         Route.Login ->
-            Login.loginView model.login |> Html.map LoginMsg
+            Login.loginView model.login |> Html.map (LoginMsg >> OnPageMsg)
 
         Route.Auth ->
-            Login.authView model.login |> Html.map LoginMsg
+            Login.authView model.login |> Html.map (LoginMsg >> OnPageMsg)
 
         Route.SystemInfo sysId ->
-            view4System sysId model (SystemInfo.view model.appState model.info >> Html.map SystemInfoMsg)
+            view4SystemRec sysId model systemInfoRec
+
+        Route.SystemConfig sysId ->
+            view4SystemRec sysId model systemConfigRec
 
         Route.GlobalMap ->
             GlobalMap.view
 
         Route.SystemOnMap sysId ->
-            view4System sysId model (GlobalMap.viewSystem model.appState model.globalMap >> Html.map GlobalMapMsg)
+            view4SystemRec sysId model systemOnMapRec
 
         Route.LinkSys ->
-            LinkSys.view model.linkSys |> Html.map LinkSysMsg
+            LinkSys.view model.linkSys |> Html.map (LinkSysMsg >> OnPageMsg)
 
         _ ->
             NotFound.view
+
+
+view4SystemRec : String -> Model -> PageRec smodel smsg -> Html Msg
+view4SystemRec sysId model ir =
+    view4System sysId model (ir.view model.appState (ir.get model) >> Html.map (ir.msg >> OnPageMsg))
 
 
 view4System : String -> Model -> (SystemDocumentInfo -> Html Msg) -> Html Msg

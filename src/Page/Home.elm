@@ -8,7 +8,7 @@ import Dict exposing (Dict)
 import Time
 import Components.UI as UI exposing (text)
 import Components.DateTime as DT
-import Msg
+import Msg as GMsg
 import AppState
 import Types.Dt as DT
 
@@ -34,7 +34,7 @@ init =
     )
 
 
-update : Msg -> Model -> ( Model, Cmd Msg, Maybe Msg.UpMsg )
+update : Msg -> Model -> ( Model, Cmd Msg, Maybe GMsg.UpMsg )
 update msg model =
     case msg of
         OnRemove index ->
@@ -44,7 +44,7 @@ update msg model =
             ( { model | showRemodeDialog = False }, Cmd.none, Nothing )
 
         OnConfirmRemove ->
-            ( { model | showRemodeDialog = False }, Cmd.none, Just (Msg.RemoveSystemFromList model.removeIndex) )
+            ( { model | showRemodeDialog = False }, Cmd.none, Just (GMsg.RemoveSystemFromList model.removeIndex) )
 
 
 view : AppState.AppState -> Model -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Html Msg
