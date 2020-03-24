@@ -32,3 +32,8 @@ ssh-copy-id fx.navi.cc@fx.navi.cc
 ```
 ssh fx.navi.cc@fx.navi.cc
 ```
+
+
+## Планы.
+
+https://github.com/marshallformula/elm-swiper

@@ -10,7 +10,8 @@ const tokenKey = 'auth_token';
 
 const hostname = location.hostname;
 // const isSSH = location.protocol == "https:";
-const protocol = (location.protocol == "https:")?"wss:":"ws:";
+const protocol = location.hostname == "localhost" ? "wss:" : ((location.protocol == "https:") ? "wss:" : "ws:");
+
 const api_path = "/api/v1/websocket";
 const local_api_endpoint = protocol + "//localhost:8080" + api_path;
 const global_api_endpoint = protocol + "//" + hostname + api_path;
