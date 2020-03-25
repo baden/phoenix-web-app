@@ -1,7 +1,7 @@
 module Page.System.Info exposing (init, update, view)
 
 import Html exposing (Html, div, text, a)
-import Html.Attributes exposing (class, href)
+import Html.Attributes as HA exposing (class, href)
 import Components.ChartSvg as ChartSvg
 import Components.UI as UI
 import Components.Dates as Dates
@@ -89,9 +89,8 @@ viewHeader appState model system =
 viewInfo : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
 viewInfo appState model system =
     (sysState_of appState system.dynamic)
-        ++ [ UI.row_item (cmdPanel system.id system.dynamic)
-           , UI.row_item (Dates.nextSession appState system.dynamic)
-           ]
+        ++ (cmdPanel system.id system.dynamic)
+        ++ (Dates.nextSession appState system.dynamic)
         ++ (Dates.sysPosition appState system.id system.dynamic)
 
 
@@ -226,10 +225,11 @@ cmdPanel sysId maybe_dynamic =
                         Just state ->
                             let
                                 b =
-                                    \i -> UI.cmdButton (System.stateAsCmdString i) (OnSysCmd sysId i)
+                                    \i ->
+                                        Html.div [ HA.class "col s12 m6 l3 xl3" ]
+                                            [ UI.cmdButton (System.stateAsCmdString i) (OnSysCmd sysId i) ]
                             in
-                                dynamic.available
-                                    |> List.map b
+                                [ Html.div [ HA.class "row" ] (dynamic.available |> List.map b) ]
 
                 Just Point ->
                     [ text <| "При следуюем сеансе связи, будет определено текущее местоположение системы"

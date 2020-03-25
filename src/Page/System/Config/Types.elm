@@ -1,4 +1,10 @@
-module Page.System.Config.Types exposing (Model, Msg(..))
+module Page.System.Config.Types exposing (..)
+
+
+type MasterPage
+    = MasterPage1
+    | MasterPage2
+    | MasterPage3
 
 
 type alias Model =
@@ -7,8 +13,9 @@ type alias Model =
     , offId : String
     , showTitleChangeDialog : Bool
     , newTitle : String
-    , showMasterDialog : Bool
+    , showMasterDialog : Maybe MasterPage
     , masterEcoValue : Int
+    , masterTrackValue : Int
     }
 
 
@@ -20,4 +27,7 @@ type Msg
     | OnStartMaster
     | OnCancelMaster
     | OnMasterEco1 Int Bool
+    | OnMasterTrack1 Int Bool
+    | OnMasterNext
+    | OnMasterPrev
     | OnNoCmd

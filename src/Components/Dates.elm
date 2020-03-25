@@ -1,6 +1,7 @@
 module Components.Dates exposing (..)
 
 import Html exposing (Html, div, text, a)
+import Html.Attributes as HA
 import Components.UI as UI
 import API.System as System
 import AppState
@@ -40,26 +41,18 @@ nextSession appState maybeSystemDynamic =
                             []
 
                         _ ->
-                            [ Html.tr []
-                                [ Html.td [] [ text "Следующий сеанс связи: " ]
-                                , Html.td []
-                                    [ text <| nextSessionText last_session dynamic.next tz ]
+                            [ Html.div [ HA.class "row" ]
+                                [ Html.div [ HA.class "col s6" ] [ text "Следующий сеанс связи: " ]
+                                , Html.div [ HA.class "col s6" ] [ text <| nextSessionText last_session dynamic.next tz ]
                                 ]
                             ]
             in
-                [ --text <|
-                  --     "Следующий сеанс связи примерно через "
-                  --         ++ (offset |> String.fromInt)
-                  --         ++ " минут"
-                  -- div [] [ text <| "Текущее дата-время: " ++ (now |> dateTimeFormat tz) ]
-                  Html.table [] <|
-                    [ Html.tr []
-                        [ Html.td [] [ text "Последний сеанс связи: " ]
-                        , Html.td [] [ text <| (last_session |> DT.toPosix |> dateTimeFormat tz) ]
-                        ]
+                [ Html.div [ HA.class "row" ]
+                    [ Html.div [ HA.class "col s6" ] [ Html.text "Последний сеанс связи: " ]
+                    , Html.div [ HA.class "col s6" ] [ Html.text <| (last_session |> DT.toPosix |> dateTimeFormat tz) ]
                     ]
-                        ++ nextSessionTextRow
                 ]
+                    ++ nextSessionTextRow
 
 
 expectSleepIn : AppState.AppState -> System.Dynamic -> List (Html msg)
@@ -116,15 +109,11 @@ sysPosition appState sid maybe_dynamic =
         Just dynamic ->
             case ( dynamic.latitude, dynamic.longitude, dynamic.dt ) of
                 ( Just latitude, Just longitude, Just dt ) ->
-                    [ UI.row_item
+                    [ Html.div [ HA.class "row" ]
                         [ --text <| "Последнее положение определено: " ++ (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ++ " "
-                          Html.table []
-                            [ Html.tr []
-                                [ Html.td [] [ text "Последнее положение определено:" ]
-                                , Html.td [] [ text <| (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ]
-                                ]
-                            ]
-                        , UI.linkIconTextButton "map" "Смотреть на карте" ("/map/" ++ sid)
+                          Html.div [ HA.class "col s6" ] [ text "Последнее положение определено:" ]
+                        , Html.div [ HA.class "col s6" ] [ text <| (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ]
+                        , Html.div [ HA.class "col s12" ] [ UI.linkIconTextButton "map" "Смотреть на карте" ("/map/" ++ sid) ]
                         ]
                     ]
 

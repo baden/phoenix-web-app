@@ -1,6 +1,6 @@
 module Page.System.Config exposing (init, update, view)
 
-import Page.System.Config.Types exposing (Model, Msg, Msg(..))
+import Page.System.Config.Types exposing (..)
 import Page.System.Config.Dialogs exposing (..)
 import AppState
 import API.System as System exposing (SystemDocumentInfo, State, State(..))
@@ -15,8 +15,9 @@ init =
       , offId = ""
       , showTitleChangeDialog = False
       , newTitle = ""
-      , showMasterDialog = False
+      , showMasterDialog = Nothing
       , masterEcoValue = 1
+      , masterTrackValue = 2
       }
     , Cmd.none
     )
@@ -43,13 +44,22 @@ update msg model =
             ( { model | showTitleChangeDialog = False }, Cmd.none )
 
         OnStartMaster ->
-            ( { model | showMasterDialog = True }, Cmd.none )
+            ( { model | showMasterDialog = Just MasterPage1 }, Cmd.none )
 
         OnCancelMaster ->
-            ( { model | showMasterDialog = False }, Cmd.none )
+            ( { model | showMasterDialog = Nothing }, Cmd.none )
 
         OnMasterEco1 val _ ->
             ( { model | masterEcoValue = val }, Cmd.none )
+
+        OnMasterTrack1 val _ ->
+            ( { model | masterTrackValue = val }, Cmd.none )
+
+        OnMasterNext ->
+            ( { model | showMasterDialog = (masterNextPage model.showMasterDialog) }, Cmd.none )
+
+        OnMasterPrev ->
+            ( { model | showMasterDialog = (masterPrevPage model.showMasterDialog) }, Cmd.none )
 
         OnNoCmd ->
             ( model, Cmd.none )
