@@ -9,9 +9,16 @@ import String
 import Regex
 
 
+type MasterPage
+    = MasterPage1
+    | MasterPage2
+    | MasterPage3
+
+
 type alias Model =
     { code : String
     , alt : Bool
+    , masterPage : MasterPage
     }
 
 
@@ -23,9 +30,15 @@ type Msg
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model "" False, Cmd.none )
+    ( { code = ""
+      , alt = False
+      , masterPage = MasterPage1
+      }
+    , Cmd.none
+    )
 
 
+splitAtCouple : Int -> String -> ( String, String )
 splitAtCouple pos str =
     ( String.left pos str, String.dropLeft pos str )
 

@@ -16,6 +16,8 @@ type alias Model =
     , showMasterDialog : Maybe MasterPage
     , masterEcoValue : Int
     , masterTrackValue : Int
+    , showRemodeDialog : Bool
+    , removeId : String
     }
 
 
@@ -31,3 +33,6 @@ type Msg
     | OnMasterNext
     | OnMasterPrev
     | OnNoCmd
+    | OnRemove String
+    | OnCancelRemove
+    | OnConfirmRemove

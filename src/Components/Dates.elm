@@ -81,11 +81,9 @@ expectSleepIn appState dynamic =
         tz =
             appState.timeZone
     in
-        [ Html.table []
-            [ Html.tr []
-                [ Html.td [] [ text "Трекер уснет: " ]
-                , Html.td [] [ text <| (autosleep) ]
-                ]
+        [ Html.div [ HA.class "row" ]
+            [ Html.div [ HA.class "col s6" ] [ text "Трекер уснет: " ]
+            , Html.div [ HA.class "col s6" ] [ text <| (autosleep) ]
             ]
         ]
 

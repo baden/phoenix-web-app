@@ -25,6 +25,7 @@ import API.Error exposing (errorMessageString)
 import Dict exposing (Dict)
 import Task
 import Time
+import Msg exposing (..)
 
 
 -- exposing (Month(..))
@@ -168,29 +169,33 @@ upmessageUpdate : Maybe MsgT.UpMsg -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 upmessageUpdate msg ( model, cmd ) =
     case msg of
         Nothing ->
-            ( model, Cmd.none )
+            ( model, cmd )
 
-        Just (MsgT.RemoveSystemFromList index) ->
+        Just (MsgT.RemoveSystemFromList sid) ->
             case model.account of
                 Nothing ->
-                    ( model, Cmd.none )
+                    ( model, cmd )
 
                 Just account ->
                     let
                         newSysList =
-                            account.systems |> ListExtra.removeAt index
+                            account.systems |> ListExtra.remove sid
+
+                        -- newSysList =
+                        --     account.systems |> ListExtra.removeAt index
                     in
-                        ( model, Cmd.batch [ API.websocketOut <| fixSysListRequest newSysList ] )
+                        ( model, Cmd.batch [ cmd, API.websocketOut <| fixSysListRequest newSysList ] )
 
 
 
+-- ( model, Cmd.none )
 -- updatePage :
 
 
 type alias PageRec pageModel pageMsg =
     { get : Model -> pageModel
     , set : pageModel -> Model -> Model
-    , update : pageMsg -> pageModel -> ( pageModel, Cmd pageMsg )
+    , update : pageMsg -> pageModel -> ( pageModel, Cmd pageMsg, Maybe UpMsg )
     , view : AppState.AppState -> pageModel -> SystemDocumentInfo -> Html pageMsg
     , msg : pageMsg -> PageMsg
     }
@@ -264,10 +269,11 @@ updatePage pageMsg model =
 
 updateOverRec msg rec model =
     let
-        ( updatedModel, upstream ) =
+        ( updatedModel, upstream, upmessage ) =
             rec.update msg (rec.get model)
     in
         ( (rec.set updatedModel model), Cmd.map (rec.msg >> OnPageMsg) upstream )
+            |> upmessageUpdate upmessage
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -355,6 +361,12 @@ update msg model =
                         let
                             -- _ =
                             --     Debug.log "Account" ( model.page, document )
+                            leaveIfmember sid =
+                                if document.systems |> List.member sid then
+                                    Cmd.none
+                                else
+                                    Cmd.batch [ Nav.pushUrl model.key "/" ]
+
                             next =
                                 case model.page of
                                     Route.Login ->
@@ -362,6 +374,15 @@ update msg model =
 
                                     Route.LinkSys ->
                                         Cmd.batch [ Nav.pushUrl model.key "/" ]
+
+                                    Route.SystemConfig sid ->
+                                        leaveIfmember sid
+
+                                    Route.SystemInfo sid ->
+                                        leaveIfmember sid
+
+                                    Route.SystemOnMap sid ->
+                                        leaveIfmember sid
 
                                     _ ->
                                         Cmd.none

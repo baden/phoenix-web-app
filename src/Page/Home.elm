@@ -15,12 +15,12 @@ import Types.Dt as DT
 
 type alias Model =
     { showRemodeDialog : Bool
-    , removeIndex : Int
+    , removeId : String
     }
 
 
 type Msg
-    = OnRemove Int
+    = OnRemove String
     | OnCancelRemove
     | OnConfirmRemove
 
@@ -28,7 +28,7 @@ type Msg
 init : ( Model, Cmd Msg )
 init =
     ( { showRemodeDialog = False
-      , removeIndex = -1
+      , removeId = ""
       }
     , Cmd.none
     )
@@ -37,14 +37,14 @@ init =
 update : Msg -> Model -> ( Model, Cmd Msg, Maybe GMsg.UpMsg )
 update msg model =
     case msg of
-        OnRemove index ->
-            ( { model | showRemodeDialog = True, removeIndex = index }, Cmd.none, Nothing )
+        OnRemove sid ->
+            ( { model | showRemodeDialog = True, removeId = sid }, Cmd.none, Nothing )
 
         OnCancelRemove ->
             ( { model | showRemodeDialog = False }, Cmd.none, Nothing )
 
         OnConfirmRemove ->
-            ( { model | showRemodeDialog = False }, Cmd.none, Just (GMsg.RemoveSystemFromList model.removeIndex) )
+            ( { model | showRemodeDialog = False }, Cmd.none, Just (GMsg.RemoveSystemFromList model.removeId) )
 
 
 view : AppState.AppState -> Model -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Html Msg
@@ -136,8 +136,8 @@ systemItem systems timeZone index sysId =
                 , UI.linkIconTextButton "cog" "Настройка" ("/system/" ++ sysId ++ "/config")
                 ]
                     ++ (ifPosition maybe_system)
-                    ++ [ UI.cmdTextIconButton "trash" "Удалить" (OnRemove index)
-                       ]
+
+            -- ++ [ UI.cmdTextIconButton "trash" "Удалить" (OnRemove index)]
             ]
     in
         -- UI.card (title ++ body ++ footer)

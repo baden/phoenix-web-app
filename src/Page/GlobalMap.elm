@@ -10,6 +10,7 @@ import AppState
 import Components.UI as UI
 import Components.DateTime exposing (dateTimeFormat)
 import Types.Dt as DT
+import Msg as GMsg
 
 
 type alias Model =
@@ -34,11 +35,11 @@ setCenter newPos model =
     { model | center = newPos }
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg, Maybe GMsg.UpMsg )
 update msg model =
     case msg of
         SetCenter x y ->
-            ( { model | center = ( x, y ) }, Cmd.none )
+            ( { model | center = ( x, y ) }, Cmd.none, Nothing )
 
 
 view : Html a

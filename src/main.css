@@ -164,3 +164,9 @@ span.title {
 .scard a {
     width: 95%;
 }
+
+@media only screen and (min-width: 601px) {
+    .header_expander {
+        height: 20px;
+    }
+}

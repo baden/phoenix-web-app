@@ -1,9 +1,9 @@
 module Page.System.Info exposing (init, update, view)
 
-import Html exposing (Html, div, text, a)
+import Html exposing (Html, div, a)
 import Html.Attributes as HA exposing (class, href)
 import Components.ChartSvg as ChartSvg
-import Components.UI as UI
+import Components.UI as UI exposing (..)
 import Components.Dates as Dates
 import API
 import API.System as System exposing (SystemDocumentInfo, State, State(..))
@@ -12,6 +12,7 @@ import Components.DateTime exposing (dateTimeFormat)
 import Types.Dt as DT
 import Page.System.Info.Types exposing (Model, Msg, Msg(..))
 import Page.System.Info.Dialogs exposing (..)
+import Msg as GMsg
 
 
 init : ( Model, Cmd Msg )
@@ -25,44 +26,49 @@ init =
     )
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg, Maybe GMsg.UpMsg )
 update msg model =
     case msg of
         OnSysCmd sysId Off ->
-            ( { model | offId = sysId, showConfirmOffDialog = True }, Cmd.none )
+            ( { model | offId = sysId, showConfirmOffDialog = True }, Cmd.none, Nothing )
 
         OnSysCmd sysId state ->
-            ( model, Cmd.batch [ API.websocketOut <| System.setSystemState sysId state ] )
+            let
+                _ =
+                    Debug.log "OnSysCmd" ( sysId, state )
+            in
+                ( model, Cmd.batch [ API.websocketOut <| System.setSystemState sysId state ], Nothing )
 
         OnSysCmdCancel sysId ->
-            ( model, Cmd.batch [ API.websocketOut <| System.cancelSystemState sysId ] )
+            ( model, Cmd.batch [ API.websocketOut <| System.cancelSystemState sysId ], Nothing )
 
         OnExtendInfo ->
-            ( { model | extendInfo = not model.extendInfo }, Cmd.none )
+            ( { model | extendInfo = not model.extendInfo }, Cmd.none, Nothing )
 
         OnConfirmOff ->
-            ( { model | showConfirmOffDialog = False }, Cmd.batch [ API.websocketOut <| System.setSystemState model.offId Off ] )
+            ( { model | showConfirmOffDialog = False }, Cmd.batch [ API.websocketOut <| System.setSystemState model.offId Off ], Nothing )
 
         OnCancelOff ->
-            ( { model | showConfirmOffDialog = False }, Cmd.none )
+            ( { model | showConfirmOffDialog = False }, Cmd.none, Nothing )
 
         OnShowProlongSleepDialog ->
-            ( { model | showSleepProlongDialog = True }, Cmd.none )
+            ( { model | showSleepProlongDialog = True }, Cmd.none, Nothing )
 
         OnHideProlongSleepDialog ->
-            ( { model | showSleepProlongDialog = False }, Cmd.none )
+            ( { model | showSleepProlongDialog = False }, Cmd.none, Nothing )
 
         OnProlongSleep sysId hours ->
-            ( { model | showSleepProlongDialog = False }, Cmd.batch [ API.websocketOut <| System.prolongSleep sysId hours ] )
+            ( { model | showSleepProlongDialog = False }, Cmd.batch [ API.websocketOut <| System.prolongSleep sysId hours ], Nothing )
 
         OnNoCmd ->
-            ( model, Cmd.none )
+            ( model, Cmd.none, Nothing )
 
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 view appState model system =
     UI.container <|
-        [ UI.widget <|
+        [ header_expander
+        , UI.widget <|
             (viewHeader appState model system)
                 ++ (viewInfo appState model system)
                 ++ (viewInfoEntended appState model system)
@@ -152,14 +158,14 @@ sysState_of appState maybe_dynamic =
                         prolongCmd =
                             case dynamic.waitState of
                                 Nothing ->
-                                    [ UI.row_item [ UI.cmdButton "Отложить засыпание" OnShowProlongSleepDialog ] ]
+                                    [ Html.div [ HA.class "row" ] [ UI.cmdButton "Отложить засыпание" OnShowProlongSleepDialog ] ]
 
                                 _ ->
                                     []
                     in
                         [ UI.row_item [ text <| "Трекер под наблюдением." ]
-                        , UI.row_item (Dates.expectSleepIn appState dynamic)
                         ]
+                            ++ (Dates.expectSleepIn appState dynamic)
                             ++ prolongCmd
 
                 Just state ->
@@ -249,5 +255,5 @@ cmdPanel sysId maybe_dynamic =
 
 cmdPanelConfig : String -> List (Html Msg)
 cmdPanelConfig sysId =
-    [ text <| "В разработке..."
+    [ UI.text <| "В разработке..."
     ]

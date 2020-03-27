@@ -35,6 +35,7 @@ module Components.UI
         , container
         , widget
         , stitle
+        , header_expander
         )
 
 import Html exposing (Html, h1, h5, div, a, text, i, input)
@@ -368,3 +369,8 @@ widget child =
 stitle : String -> Html a
 stitle t =
     Html.span [ HA.class "title" ] [ text t ]
+
+
+header_expander : UI a
+header_expander =
+    Html.div [ class "header_expander" ] []

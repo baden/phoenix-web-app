@@ -24,6 +24,23 @@ titleChangeDialogView model sysId =
         []
 
 
+viewRemoveWidget : Model -> List (Html Msg)
+viewRemoveWidget model =
+    if model.showRemodeDialog then
+        [ UI.modal
+            "Удаление"
+            [ UI.ModalText "Вы уверены что хотите удалить систему из списка наблюдения?"
+            , UI.ModalText "Напоминаю, что вы не можете просто добавить систему в список наблюдения, необходимо проделать определенную процедуру."
+            ]
+            [ UI.cmdButton "Да" (OnConfirmRemove)
+            , UI.cmdButton "Нет" (OnCancelRemove)
+            ]
+        , UI.modal_overlay OnCancelRemove
+        ]
+    else
+        []
+
+
 masterNextPage : Maybe MasterPage -> Maybe MasterPage
 masterNextPage showMasterDialog =
     case showMasterDialog of

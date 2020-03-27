@@ -2,4 +2,4 @@ module Msg exposing (..)
 
 
 type UpMsg
-    = RemoveSystemFromList Int
+    = RemoveSystemFromList String
