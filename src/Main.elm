@@ -2,7 +2,7 @@ port module Main exposing (..)
 
 import Browser
 import Browser.Navigation as Nav
-import Types exposing (Model, ConnectionState(..), PageRec, Msg(..), Flags, PageMsg(..), PageType(..))
+import Types exposing (Model, ConnectionState(..), PageRec, Msg(..), Flags, PageMsg(..), PageType(..), PageUpdateType(..))
 import Url
 import Url.Parser as Parser
 import Page
@@ -130,7 +130,7 @@ systemInfoRec : PageRec SystemInfoTypes.Model SystemInfoTypes.Msg
 systemInfoRec =
     { get = .info
     , set = \newModel model -> { model | info = newModel }
-    , update = SystemInfo.update
+    , update = PUT_Public SystemInfo.update
     , view = PT_System SystemInfo.view
     , msg = SystemInfoMsg
     }
@@ -140,9 +140,19 @@ systemConfigRec : PageRec SystemConfigTypes.Model SystemConfigTypes.Msg
 systemConfigRec =
     { get = .systemConfig
     , set = \newModel model -> { model | systemConfig = newModel }
-    , update = SystemConfig.update
+    , update = PUT_Public SystemConfig.update
     , view = PT_System SystemConfig.view
     , msg = SystemConfigMsg
+    }
+
+
+linkSysRec : PageRec LinkSys.Model LinkSys.Msg
+linkSysRec =
+    { get = .linkSys
+    , set = \newModel model -> { model | linkSys = newModel }
+    , update = PUT_Private LinkSys.update
+    , view = PT_Nodata LinkSys.view
+    , msg = LinkSysMsg
     }
 
 
@@ -161,7 +171,7 @@ systemOnMapRec : PageRec GlobalMap.Model GlobalMap.Msg
 systemOnMapRec =
     { get = .globalMap
     , set = \newModel model -> { model | globalMap = newModel }
-    , update = GlobalMap.update
+    , update = PUT_Public GlobalMap.update
     , view = PT_System GlobalMap.viewSystem
     , msg = GlobalMapMsg
     }
@@ -186,13 +196,15 @@ updatePage pageMsg model =
             in
                 ( { model | login = updatedLoginModel }, Cmd.map (LoginMsg >> OnPageMsg) upstream )
 
-        LinkSysMsg linkSysMsg ->
-            let
-                ( updatedLinkSysModel, upstream ) =
-                    LinkSys.update linkSysMsg model.linkSys
-            in
-                ( { model | linkSys = updatedLinkSysModel }, Cmd.map (LinkSysMsg >> OnPageMsg) upstream )
+        LinkSysMsg smsg ->
+            updateOverRec smsg linkSysRec model
 
+        -- LinkSysMsg linkSysMsg ->
+        --     let
+        --         ( updatedLinkSysModel, upstream ) =
+        --             LinkSys.update linkSysMsg model.linkSys
+        --     in
+        --         ( { model | linkSys = updatedLinkSysModel }, Cmd.map (LinkSysMsg >> OnPageMsg) upstream )
         GlobalMapMsg globalMapMsg ->
             updateOverRec globalMapMsg systemOnMapRec model
 
@@ -216,12 +228,21 @@ updatePage pageMsg model =
 
 
 updateOverRec msg rec model =
-    let
-        ( updatedModel, upstream, upmessage ) =
-            rec.update msg (rec.get model)
-    in
-        ( (rec.set updatedModel model), Cmd.map (rec.msg >> OnPageMsg) upstream )
-            |> upmessageUpdate upmessage
+    case rec.update of
+        PUT_Private u ->
+            let
+                ( updatedModel, upstream ) =
+                    u msg (rec.get model)
+            in
+                ( (rec.set updatedModel model), Cmd.map (rec.msg >> OnPageMsg) upstream )
+
+        PUT_Public u ->
+            let
+                ( updatedModel, upstream, upmessage ) =
+                    u msg (rec.get model)
+            in
+                ( (rec.set updatedModel model), Cmd.map (rec.msg >> OnPageMsg) upstream )
+                    |> upmessageUpdate upmessage
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -479,8 +500,10 @@ viewPage model =
             view4SystemRec sysId model systemOnMapRec
 
         Route.LinkSys ->
-            LinkSys.view model.linkSys |> Html.map (LinkSysMsg >> OnPageMsg)
+            view4SystemRec "" model linkSysRec
 
+        -- Route.LinkSys ->
+        --     LinkSys.view model.linkSys |> Html.map (LinkSysMsg >> OnPageMsg)
         _ ->
             NotFound.view
 
@@ -490,6 +513,9 @@ view4SystemRec sysId model ir =
     case ir.view of
         PT_System v ->
             view4System sysId model (v model.appState (ir.get model) >> Html.map (ir.msg >> OnPageMsg))
+
+        PT_Nodata v ->
+            v (ir.get model) |> Html.map (ir.msg >> OnPageMsg)
 
 
 view4System : String -> Model -> (SystemDocumentInfo -> Html Msg) -> Html Msg

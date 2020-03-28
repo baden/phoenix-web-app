@@ -90,16 +90,20 @@ type alias Flags =
 
 type PageType pageModel pageMsg
     = PT_System (AppState.AppState -> pageModel -> SystemDocumentInfo -> Html pageMsg)
+    | PT_Nodata (pageModel -> Html pageMsg)
+
+
+type PageUpdateType pageModel pageMsg
+    = PUT_Private (pageMsg -> pageModel -> ( pageModel, Cmd pageMsg ))
+    | PUT_Public (pageMsg -> pageModel -> ( pageModel, Cmd pageMsg, Maybe UpMsg ))
 
 
 type alias PageRec pageModel pageMsg =
     { get : Model -> pageModel
     , set : pageModel -> Model -> Model
-    , update : pageMsg -> pageModel -> ( pageModel, Cmd pageMsg, Maybe UpMsg )
 
-    -- , view : AppState.AppState -> pageModel -> SystemDocumentInfo -> Html pageMsg
+    -- , update : pageMsg -> pageModel -> ( pageModel, Cmd pageMsg, Maybe UpMsg )
+    , update : PageUpdateType pageModel pageMsg
     , view : PageType pageModel pageMsg
-
-    -- , view : AppState.AppState -> pageModel -> Page.ViewInfo -> Html pageMsg
     , msg : pageMsg -> PageMsg
     }
