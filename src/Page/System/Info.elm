@@ -33,11 +33,7 @@ update msg model =
             ( { model | offId = sysId, showConfirmOffDialog = True }, Cmd.none, Nothing )
 
         OnSysCmd sysId state ->
-            let
-                _ =
-                    Debug.log "OnSysCmd" ( sysId, state )
-            in
-                ( model, Cmd.batch [ API.websocketOut <| System.setSystemState sysId state ], Nothing )
+            ( model, Cmd.batch [ API.websocketOut <| System.setSystemState sysId state ], Nothing )
 
         OnSysCmdCancel sysId ->
             ( model, Cmd.batch [ API.websocketOut <| System.cancelSystemState sysId ], Nothing )

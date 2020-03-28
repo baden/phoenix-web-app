@@ -1,6 +1,6 @@
 module Page.LinkSys exposing (..)
 
-import Components.UI as UI
+import Components.UI as UI exposing (..)
 import Html exposing (Html, div, text)
 import Html.Attributes as HA exposing (class, placeholder, value, pattern)
 import Html.Events exposing (onInput, onClick)
@@ -9,30 +9,26 @@ import String
 import Regex
 
 
-type MasterPage
-    = MasterPage1
-    | MasterPage2
-    | MasterPage3
-
-
 type alias Model =
     { code : String
-    , alt : Bool
-    , masterPage : MasterPage
+    , masterPage : Int
+    , helpPage1 : Bool
     }
 
 
 type Msg
     = OnCode String
     | StartLink
-    | AltMode
+    | OnHelpPage1
+    | OnNext
+    | OnPrev
 
 
 init : ( Model, Cmd Msg )
 init =
     ( { code = ""
-      , alt = False
-      , masterPage = MasterPage1
+      , masterPage = 1
+      , helpPage1 = False
       }
     , Cmd.none
     )
@@ -82,67 +78,64 @@ update msg model =
                 ]
             )
 
-        AltMode ->
-            ( { model | alt = not model.alt }, Cmd.none )
+        OnHelpPage1 ->
+            ( { model | helpPage1 = True }, Cmd.none )
+
+        OnNext ->
+            ( { model | masterPage = model.masterPage + 1 }, Cmd.none )
+
+        OnPrev ->
+            ( { model | masterPage = model.masterPage - 1 }, Cmd.none )
 
 
 view : Model -> Html Msg
 view model =
     let
-        master =
-            case model.alt of
-                False ->
-                    [ UI.master
-                        [ page_1
-                        , page_2
-                        ]
-                    , div [ class "row nodesktop" ]
-                        [ div [ class "col s4 offset-s4" ]
-                            [ UI.smsLink "" "link" ]
-                        ]
-                    ]
+        masterPage =
+            case model.masterPage of
+                1 ->
+                    [ page_1 model ]
 
-                True ->
-                    [ UI.master
-                        [ page_alt_1 model
-                        ]
-                    , div [ class "row nodesktop" ]
-                        [ div [ class "col s4 offset-s4" ]
-                            [ UI.smsLink "" "link" ]
-                        ]
-                    ]
+                _ ->
+                    [ page_2 model ]
     in
         div [] <|
             [ UI.title_item "Мастер добавления систем"
             ]
-                ++ master
-                ++ [ UI.smsCodeInput model.code OnCode StartLink
-                   , UI.row [ UI.cmdButton "Альтернативный способ" AltMode ]
-                   , UI.row [ UI.linkIconTextButton "clone" "Вернуться к списку объектов" "/" ]
-                   ]
+                ++ [ UI.master masterPage ]
+                ++ [ UI.row [ UI.linkIconTextButton "clone" "Вернуться к списку объектов" "/" ] ]
 
 
-page_1 : UI.MasterItem
-page_1 =
+page_1 : Model -> UI.MasterItem Msg
+page_1 model =
     UI.MasterItem "1. Активируйте закладку"
-        [ "Убедитесь, что трекер-закладка находится в активном режиме (в режиме трекера)."
-        , "(Доработать!) Инструкция по переводу закладки в активный режим."
+        [ MasterElementText "Убедитесь, что трекер-закладка находится в активном режиме (в режиме трекера)."
+        , case model.helpPage1 of
+            False ->
+                MasterElementCmdButton "Инструкция" OnHelpPage1
+
+            True ->
+                MasterElementText "(Доработать!) Тут должна быть инструкция по переводу закладки в активный режим."
+        , MasterElementNext OnNext
         ]
 
 
-page_2 : UI.MasterItem
-page_2 =
+page_2 : Model -> UI.MasterItem Msg
+page_2 model =
     UI.MasterItem "2. Начните процедуру привязки"
-        [ "Отправьте на телефонный номер карточки трекера SMS: link."
-        , "В ответ придёт уникальный код, введите код в поле ниже."
+        [ MasterElementText "Отправьте на телефонный номер карточки трекера SMS: link."
+        , MasterElementText "В ответ придёт уникальный код, введите код в поле ниже:"
+        , MasterElementSMSLink
+        , MasterElementTextField model.code OnCode StartLink
+        , MasterElementPrev OnPrev
         ]
 
 
-page_alt_1 : Model -> UI.MasterItem
+page_alt_1 : Model -> UI.MasterItem Msg
 page_alt_1 model =
     UI.MasterItem "1. Укажите телефонный номер карточки системы"
-        [ "Данный способ регистрации менее защищенный, так как идет передача номера карточки."
-        , "Данный способ регистрации пока на стадии разработки..."
+        [ MasterElementText "Данный способ регистрации менее защищенный, так как идет передача номера карточки."
+        , MasterElementText "Данный способ регистрации пока на стадии разработки..."
 
         -- , UI.smsCodeInput model.code OnCode StartLink
         ]

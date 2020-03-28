@@ -88,18 +88,17 @@ viewSystem appState model system =
             [ --div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []
               lazy2 mapAt lat lon
             , div [ class "control" ]
-                [ a [ class "btn", href <| "/system/" ++ system.id ] [ Html.text "Управление" ]
-                , a [ class "btn", href "/" ] [ Html.text "На главную" ]
-
-                -- , div [] [ Html.text <| "Центр: " ++ (String.fromFloat lat) ++ ", " ++ (String.fromFloat lon) ]
-                -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.4226036 35.0252341) ]
-                --     [ Html.text "На высоковольтную" ]
-                -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.5013798 34.6234255) ]
-                --     [ Html.text "Домой" ]
-                , div []
+                [ -- , div [] [ Html.text <| "Центр: " ++ (String.fromFloat lat) ++ ", " ++ (String.fromFloat lon) ]
+                  -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.4226036 35.0252341) ]
+                  --     [ Html.text "На высоковольтную" ]
+                  -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.5013798 34.6234255) ]
+                  --     [ Html.text "Домой" ]
+                  div []
                     [ Html.text system.title
                     , div [] (sysPosition appState system.id system.dynamic)
                     ]
+                , UI.linkIconTextButton "gamepad" "Управление" ("/system/" ++ system.id)
+                , UI.linkIconTextButton "clone" "Выбрать объект" "/"
                 ]
             ]
 

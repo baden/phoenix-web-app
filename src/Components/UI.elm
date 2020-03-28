@@ -14,6 +14,7 @@ module Components.UI
         , smallForm
         , master
         , MasterItem
+        , MasterElement(..)
         , row
         , row_item
         , info_2_10
@@ -136,31 +137,65 @@ smallForm childrens =
         ]
 
 
-type alias MasterItem =
+type alias MasterItem m =
     { title : String
-    , content : List String
+    , content : List (MasterElement m)
     }
 
 
-master : List MasterItem -> Html a
+type MasterElement m
+    = MasterElementText String
+    | MasterElementSMSLink
+      -- | MasterElementHelp String m String
+    | MasterElementCmdButton String m
+    | MasterElementTextField String (String -> m) m
+    | MasterElementNext m
+    | MasterElementPrev m
+
+
+master : List (MasterItem m) -> Html m
 master ch =
     div [ class "row" ]
-        [ div [ class "col s8 offset-s2" ]
+        [ div [ class "col s12 m8 offset-m2" ]
             (ch
                 |> List.foldl (\e acc -> acc ++ [ master_element e ]) []
             )
         ]
 
 
-master_element : MasterItem -> Html a
+master_element : MasterItem m -> Html m
 master_element { title, content } =
-    div []
-        [ Html.h5 [] [ text title ]
-        , div []
-            (content
-                |> List.map (\e -> Html.p [] [ text e ])
-            )
-        ]
+    let
+        melem e =
+            case e of
+                MasterElementText val ->
+                    Html.p [] [ text val ]
+
+                MasterElementSMSLink ->
+                    div [ class "row nodesktop" ]
+                        [ div [ class "col s12 m4 offset-m4 l3 offset-l4" ]
+                            [ smsLink "" "link" ]
+                        ]
+
+                MasterElementCmdButton mtitle mcmd ->
+                    Html.div [ HA.class "row" ] [ cmdButton mtitle mcmd ]
+
+                MasterElementTextField mcode mOnCode mStartLink ->
+                    smsCodeInput mcode mOnCode mStartLink
+
+                MasterElementNext mOnNext ->
+                    cmdTextIconButton "arrow-right" "Далее" mOnNext
+
+                MasterElementPrev mOnPrev ->
+                    cmdTextIconButton "arrow-left" "Назад" mOnPrev
+    in
+        div []
+            [ Html.h5 [] [ text title ]
+            , div []
+                (content
+                    |> List.map melem
+                )
+            ]
 
 
 row : List (Html a) -> Html a
@@ -309,7 +344,7 @@ modal_overlay cancelcmd =
 
 title_item : String -> Html a
 title_item text_label =
-    Html.h4 [] [ text text_label ]
+    Html.h4 [ class "hide-on-small-and-down" ] [ text text_label ]
 
 
 smsLink : String -> String -> Html a
@@ -320,7 +355,7 @@ smsLink phone body =
 smsCodeInput : String -> (String -> cmd) -> cmd -> Html cmd
 smsCodeInput code_ cmd_ start_ =
     Html.div [ class "row" ]
-        [ div [ class "col s6 offset-s3 m4 offset-m4 l2 offset-l5" ]
+        [ div [ class "col s8 offset-s2 m6 offset-m3 l4 offset-l4" ]
             ([ Html.input
                 [ HA.class "sms_code"
                 , HA.placeholder "Введите код из SMS"
