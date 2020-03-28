@@ -1,6 +1,3 @@
--- module Page exposing (Page(..), view, viewErrors)
-
-
 module Page exposing (..)
 
 import API.System exposing (SystemDocumentInfo, SystemDocumentLog)

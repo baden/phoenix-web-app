@@ -2,6 +2,7 @@ port module Main exposing (..)
 
 import Browser
 import Browser.Navigation as Nav
+import Types exposing (Model, ConnectionState(..), PageRec, Msg(..), Flags, PageMsg(..), PageType(..))
 import Url
 import Url.Parser as Parser
 import Page
@@ -27,87 +28,10 @@ import API.Error exposing (errorMessageString)
 import Dict exposing (Dict)
 import Task
 import Time
-import Msg exposing (..)
-
-
--- exposing (Month(..))
-
-import Msg as MsgT
+import Msg as MsgT exposing (..)
 import List.Extra as ListExtra
 import Components.UI as UI
-
-
--- import Date exposing (Date, Interval(..), Unit(..))
-
 import AppState
-
-
-type alias Model =
-    { token : Maybe String
-    , api_url : String
-    , key : Nav.Key
-    , url : Url.Url
-    , page : Route.Page
-    , home : Home.Model
-    , login : Login.Model
-    , linkSys : LinkSys.Model
-    , info : SystemInfoTypes.Model
-    , systemConfig : SystemConfigTypes.Model
-    , systemLogs : SystemLogs.Model
-    , globalMap : GlobalMap.Model
-    , account : Maybe AccountDocumentInfo
-    , systems : Dict String SystemDocumentInfo
-    , logs : Dict String (List SystemDocumentLog)
-    , errorMessage : Maybe String -- Надо бы расширить функцилнал
-    , appState : AppState.AppState
-    , connectionState : ConnectionState
-    , showQrCode : Bool
-    }
-
-
-type ConnectionState
-    = NotConnected
-    | Connected
-
-
-type Msg
-    = NoOp
-    | LinkClicked Browser.UrlRequest
-    | UrlChanged Url.Url
-    | WebsocketIn String
-    | OpenWebsocket String
-    | WebsocketOpened Bool
-      -- | HomeMsg Home.Msg
-      -- | LoginMsg Login.Msg
-      -- | SystemInfoMsg SystemInfoTypes.Msg
-      -- | GlobalMapMsg GlobalMap.Msg
-      -- | LinkSysMsg LinkSys.Msg
-    | OnCloseModal
-    | TimeZoneDetected Time.Zone
-    | ReceiveNow Time.Posix
-    | ShowQrCode
-    | HideQrCode
-    | OnPageMsg PageMsg
-
-
-
--- | PageMsg Page Msg
-
-
-type PageMsg
-    = HomeMsg Home.Msg
-    | LoginMsg Login.Msg
-    | SystemInfoMsg SystemInfoTypes.Msg
-    | SystemConfigMsg SystemConfigTypes.Msg
-    | SystemLogsMsg SystemLogs.Msg
-    | GlobalMapMsg GlobalMap.Msg
-    | LinkSysMsg LinkSys.Msg
-
-
-type alias Flags =
-    { token : Maybe String
-    , api_url : String
-    }
 
 
 init : Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -202,23 +126,12 @@ upmessageUpdate msg ( model, cmd ) =
 -- updatePage :
 
 
-type alias PageRec pageModel pageMsg =
-    { get : Model -> pageModel
-    , set : pageModel -> Model -> Model
-    , update : pageMsg -> pageModel -> ( pageModel, Cmd pageMsg, Maybe UpMsg )
-    , view : AppState.AppState -> pageModel -> SystemDocumentInfo -> Html pageMsg
-
-    -- , view : AppState.AppState -> pageModel -> Page.ViewInfo -> Html pageMsg
-    , msg : pageMsg -> PageMsg
-    }
-
-
 systemInfoRec : PageRec SystemInfoTypes.Model SystemInfoTypes.Msg
 systemInfoRec =
     { get = .info
     , set = \newModel model -> { model | info = newModel }
     , update = SystemInfo.update
-    , view = SystemInfo.view
+    , view = PT_System SystemInfo.view
     , msg = SystemInfoMsg
     }
 
@@ -228,7 +141,7 @@ systemConfigRec =
     { get = .systemConfig
     , set = \newModel model -> { model | systemConfig = newModel }
     , update = SystemConfig.update
-    , view = SystemConfig.view
+    , view = PT_System SystemConfig.view
     , msg = SystemConfigMsg
     }
 
@@ -249,7 +162,7 @@ systemOnMapRec =
     { get = .globalMap
     , set = \newModel model -> { model | globalMap = newModel }
     , update = GlobalMap.update
-    , view = GlobalMap.viewSystem
+    , view = PT_System GlobalMap.viewSystem
     , msg = GlobalMapMsg
     }
 
@@ -574,7 +487,9 @@ viewPage model =
 
 view4SystemRec : String -> Model -> PageRec smodel smsg -> Html Msg
 view4SystemRec sysId model ir =
-    view4System sysId model (ir.view model.appState (ir.get model) >> Html.map (ir.msg >> OnPageMsg))
+    case ir.view of
+        PT_System v ->
+            view4System sysId model (v model.appState (ir.get model) >> Html.map (ir.msg >> OnPageMsg))
 
 
 view4System : String -> Model -> (SystemDocumentInfo -> Html Msg) -> Html Msg
