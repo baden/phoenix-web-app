@@ -18,6 +18,7 @@ type Page
     | Config
     | SystemInfo String
     | SystemConfig String
+    | SystemLogs String
     | BouncePage
     | LinkSys
 
@@ -34,6 +35,7 @@ routeParser =
         , map Config (s "config")
         , map SystemInfo (s "system" </> string)
         , map SystemConfig (s "system" </> string </> s "config")
+        , map SystemLogs (s "system" </> string </> s "logs")
         , map Auth (s "auth")
         , map Login (s "login")
         , map BouncePage (s "logout")

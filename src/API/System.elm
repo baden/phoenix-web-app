@@ -16,6 +16,9 @@ module API.System
         , setSystemState
         , prolongSleep
         , cancelSystemState
+        , getLogs
+        , SystemDocumentLog
+        , systemDocumentLogDecoder
         )
 
 import Json.Decode as JD
@@ -289,7 +292,27 @@ stateAsCmdString state =
             ("В разработке..." ++ s)
 
 
+type alias SystemDocumentLog =
+    { dt : DT.Dt
+    , text : String
+    }
 
+
+
+-- type alias SystemDocumentLogs =
+--     List SystemDocumentLog
+
+
+systemDocumentLogDecoder : JD.Decoder SystemDocumentLog
+systemDocumentLogDecoder =
+    JD.succeed SystemDocumentLog
+        |> required "dt" DT.decoder
+        |> required "text" JD.string
+
+
+
+-- systemDocumentLogsDecoder : JD.Decoder SystemDocumentLogs
+--     JD.succeed SystemDocumentLogs
 -- type alias SysState =
 --     { current : State
 --     , available : List State
@@ -382,6 +405,16 @@ cancelSystemState sysId =
 prolongSleep : String -> Int -> Encode.Value
 prolongSleep sysId hours =
     setSystemState sysId (ProlongSleep hours)
+
+
+getLogs : String -> Int -> Encode.Value
+getLogs sysId offset =
+    Encode.object
+        [ ( "cmd", Encode.string "system_logs" )
+        , ( "id", Encode.string sysId )
+        , ( "skip", Encode.int offset )
+        , ( "count", Encode.int 20 )
+        ]
 
 
 

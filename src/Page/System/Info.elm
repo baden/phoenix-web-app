@@ -1,5 +1,6 @@
 module Page.System.Info exposing (init, update, view)
 
+import Page
 import Html exposing (Html, div, a)
 import Html.Attributes as HA exposing (class, href)
 import Components.ChartSvg as ChartSvg
@@ -74,6 +75,27 @@ view appState model system =
             ++ (viewModalDialogs model)
 
 
+
+-- view : AppState.AppState -> Model -> Page.ViewInfo -> Html Msg
+-- view appState model pvi =
+--     case pvi of
+--         Page.VI_System system ->
+--             UI.container <|
+--                 [ header_expander
+--                 , UI.widget <|
+--                     (viewHeader appState model system)
+--                         ++ (viewInfo appState model system)
+--                         ++ (viewInfoEntended appState model system)
+--                         ++ [ UI.row [ UI.linkIconTextButton "clone" "Выбрать другой объект" "/" ] ]
+--                         ++ (prolongSleepDialogView model system.id)
+--                 ]
+--                     ++ (viewModalDialogs model)
+--
+--         _ ->
+--             UI.container [ text "404" ]
+--
+
+
 viewHeader : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
 viewHeader appState model system =
     [ UI.row_item
@@ -94,6 +116,7 @@ viewInfo appState model system =
         ++ (cmdPanel system.id system.dynamic)
         ++ (Dates.nextSession appState system.dynamic)
         ++ (Dates.sysPosition appState system.id system.dynamic)
+        ++ [ UI.row [ UI.linkIconTextButton "eye" "Cобытия" ("/system/" ++ system.id ++ "/logs") ] ]
 
 
 

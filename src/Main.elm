@@ -4,6 +4,7 @@ import Browser
 import Browser.Navigation as Nav
 import Url
 import Url.Parser as Parser
+import Page
 import Page.Route as Route
 import Html exposing (Html)
 import Html.Attributes as HA
@@ -14,13 +15,14 @@ import Page.Login as Login
 import Page.System.Info as SystemInfo
 import Page.System.Info.Types as SystemInfoTypes
 import Page.System.Config as SystemConfig
+import Page.System.Logs as SystemLogs
 import Page.System.Config.Types as SystemConfigTypes
 import Page.NotFound as NotFound
 import Page.GlobalMap as GlobalMap
 import Page.LinkSys as LinkSys
 import API
 import API.Account exposing (AccountDocumentInfo, fixSysListRequest)
-import API.System exposing (SystemDocumentInfo)
+import API.System exposing (SystemDocumentInfo, SystemDocumentLog)
 import API.Error exposing (errorMessageString)
 import Dict exposing (Dict)
 import Task
@@ -51,9 +53,11 @@ type alias Model =
     , linkSys : LinkSys.Model
     , info : SystemInfoTypes.Model
     , systemConfig : SystemConfigTypes.Model
+    , systemLogs : SystemLogs.Model
     , globalMap : GlobalMap.Model
     , account : Maybe AccountDocumentInfo
     , systems : Dict String SystemDocumentInfo
+    , logs : Dict String (List SystemDocumentLog)
     , errorMessage : Maybe String -- Надо бы расширить функцилнал
     , appState : AppState.AppState
     , connectionState : ConnectionState
@@ -95,6 +99,7 @@ type PageMsg
     | LoginMsg Login.Msg
     | SystemInfoMsg SystemInfoTypes.Msg
     | SystemConfigMsg SystemConfigTypes.Msg
+    | SystemLogsMsg SystemLogs.Msg
     | GlobalMapMsg GlobalMap.Msg
     | LinkSysMsg LinkSys.Msg
 
@@ -126,6 +131,9 @@ init flags url key =
         ( systemConfigModel, _ ) =
             SystemConfig.init
 
+        ( systemLogsModel, _ ) =
+            SystemLogs.init
+
         model =
             { token = flags.token
             , api_url = flags.api_url
@@ -137,9 +145,11 @@ init flags url key =
             , linkSys = linkSysModel
             , info = infoModel
             , systemConfig = systemConfigModel
+            , systemLogs = systemLogsModel
             , globalMap = globalMapModel
             , account = Nothing
             , systems = Dict.empty
+            , logs = Dict.empty
             , errorMessage = Nothing
             , appState = AppState.initModel
             , connectionState = NotConnected
@@ -197,6 +207,8 @@ type alias PageRec pageModel pageMsg =
     , set : pageModel -> Model -> Model
     , update : pageMsg -> pageModel -> ( pageModel, Cmd pageMsg, Maybe UpMsg )
     , view : AppState.AppState -> pageModel -> SystemDocumentInfo -> Html pageMsg
+
+    -- , view : AppState.AppState -> pageModel -> Page.ViewInfo -> Html pageMsg
     , msg : pageMsg -> PageMsg
     }
 
@@ -219,6 +231,17 @@ systemConfigRec =
     , view = SystemConfig.view
     , msg = SystemConfigMsg
     }
+
+
+
+-- systemLogsRec : PageRec SystemLogs.Model SystemLogs.Msg
+-- systemLogsRec =
+--     { get = .systemLogs
+--     , set = \newModel model -> { model | systemLogs = newModel }
+--     , update = SystemLogs.update
+--     , view = SystemLogs.view
+--     , msg = SystemLogsMsg
+--     }
 
 
 systemOnMapRec : PageRec GlobalMap.Model GlobalMap.Msg
@@ -266,6 +289,18 @@ updatePage pageMsg model =
         SystemConfigMsg msg ->
             updateOverRec msg systemConfigRec model
 
+        SystemLogsMsg msg ->
+            let
+                ( updatedModel, upstream, upmessage ) =
+                    SystemLogs.update msg (model.systemLogs)
+            in
+                ( ({ model | systemLogs = updatedModel }), Cmd.map (SystemLogsMsg >> OnPageMsg) upstream )
+                    |> upmessageUpdate upmessage
+
+
+
+--     updateOverRec msg systemLogsRec model
+
 
 updateOverRec msg rec model =
     let
@@ -286,6 +321,10 @@ update msg model =
             updatePage pageMsg model
 
         LinkClicked urlRequest ->
+            -- let
+            --     _ =
+            --         Debug.log "LinkClicked" urlRequest
+            -- in
             case urlRequest of
                 Browser.Internal url ->
                     ( model, Nav.pushUrl model.key (Url.toString url) )
@@ -297,40 +336,11 @@ update msg model =
             let
                 setModel4Page page oldModel =
                     { oldModel | page = page } |> computeViewForPage page
+
+                -- _ =
+                --     Debug.log "UrlChanged" url
             in
                 case Parser.parse Route.routeParser url of
-                    -- Just (Route.SystemOnMap sysId) ->
-                    --     -- TODO: Потом сделать это цивилизованно
-                    --     -- В том числе добавить это в получение документа System если уже открыта страница SystemOnMap
-                    --     -- TODO: Черт, это не работает.
-                    --     case Dict.get sysId model.systems of
-                    --         Nothing ->
-                    --             ( setModel4Page (Route.SystemOnMap sysId) model
-                    --             , Cmd.none
-                    --             )
-                    --
-                    --         Just system ->
-                    --             case system.dynamic of
-                    --                 Nothing ->
-                    --                     ( setModel4Page (Route.SystemOnMap sysId) model, Cmd.none )
-                    --
-                    --                 Just dynamic ->
-                    --                     case ( dynamic.latitude, dynamic.longitude ) of
-                    --                         ( Just latitude, Just longitude ) ->
-                    --                             let
-                    --                                 _ =
-                    --                                     Debug.log "TBD must be set center of map for" ( latitude, longitude )
-                    --
-                    --                                 pagedModel =
-                    --                                     setModel4Page (Route.SystemOnMap sysId) model
-                    --                             in
-                    --                                 ( { pagedModel | globalMap = pagedModel.globalMap |> GlobalMap.setCenter ( latitude, longitude ) }, Cmd.none )
-                    --
-                    --                         _ ->
-                    --                             ( setModel4Page (Route.SystemOnMap sysId) model, Cmd.none )
-                    --
-                    -- SystemInfo.view model.appState model.info system |> Html.map SystemInfoMsg
-                    -- ( model, Nav.load (Url.toString url) )
                     Just page ->
                         ( setModel4Page page model, Cmd.none )
 
@@ -407,6 +417,15 @@ update msg model =
                                         { system | dynamic = Just document }
                                 in
                                     ( { model | systems = Dict.insert sysId new_system model.systems }, Cmd.none )
+
+                    Just (API.Document sysId (API.SystemLogsDocument document)) ->
+                        -- let
+                        --     _ =
+                        --         Debug.log "logs" document
+                        -- in
+                        ( { model | logs = Dict.insert sysId document model.logs }
+                        , Cmd.none
+                        )
 
                     Just (API.Error error) ->
                         case errorMessageString error of
@@ -524,6 +543,21 @@ viewPage model =
 
         Route.SystemConfig sysId ->
             view4SystemRec sysId model systemConfigRec
+
+        Route.SystemLogs sysId ->
+            case Dict.get sysId model.systems of
+                Nothing ->
+                    Html.div []
+                        [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра."
+                        , Html.a [ HA.class "btn", HA.href "/" ] [ Html.text "Вернуться на главную" ]
+                        ]
+
+                Just system ->
+                    let
+                        logs =
+                            Dict.get sysId model.logs
+                    in
+                        SystemLogs.view model.appState model.systemLogs system logs |> Html.map (SystemLogsMsg >> OnPageMsg)
 
         Route.GlobalMap ->
             GlobalMap.view

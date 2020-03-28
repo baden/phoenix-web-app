@@ -1,10 +1,20 @@
-module Page exposing (Page(..), view, viewErrors)
+-- module Page exposing (Page(..), view, viewErrors)
 
 
-type Page
-    = Other
-    | Home
-    | Login
+module Page exposing (..)
+
+import API.System exposing (SystemDocumentInfo, SystemDocumentLog)
 
 
-view : Maybe Viewer -> Page -> { title : String, content : Html msg } -> Document msg
+-- type Page
+--     = Other
+--     | Home
+--     | Login
+--
+-- view : Maybe Viewer -> Page -> { title : String, content : Html msg } -> Document msg
+
+
+type ViewInfo
+    = VI_None
+    | VI_System SystemDocumentInfo
+    | VI_SystemLogs SystemDocumentInfo SystemDocumentLog
