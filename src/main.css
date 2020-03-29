@@ -26,7 +26,7 @@ body {
   padding: 0;
   margin: 0;
   text-align: center;
-  color: #293c4b;
+  /* color: #293c4b; */
 }
 
 html, body {
@@ -165,8 +165,62 @@ span.title {
     width: 95%;
 }
 
-@media only screen and (min-width: 601px) {
+@media only screen and (min-height: 500px) {
     .header_expander {
         height: 20px;
+    }
+}
+
+.led_flash {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 1px solid black;
+    border-radius: 8px;
+}
+
+.led_fast_flash {
+    /* -webkit-animation: led_fast_flashs 0.12s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+            animation: led_fast_flashs 0.12s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite; */
+    -webkit-animation: led_fast_flashs 0.12s linear infinite;
+            animation: led_fast_flashs 0.12s linear infinite;
+}
+
+.led_slow_flash {
+    -webkit-animation: led_fast_flashs 1.0s linear infinite;
+            animation: led_fast_flashs 1.0s linear infinite;
+
+}
+
+@-webkit-keyframes led_fast_flashs {
+  0% {
+      background-color: black;
+  }
+  100% {
+      background-color: #ff7777;
+  }
+}
+
+@keyframes led_fast_flashs {
+    0% {
+        background-color: black;
+    }
+    100% {
+        background-color: #ff7777;
+    }
+}
+
+@keyframes led_slow_flashs {
+    0% {
+        background-color: black;
+    }
+    95% {
+        background-color: black;
+    }
+    97% {
+        background-color: #ff7777;
+    }
+    100% {
+        background-color: black;
     }
 }

@@ -91,6 +91,11 @@ type alias Flags =
 type PageType pageModel pageMsg
     = PT_System (AppState.AppState -> pageModel -> SystemDocumentInfo -> Html pageMsg)
     | PT_Nodata (pageModel -> Html pageMsg)
+    | PT_Full (AppState.AppState -> pageModel -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Html pageMsg)
+
+
+
+-- | PT_SysLogs (AppState.AppState -> pageModel -> SystemDocumentInfo -> Maybe (List SystemDocumentLog) -> UI pageMsg)
 
 
 type PageUpdateType pageModel pageMsg

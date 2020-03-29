@@ -170,6 +170,8 @@ master_element { title, content } =
         melem e =
             case e of
                 MasterElementText val ->
+                    -- div [ class "row" ] [ div [ class "col s12" ] [ text val ] ]
+                    --
                     Html.p [] [ text val ]
 
                 MasterElementSMSLink ->
@@ -179,7 +181,8 @@ master_element { title, content } =
                         ]
 
                 MasterElementCmdButton mtitle mcmd ->
-                    Html.div [ HA.class "row" ] [ cmdButton mtitle mcmd ]
+                    -- Html.div [ HA.class "row" ] [ cmdButton mtitle mcmd ]
+                    cmdButton mtitle mcmd
 
                 MasterElementTextField mcode mOnCode mStartLink ->
                     smsCodeInput mcode mOnCode mStartLink
@@ -192,7 +195,7 @@ master_element { title, content } =
     in
         div []
             [ Html.h5 [] [ text title ]
-            , div []
+            , div [ class "left-align" ]
                 (content
                     |> List.map melem
                 )
@@ -298,13 +301,14 @@ card_panel childs =
 
 card : List (Html a) -> Html a
 card child =
-    Html.div [ class "col s12 m4 l2" ]
+    Html.div [ class "col s12 m6 l4 xl3" ]
         [ Html.div [ class "z-depth-2 shadow-demo scard" ] child ]
 
 
 type ModalElement m
     = ModalText String
     | ModalHtml (Html m)
+    | ModalIconText String String
 
 
 modal : String -> List (ModalElement m) -> List (Html m) -> Html m
@@ -316,12 +320,17 @@ modal text_title content buttons =
                     ModalText text_value ->
                         Html.p [] [ Html.text text_value ]
 
+                    ModalIconText icon text_value ->
+                        Html.p [] [ Html.img [ HA.style "margin" "-3px 10px -3px 0", src <| "static/" ++ icon ] [], Html.text text_value ]
+
+                    -- ModalIconText icon text_value ->
+                    --     Html.p [] [ Html.div [ HA.class "led_flash led_slow_flash" ] [], Html.text text_value ]
                     ModalHtml html ->
                         html
             )
     in
         Html.div
-            [ class "modal open"
+            [ class "modal open left-align"
             , HA.tabindex 0
             , HA.style "z-index" "1003"
             , HA.style "display" "block"

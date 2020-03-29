@@ -16,8 +16,11 @@ type alias Model =
     , showMasterDialog : Maybe MasterPage
     , masterEcoValue : Int
     , masterTrackValue : Int
+    , masterSecurValue : ( Bool, Bool )
     , showRemodeDialog : Bool
     , removeId : String
+    , adminPhone : String
+    , adminCode : String
     }
 
 
@@ -30,9 +33,16 @@ type Msg
     | OnCancelMaster
     | OnMasterEco1 Int Bool
     | OnMasterTrack1 Int Bool
+    | OnMasterSecur1 Int Bool
     | OnMasterNext
     | OnMasterPrev
     | OnNoCmd
     | OnRemove String
     | OnCancelRemove
     | OnConfirmRemove
+    | OnAdminPhone String
+    | OnAdminCode String
+
+
+
+-- | OnAdminPhoneDone

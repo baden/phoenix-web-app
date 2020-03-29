@@ -156,7 +156,38 @@ linkSysRec =
     }
 
 
+homeRec : PageRec Home.Model Home.Msg
+homeRec =
+    { get = .home
+    , set = \newModel model -> { model | home = newModel }
+    , update = PUT_Public Home.update
+    , view = PT_Full Home.view
+    , msg = HomeMsg
+    }
 
+
+loginRec : PageRec Login.Model Login.Msg
+loginRec =
+    { get = .login
+    , set = \newModel model -> { model | login = newModel }
+    , update = PUT_Private Login.update
+    , view = PT_Nodata Login.loginView
+    , msg = LoginMsg
+    }
+
+
+authRec : PageRec Login.Model Login.Msg
+authRec =
+    { loginRec | view = PT_Nodata Login.authView }
+
+
+
+-- { get = .login
+-- , set = \newModel model -> { model | login = newModel }
+-- , update = loginRec.update
+-- , view = PT_Nodata Login.authView
+-- , msg = loginRec.msg
+-- }
 -- systemLogsRec : PageRec SystemLogs.Model SystemLogs.Msg
 -- systemLogsRec =
 --     { get = .systemLogs
@@ -181,21 +212,24 @@ updatePage : PageMsg -> Model -> ( Model, Cmd Msg )
 updatePage pageMsg model =
     case pageMsg of
         HomeMsg homeMsg ->
-            let
-                ( updatedHomeModel, upstream, upmessage ) =
-                    Home.update homeMsg model.home
-            in
-                -- TODO: Move to UP
-                ( { model | home = updatedHomeModel }, Cmd.map (HomeMsg >> OnPageMsg) upstream )
-                    |> upmessageUpdate upmessage
+            updateOverRec homeMsg homeRec model
 
+        -- let
+        --     ( updatedHomeModel, upstream, upmessage ) =
+        --         Home.update homeMsg model.home
+        -- in
+        --     -- TODO: Move to UP
+        --     ( { model | home = updatedHomeModel }, Cmd.map (HomeMsg >> OnPageMsg) upstream )
+        --         |> upmessageUpdate upmessage
         LoginMsg loginMsg ->
-            let
-                ( updatedLoginModel, upstream ) =
-                    Login.update loginMsg model.login
-            in
-                ( { model | login = updatedLoginModel }, Cmd.map (LoginMsg >> OnPageMsg) upstream )
+            -- TODO: Тут на самом деле и loginRec и authRec
+            updateOverRec loginMsg loginRec model
 
+        -- let
+        --     ( updatedLoginModel, upstream ) =
+        --         Login.update loginMsg model.login
+        -- in
+        --     ( { model | login = updatedLoginModel }, Cmd.map (LoginMsg >> OnPageMsg) upstream )
         LinkSysMsg smsg ->
             updateOverRec smsg linkSysRec model
 
@@ -464,14 +498,17 @@ viewPage : Model -> Html Msg
 viewPage model =
     case model.page of
         Route.Home ->
-            Home.view model.appState model.home model.account model.systems |> Html.map (HomeMsg >> OnPageMsg)
+            view4SystemRec "" model homeRec
 
+        -- Home.view model.appState model.home model.account model.systems |> Html.map (HomeMsg >> OnPageMsg)
         Route.Login ->
-            Login.loginView model.login |> Html.map (LoginMsg >> OnPageMsg)
+            view4SystemRec "" model loginRec
 
+        -- Login.loginView model.login |> Html.map (LoginMsg >> OnPageMsg)
         Route.Auth ->
-            Login.authView model.login |> Html.map (LoginMsg >> OnPageMsg)
+            view4SystemRec "" model authRec
 
+        -- Login.authView model.login |> Html.map (LoginMsg >> OnPageMsg)
         Route.SystemInfo sysId ->
             view4SystemRec sysId model systemInfoRec
 
@@ -516,6 +553,9 @@ view4SystemRec sysId model ir =
 
         PT_Nodata v ->
             v (ir.get model) |> Html.map (ir.msg >> OnPageMsg)
+
+        PT_Full v ->
+            v model.appState (ir.get model) model.account model.systems |> Html.map (ir.msg >> OnPageMsg)
 
 
 view4System : String -> Model -> (SystemDocumentInfo -> Html Msg) -> Html Msg

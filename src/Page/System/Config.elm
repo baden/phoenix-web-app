@@ -19,8 +19,11 @@ init =
       , showMasterDialog = Nothing
       , masterEcoValue = 1
       , masterTrackValue = 2
+      , masterSecurValue = ( False, False )
       , showRemodeDialog = False
       , removeId = ""
+      , adminPhone = ""
+      , adminCode = ""
       }
     , Cmd.none
     )
@@ -58,6 +61,18 @@ update msg model =
         OnMasterTrack1 val _ ->
             ( { model | masterTrackValue = val }, Cmd.none, Nothing )
 
+        OnMasterSecur1 val s ->
+            let
+                ( s1, s2 ) =
+                    model.masterSecurValue
+            in
+                case val of
+                    1 ->
+                        ( { model | masterSecurValue = ( s, s2 ) }, Cmd.none, Nothing )
+
+                    _ ->
+                        ( { model | masterSecurValue = ( s1, s ) }, Cmd.none, Nothing )
+
         OnMasterNext ->
             ( { model | showMasterDialog = (masterNextPage model.showMasterDialog) }, Cmd.none, Nothing )
 
@@ -72,6 +87,12 @@ update msg model =
 
         OnConfirmRemove ->
             ( { model | showRemodeDialog = False }, Cmd.none, Just (GMsg.RemoveSystemFromList model.removeId) )
+
+        OnAdminPhone s ->
+            ( { model | adminPhone = s }, Cmd.none, Nothing )
+
+        OnAdminCode s ->
+            ( { model | adminCode = s }, Cmd.none, Nothing )
 
         OnNoCmd ->
             ( model, Cmd.none, Nothing )

@@ -13,6 +13,7 @@ type alias Model =
     { code : String
     , masterPage : Int
     , helpPage1 : Bool
+    , showLedHelpDialog : Bool
     }
 
 
@@ -22,6 +23,9 @@ type Msg
     | OnHelpPage1
     | OnNext
     | OnPrev
+    | OnPage Int
+    | OnLedHelp
+    | OnLedHelpCancel
 
 
 init : ( Model, Cmd Msg )
@@ -29,6 +33,7 @@ init =
     ( { code = ""
       , masterPage = 1
       , helpPage1 = False
+      , showLedHelpDialog = False
       }
     , Cmd.none
     )
@@ -87,6 +92,15 @@ update msg model =
         OnPrev ->
             ( { model | masterPage = model.masterPage - 1 }, Cmd.none )
 
+        OnPage page ->
+            ( { model | masterPage = page }, Cmd.none )
+
+        OnLedHelp ->
+            ( { model | showLedHelpDialog = True }, Cmd.none )
+
+        OnLedHelpCancel ->
+            ( { model | showLedHelpDialog = False }, Cmd.none )
+
 
 view : Model -> Html Msg
 view model =
@@ -96,35 +110,86 @@ view model =
                 1 ->
                     [ page_1 model ]
 
-                _ ->
+                2 ->
                     [ page_2 model ]
+
+                3 ->
+                    [ page_3 model ]
+
+                4 ->
+                    [ page_4 model ]
+
+                _ ->
+                    [ page_5 model ]
     in
-        div [] <|
+        div [ class "container" ] <|
             [ UI.title_item "Мастер добавления систем"
             ]
                 ++ [ UI.master masterPage ]
-                ++ [ UI.row [ UI.linkIconTextButton "clone" "Вернуться к списку объектов" "/" ] ]
+                ++ [ UI.row_item [ UI.linkIconTextButton "clone" "Вернуться к списку объектов" "/" ] ]
+                ++ (ledHelpDialogView model.showLedHelpDialog)
 
 
 page_1 : Model -> UI.MasterItem Msg
 page_1 model =
-    UI.MasterItem "1. Активируйте закладку"
-        [ MasterElementText "Убедитесь, что трекер-закладка находится в активном режиме (в режиме трекера)."
-        , case model.helpPage1 of
-            False ->
-                MasterElementCmdButton "Инструкция" OnHelpPage1
-
-            True ->
-                MasterElementText "(Доработать!) Тут должна быть инструкция по переводу закладки в активный режим."
+    UI.MasterItem "Подготовка SIM-карты"
+        [ MasterElementText "1. Установите SIM-карту в мобильный телефон."
+        , MasterElementText "2. Активируйте SIM-карту в соответствии с инструкциями GSM-оператора."
+        , MasterElementText "3. Убедитесь в том, что PIN-код при включении телефона выключен."
+        , MasterElementText "4. В случае необходимости зарегистрируйте SIM-карту на сайте GSM-оператора."
+        , MasterElementText "5. Выключите мобильный телефон и извлеките из него подготовленную SIM-карту."
+        , MasterElementCmdButton "L" OnLedHelp
         , MasterElementNext OnNext
         ]
 
 
 page_2 : Model -> UI.MasterItem Msg
 page_2 model =
-    UI.MasterItem "2. Начните процедуру привязки"
-        [ MasterElementText "Отправьте на телефонный номер карточки трекера SMS: link."
-        , MasterElementText "В ответ придёт уникальный код, введите код в поле ниже:"
+    UI.MasterItem "Установка подготовленной SIM-карты в трекер"
+        [ MasterElementText "1. Выкрутите 4 винта и снимите крышку корпуса."
+        , MasterElementText "2. Убедитесь в том, что трекер выключен – светодиодный индикатор не горит и не мигает."
+        , MasterElementText "3. Установите подготовленную SIM-карту в трекер."
+        , MasterElementText "4. В случае необходимости произведите привязку экзекуторов."
+        , MasterElementPrev OnPrev
+        , MasterElementCmdButton "L" OnLedHelp
+        , MasterElementCmdButton "Привязать экзекуторы" (OnPage 3)
+        , MasterElementCmdButton "Далее" (OnPage 4)
+
+        -- , MasterElementCmdButton "" (OnPage 3)
+        -- , MasterElementNext OnNext
+        ]
+
+
+page_3 : Model -> UI.MasterItem Msg
+page_3 model =
+    UI.MasterItem "Привязка экзекуторов и активация трекера-закладки"
+        [ MasterElementText "1. Исходное состояние: трекер – выключен."
+        , MasterElementText "2. Обесточьте все привязываемые экзекуторы и подготовьте их к подаче питания."
+        , MasterElementText "3. Нажмите и удерживайте 3 секунды кнопку ON-OFF трекера – загорится светодиод."
+        , MasterElementText "4. Как только загорится светодиод – подайте питание на все привязываемые экзекуторы – экзекуторы привяжутся, светодиод потухнет и на 4 часа включится GSM-модуль – светодиод начнёт отрабатывать редкие тройные вспышки."
+        , MasterElementText "5. Закройте крышку корпуса трекера и закрутите 4 винта."
+        , MasterElementPrev OnPrev
+        , MasterElementCmdButton "L" OnLedHelp
+        , MasterElementCmdButton "Далее" (OnPage 5)
+        ]
+
+
+page_4 : Model -> UI.MasterItem Msg
+page_4 model =
+    UI.MasterItem "Активация трекера-закладки"
+        [ MasterElementText "1. Нажмите кнопку ON-OFF трекера – светодиодный индикатор подтвердит включение."
+        , MasterElementText "2. Закройте крышку корпуса трекера и закрутите 4 винта."
+        , MasterElementCmdButton "Назад" (OnPage 2)
+        , MasterElementCmdButton "L" OnLedHelp
+        , MasterElementNext OnNext
+        ]
+
+
+page_5 : Model -> UI.MasterItem Msg
+page_5 model =
+    UI.MasterItem "Добавление трекера-закладки в наблюдение"
+        [ MasterElementText "1. Отправьте на телефонный номер SIM-карты трекера SMS: link."
+        , MasterElementText "В ответ придёт уникальный код – введите его в поле ниже:"
         , MasterElementSMSLink
         , MasterElementTextField model.code OnCode StartLink
         , MasterElementPrev OnPrev
@@ -139,3 +204,24 @@ page_alt_1 model =
 
         -- , UI.smsCodeInput model.code OnCode StartLink
         ]
+
+
+ledHelpDialogView : Bool -> List (UI Msg)
+ledHelpDialogView s =
+    if s then
+        [ UI.modal
+            "Светодиодный индикатор"
+            [ UI.ModalIconText "images/gifs/LedOff.png" "Не горит и не мигает – трекер выключен"
+            , UI.ModalIconText "images/gifs/led_fast_flash.gif" "Серия частых вспышек – включение трекера"
+            , UI.ModalIconText "images/gifs/led_slow_flash.gif" "Редкие одиночные вспышки – режим трекера"
+            , UI.ModalIconText "images/gifs/led_slow2_flash.gif" "Редкие двойные вспышки – зарегистрированы спутники"
+            , UI.ModalIconText "images/gifs/led_slow3_flash.gif" "Редкие тройные вспышки – режим установки, GSM-модуль включён"
+            , UI.ModalIconText "images/gifs/led_long_flash.gif" "Серия нечастых вспышек – выключение трекера"
+            , UI.ModalIconText "images/gifs/LedOn.png" "Горит 5 секунд – процедура привязки экзекуторов"
+            ]
+            [ UI.cmdButton "Закрыть" (OnLedHelpCancel)
+            ]
+        , UI.modal_overlay OnLedHelpCancel
+        ]
+    else
+        []

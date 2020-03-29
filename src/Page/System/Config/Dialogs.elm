@@ -95,15 +95,15 @@ masterDialogView model sysId =
                 [ UI.ModalText <| masterPage2Help model.masterTrackValue
                 , UI.ModalHtml <| masterPage2View model.masterTrackValue
                 ]
-                masterFooterLast
+                masterFooterMiddle
             , UI.modal_overlay OnCancelMaster
             ]
 
         Just MasterPage3 ->
             [ UI.modal
-                "SMS оповещения"
-                [ UI.ModalText <| masterPage1Help model.masterEcoValue
-                , UI.ModalHtml <| masterPage1View model.masterEcoValue
+                "Безопасность"
+                [ UI.ModalText <| masterPage3Help model.masterSecurValue
+                , UI.ModalHtml <| masterPage3View model.masterSecurValue model
                 ]
                 masterFooterLast
             , UI.modal_overlay OnCancelMaster
@@ -144,6 +144,18 @@ item_ index label_ checked_ msg =
         [ label []
             [ input [ attribute "name" "group1", type_ "radio", checked checked_, HE.onCheck (msg index) ] []
             , span [] [ Html.text label_ ]
+            ]
+        ]
+
+
+item1_ : Int -> String -> Bool -> (Int -> Bool -> Msg) -> UI Msg
+item1_ index label_ checked_ msg =
+    row
+        [ Html.div [ class "col s12 m10 offset-m1 l6 offset-l2" ]
+            [ label []
+                [ input [ attribute "name" "group1", type_ "checkbox", checked checked_, HE.onCheck (msg index) ] []
+                , span [] [ Html.text label_ ]
+                ]
             ]
         ]
 
@@ -200,3 +212,89 @@ masterPage2Help index =
 
         _ ->
             "Объект будет 1 час работать в режиме Трекинга, потом перейдет в режим Сон. Заряда хватит на 50 активаций режима Трекинг."
+
+
+masterPage3View : ( Bool, Bool ) -> Model -> Html Msg
+masterPage3View ( s1, s2 ) model =
+    row <|
+        [ div [ class "col s12", HA.style "text-align" "left" ]
+            [ form [ attribute "action" "#" ] <|
+                [ item1_ 1 "Привязать к телефону" s1 OnMasterSecur1 ]
+                    ++ [ phoneInput s1 model.adminPhone OnAdminPhone ]
+                    ++ [ item1_ 2 "Установить пароль доступа" s2 OnMasterSecur1 ]
+                    ++ [ codeInput s2 model.adminCode OnAdminCode ]
+            ]
+        ]
+
+
+masterPage3Help : ( Bool, Bool ) -> String
+masterPage3Help ( s1, s2 ) =
+    case s1 of
+        _ ->
+            "Чтобы никто посторонний не смог получить управление вашим устройством, установите дополнительную защиту"
+
+
+phoneInput : Bool -> String -> (String -> cmd) -> Html cmd
+phoneInput en code_ cmd_ =
+    case en of
+        False ->
+            row
+                [ Html.div [ class "col s12 m10 offset-m1 l6 offset-l3" ] [ Html.text "Управление будет возможно с любого телефона." ] ]
+
+        True ->
+            row
+                [ Html.div
+                    [ class "col s12 m10 offset-m1 l5 offset-l3" ]
+                    [ Html.input
+                        [ HA.class "sms_code"
+                        , HA.type_ "tel"
+                        , HA.placeholder "В формате +380..."
+                        , HA.value code_
+                        , HA.autofocus True
+                        , HE.onInput cmd_
+                        , HA.pattern "[0-9]{12}"
+                        ]
+                        []
+                    ]
+                , Html.div [ class "col s12 m10 offset-m1 l6 offset-l3" ] <|
+                    case code_ of
+                        "" ->
+                            [ Html.text "Управление будет возможно с любого телефона." ]
+
+                        _ ->
+                            [ Html.text "Управление будет возможно только с телефона:"
+                            , Html.span [ HA.style "font-weight" "bold" ] [ Html.text code_ ]
+                            ]
+                ]
+
+
+codeInput : Bool -> String -> (String -> cmd) -> Html cmd
+codeInput en code_ cmd_ =
+    case en of
+        False ->
+            row
+                [ Html.div [ class "col s12 m10 offset-m1 l6 offset-l3" ]
+                    [ Html.text "SMS-команды управления имеют вид: "
+                    , Html.span [ HA.style "font-weight" "bold" ] [ Html.text "link" ]
+                    ]
+                ]
+
+        True ->
+            row
+                [ Html.div
+                    [ class "col s12 m10 offset-m1 l5 offset-l3" ]
+                    [ Html.input
+                        [ HA.class "sms_code"
+                        , HA.placeholder "Только латинские символы или цифры"
+                        , HA.value code_
+                        , HA.autofocus True
+                        , HE.onInput cmd_
+                        , HA.pattern "[A-Za-z0-9]{6}"
+                        ]
+                        []
+                    ]
+                , Html.div [ class "col s12 m10 offset-m1 l6 offset-l3" ]
+                    [ Html.text <| "SMS-команды управления имеют вид: "
+                    , Html.span [ HA.style "font-weight" "bold" ] [ Html.text <| code_ ++ " link" ]
+                    ]
+                ]
