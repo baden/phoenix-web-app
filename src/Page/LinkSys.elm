@@ -123,7 +123,7 @@ view model =
                     [ page_5 model ]
     in
         div [ class "container" ] <|
-            [ UI.title_item "Мастер добавления систем"
+            [ UI.title_item "Мастер добавления трекеров"
             ]
                 ++ [ UI.master masterPage ]
                 ++ [ UI.row_item [ UI.linkIconTextButton "clone" "Вернуться к списку объектов" "/" ] ]
@@ -166,7 +166,7 @@ page_3 model =
         [ MasterElementText "1. Исходное состояние: трекер – выключен."
         , MasterElementText "2. Обесточьте все привязываемые экзекуторы и подготовьте их к подаче питания."
         , MasterElementText "3. Нажмите и удерживайте 3 секунды кнопку ON-OFF трекера – загорится светодиод."
-        , MasterElementText "4. Как только загорится светодиод – подайте питание на все привязываемые экзекуторы – экзекуторы привяжутся, светодиод потухнет и на 4 часа включится GSM-модуль – светодиод начнёт отрабатывать редкие тройные вспышки."
+        , MasterElementText "4. Как только светодиод загорится – подайте питание на все привязываемые экзекуторы – светодиод отработает серию частых вспышек и начнёт отрабатывать редкие одиночные вспышки."
         , MasterElementText "5. Закройте крышку корпуса трекера и закрутите 4 винта."
         , MasterElementPrev OnPrev
         , MasterElementCmdButton "L" OnLedHelp
@@ -215,9 +215,8 @@ ledHelpDialogView s =
             , UI.ModalIconText "images/gifs/led_fast_flash.gif" "Серия частых вспышек – включение трекера"
             , UI.ModalIconText "images/gifs/led_slow_flash.gif" "Редкие одиночные вспышки – режим трекера"
             , UI.ModalIconText "images/gifs/led_slow2_flash.gif" "Редкие двойные вспышки – зарегистрированы спутники"
-            , UI.ModalIconText "images/gifs/led_slow3_flash.gif" "Редкие тройные вспышки – режим установки, GSM-модуль включён"
             , UI.ModalIconText "images/gifs/led_long_flash.gif" "Серия нечастых вспышек – выключение трекера"
-            , UI.ModalIconText "images/gifs/LedOn.png" "Горит 5 секунд – процедура привязки экзекуторов"
+            , UI.ModalIconText "images/gifs/led_5sec_flash.gif" "Горит 5 секунд – привязка экзекуторов"
             ]
             [ UI.cmdButton "Закрыть" (OnLedHelpCancel)
             ]

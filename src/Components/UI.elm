@@ -324,7 +324,7 @@ modal text_title content buttons =
                         Html.p [] [ Html.img [ HA.style "margin" "-3px 10px -3px 0", src <| "static/" ++ icon ] [], Html.text text_value ]
 
                     -- ModalIconText icon text_value ->
-                    --     Html.p [] [ Html.div [ HA.class "led_flash led_slow_flash" ] [], Html.text text_value ]
+                    --     Html.p [] [ Html.div [ HA.class "led_flash led_fast_flash" ] [], Html.text text_value ]
                     ModalHtml html ->
                         html
             )

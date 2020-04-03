@@ -182,14 +182,25 @@ span.title {
 .led_fast_flash {
     /* -webkit-animation: led_fast_flashs 0.12s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
             animation: led_fast_flashs 0.12s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite; */
-    -webkit-animation: led_fast_flashs 0.12s linear infinite;
-            animation: led_fast_flashs 0.12s linear infinite;
+    /* -webkit-animation: led_fast_flashs 0.12s linear infinite;
+            animation: led_fast_flashs 0.12s linear infinite; */
+
+    animation: bg 1s steps(1) infinite;
 }
 
 .led_slow_flash {
     -webkit-animation: led_fast_flashs 1.0s linear infinite;
             animation: led_fast_flashs 1.0s linear infinite;
 
+}
+
+@keyframes bg {
+  0% {
+    background: red;
+  }
+  10% {
+    background: black;
+  }
 }
 
 @-webkit-keyframes led_fast_flashs {
