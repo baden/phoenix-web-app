@@ -142,9 +142,9 @@ systemConfigRec =
     { get = .systemConfig
     , set = \newModel model -> { model | systemConfig = newModel }
     , update = PUT_Public SystemConfig.update
+    , view = PT_SystemParams SystemConfig.view
 
-    -- , view = PT_SystemParams SystemConfig.view
-    , view = PT_System SystemConfig.view
+    -- , view = PT_System SystemConfig.view
     , msg = SystemConfigMsg
     }
 
@@ -524,6 +524,10 @@ view model =
         }
 
 
+
+-- TODO: Тут бы провести глобальную унификацию!
+
+
 viewPage : Model -> Html Msg
 viewPage model =
     case model.page of
@@ -581,8 +585,15 @@ view4SystemRec sysId model ir =
         PT_System v ->
             view4System sysId model (v model.appState (ir.get model) >> Html.map (ir.msg >> OnPageMsg))
 
-        -- PT_SystemParams v ->
-        --     view4SystemParams sysId model (v model.appState (ir.get model) >> Html.map (ir.msg >> OnPageMsg))
+        PT_SystemParams v ->
+            case Dict.get sysId model.systems of
+                Nothing ->
+                    (Html.div [] [ Html.text "Error" ]) |> Html.map (ir.msg >> OnPageMsg)
+
+                Just system ->
+                    (v model.appState (ir.get model) system (model.params |> Dict.get sysId)) |> Html.map (ir.msg >> OnPageMsg)
+
+        -- view4SystemParams sysId model (v model.appState (ir.get model) >> Html.map (ir.msg >> OnPageMsg))
         PT_Nodata v ->
             v (ir.get model) |> Html.map (ir.msg >> OnPageMsg)
 
@@ -603,18 +614,21 @@ view4System sysId model pageView =
             pageView system
 
 
+view4SystemParams : String -> Model -> (SystemDocumentInfo -> Maybe SystemDocumentParams -> Html Msg) -> Html Msg
+view4SystemParams sysId model pageView =
+    case Dict.get sysId model.systems of
+        Nothing ->
+            Html.div []
+                [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра."
+                , Html.a [ HA.class "btn", HA.href "/" ] [ Html.text "Вернуться на главную" ]
+                ]
 
--- view4SystemParams : String -> Model -> (SystemDocumentInfo -> Html Msg) -> Html Msg
--- view4SystemParams sysId model pageView =
---     case Dict.get sysId model.systems of
---         Nothing ->
---             Html.div []
---                 [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра."
---                 , Html.a [ HA.class "btn", HA.href "/" ] [ Html.text "Вернуться на главную" ]
---                 ]
---
---         Just system ->
---             pageView system (model.params |> Dict.get sysId)
+        Just system ->
+            pageView system Nothing
+
+
+
+--(model.params |> Dict.get sysId)
 -- SystemInfo.view model.appState model.info system |> Html.map SystemInfoMsg
 
 

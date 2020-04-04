@@ -16,7 +16,7 @@ configCustomView model sysId sysparams =
             errorMsg ++ footer
 
         Just params ->
-            warnMgs ++ footer
+            warnMgs ++ (paramsWidget sysId params) ++ footer
 
 
 warnMgs : List (UI Msg)
@@ -32,3 +32,19 @@ errorMsg =
 footer : List (UI Msg)
 footer =
     [ row [ UI.cmdTextIconButton "times-circle" "Отмена" (OnCancelMaster) ] ]
+
+
+paramsWidget : String -> SystemDocumentParams -> List (UI Msg)
+paramsWidget sysId params =
+    let
+        prow ( name, { type_, value, default } ) =
+            Html.div [ HA.class "row" ]
+                [ Html.div [ HA.class "col s6 m3 offset-m3 l2 offset-l4 left-align" ] [ Html.text name ]
+                , Html.div [ HA.class "col s6 m3 l2 right-align" ]
+                    [ Html.text <| value ++ " "
+                    , cmdIconButton "edit" (OnStartEditParam name)
+                    ]
+                ]
+    in
+        params.data
+            |> List.map prow

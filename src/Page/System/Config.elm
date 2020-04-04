@@ -106,6 +106,9 @@ update msg model =
         OnMasterCustom ->
             ( { model | showState = SS_Custom }, Cmd.none, Nothing )
 
+        OnStartEditParam _ ->
+            ( model, Cmd.none, Nothing )
+
         OnNoCmd ->
             ( model, Cmd.none, Nothing )
 
@@ -116,11 +119,11 @@ loadParams sysId =
 
 
 
--- view : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> UI Msg
+-- view : AppState.AppState -> Model -> SystemDocumentInfo -> UI Msg
 
 
-view : AppState.AppState -> Model -> SystemDocumentInfo -> UI Msg
-view appState model system =
+view : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> UI Msg
+view appState model system mparams =
     container <|
         [ header_expander
         , row
@@ -129,8 +132,8 @@ view appState model system =
             , UI.cmdIconButton "edit" (OnTitleChangeStart system.title)
             ]
         ]
-            -- ++ (viewContainer appState model system mparams)
-            ++ (viewContainer appState model system Nothing)
+            ++ (viewContainer appState model system mparams)
+            -- ++ (viewContainer appState model system Nothing)
             ++ (titleChangeDialogView model system.id)
             ++ (viewRemoveWidget model)
 

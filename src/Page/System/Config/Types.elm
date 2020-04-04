@@ -52,6 +52,7 @@ type Msg
     | OnConfirmRemove
     | OnAdminPhone String
     | OnAdminCode String
+    | OnStartEditParam String
 
 
 
