@@ -23,7 +23,7 @@ import Page.GlobalMap as GlobalMap
 import Page.LinkSys as LinkSys
 import API
 import API.Account exposing (AccountDocumentInfo, fixSysListRequest)
-import API.System exposing (SystemDocumentInfo, SystemDocumentLog)
+import API.System exposing (SystemDocumentInfo, SystemDocumentLog, SystemDocumentParams)
 import API.Error exposing (errorMessageString)
 import Dict exposing (Dict)
 import Task
@@ -74,6 +74,7 @@ init flags url key =
             , account = Nothing
             , systems = Dict.empty
             , logs = Dict.empty
+            , params = Dict.empty
             , errorMessage = Nothing
             , appState = AppState.initModel
             , connectionState = NotConnected
@@ -141,6 +142,8 @@ systemConfigRec =
     { get = .systemConfig
     , set = \newModel model -> { model | systemConfig = newModel }
     , update = PUT_Public SystemConfig.update
+
+    -- , view = PT_SystemParams SystemConfig.view
     , view = PT_System SystemConfig.view
     , msg = SystemConfigMsg
     }
@@ -393,6 +396,15 @@ update msg model =
                         , Cmd.none
                         )
 
+                    Just (API.Document sysId (API.SystemParamsDocument document)) ->
+                        let
+                            _ =
+                                Debug.log "params" document
+                        in
+                            ( { model | params = Dict.insert sysId document model.params }
+                            , Cmd.none
+                            )
+
                     Just (API.Error error) ->
                         case errorMessageString error of
                             Nothing ->
@@ -462,7 +474,7 @@ computeViewForPage page model =
                 ( init_model, init_cmd ) =
                     SystemConfig.init (Just s)
             in
-                ( { model | systemConfig = init_model }, Cmd.none )
+                ( { model | systemConfig = init_model }, Cmd.map (SystemConfigMsg >> OnPageMsg) init_cmd )
 
         Route.SystemLogs s ->
             let
@@ -569,6 +581,8 @@ view4SystemRec sysId model ir =
         PT_System v ->
             view4System sysId model (v model.appState (ir.get model) >> Html.map (ir.msg >> OnPageMsg))
 
+        -- PT_SystemParams v ->
+        --     view4SystemParams sysId model (v model.appState (ir.get model) >> Html.map (ir.msg >> OnPageMsg))
         PT_Nodata v ->
             v (ir.get model) |> Html.map (ir.msg >> OnPageMsg)
 
@@ -590,6 +604,17 @@ view4System sysId model pageView =
 
 
 
+-- view4SystemParams : String -> Model -> (SystemDocumentInfo -> Html Msg) -> Html Msg
+-- view4SystemParams sysId model pageView =
+--     case Dict.get sysId model.systems of
+--         Nothing ->
+--             Html.div []
+--                 [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра."
+--                 , Html.a [ HA.class "btn", HA.href "/" ] [ Html.text "Вернуться на главную" ]
+--                 ]
+--
+--         Just system ->
+--             pageView system (model.params |> Dict.get sysId)
 -- SystemInfo.view model.appState model.info system |> Html.map SystemInfoMsg
 
 

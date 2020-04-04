@@ -17,8 +17,11 @@ module API.System
         , prolongSleep
         , cancelSystemState
         , getLogs
+        , getParams
         , SystemDocumentLog
+        , SystemDocumentParams
         , systemDocumentLogDecoder
+        , systemDocumentParamsDecoder
         )
 
 import Json.Decode as JD
@@ -298,6 +301,36 @@ type alias SystemDocumentLog =
     }
 
 
+type alias SystemDocumentParams =
+    { id : String -- Дублирующее поле?
+    , data : List ( String, SystemDocumentParam )
+    , queue : List ( String, String )
+    }
+
+
+systemDocumentParamsDecoder : JD.Decoder SystemDocumentParams
+systemDocumentParamsDecoder =
+    JD.succeed SystemDocumentParams
+        |> required "id" JD.string
+        |> required "data" (JD.keyValuePairs systemDocumentParamDecoder)
+        |> required "queue" (JD.keyValuePairs JD.string)
+
+
+type alias SystemDocumentParam =
+    { type_ : String
+    , value : String
+    , default : String
+    }
+
+
+systemDocumentParamDecoder : JD.Decoder SystemDocumentParam
+systemDocumentParamDecoder =
+    JD.succeed SystemDocumentParam
+        |> required "type" JD.string
+        |> required "value" JD.string
+        |> required "default" JD.string
+
+
 
 -- type alias SystemDocumentLogs =
 --     List SystemDocumentLog
@@ -414,6 +447,14 @@ getLogs sysId offset =
         , ( "id", Encode.string sysId )
         , ( "skip", Encode.int offset )
         , ( "count", Encode.int 20 )
+        ]
+
+
+getParams : String -> Encode.Value
+getParams sysId =
+    Encode.object
+        [ ( "cmd", Encode.string "system_params" )
+        , ( "id", Encode.string sysId )
         ]
 
 

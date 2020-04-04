@@ -37,7 +37,7 @@ type Msg
     | OnTitleChange String
     | OnTitleConfirm String String
     | OnTitleCancel
-    | OnStartMaster
+    | OnStartMaster String
     | OnCancelMaster
     | OnMasterEco1 Int Bool
     | OnMasterTrack1 Int Bool

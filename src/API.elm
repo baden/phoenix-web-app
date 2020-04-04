@@ -30,6 +30,7 @@ type DocumentInfo
     | SystemDocument System.SystemDocumentInfo
     | SystemDocumentDynamic System.Dynamic
     | SystemLogsDocument (List System.SystemDocumentLog)
+    | SystemParamsDocument System.SystemDocumentParams
 
 
 parsePayload : String -> Maybe APIContent
@@ -99,6 +100,9 @@ documentDecoder =
 
                         "system_logs" ->
                             JD.map SystemLogsDocument (JD.list System.systemDocumentLogDecoder)
+
+                        "system_params" ->
+                            JD.map SystemParamsDocument System.systemDocumentParamsDecoder
 
                         _ ->
                             JD.fail ("unexpected document " ++ c)

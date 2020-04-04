@@ -8,7 +8,7 @@ import Page.Home as Home
 import Page.Login as Login
 import Page.LinkSys as LinkSys
 import API.Account exposing (AccountDocumentInfo, fixSysListRequest)
-import API.System exposing (SystemDocumentInfo, SystemDocumentLog)
+import API.System exposing (SystemDocumentInfo, SystemDocumentLog, SystemDocumentParams)
 import AppState
 import Page.GlobalMap as GlobalMap
 import Page.System.Info.Types as SystemInfoTypes
@@ -41,6 +41,7 @@ type alias Model =
     , account : Maybe AccountDocumentInfo
     , systems : Dict String SystemDocumentInfo
     , logs : Dict String (List SystemDocumentLog)
+    , params : Dict String SystemDocumentParams
     , errorMessage : Maybe String -- Надо бы расширить функцилнал
     , appState : AppState.AppState
     , connectionState : ConnectionState
@@ -90,6 +91,7 @@ type alias Flags =
 
 type PageType pageModel pageMsg
     = PT_System (AppState.AppState -> pageModel -> SystemDocumentInfo -> Html pageMsg)
+      -- | PT_SystemParams (AppState.AppState -> pageModel -> SystemDocumentInfo -> Maybe SystemDocumentParams -> Html pageMsg)
     | PT_Nodata (pageModel -> Html pageMsg)
     | PT_Full (AppState.AppState -> pageModel -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Html pageMsg)
 

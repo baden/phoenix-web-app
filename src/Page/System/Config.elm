@@ -5,7 +5,7 @@ import Page.System.Config.Dialogs exposing (..)
 import Page.System.Config.Master exposing (..)
 import Page.System.Config.Custom exposing (..)
 import AppState
-import API.System as System exposing (SystemDocumentInfo, State, State(..))
+import API.System as System exposing (SystemDocumentInfo, State, State(..), SystemDocumentParams)
 import Components.UI as UI exposing (..)
 import API
 import Msg as GMsg
@@ -94,8 +94,8 @@ update msg model =
 
         -- OnShowState s ->
         --     ( { model | showState = s }, Cmd.none, Nothing )
-        OnStartMaster ->
-            ( { model | showState = SS_Master, showMasterDialog = MasterPage1 }, loadParams, Nothing )
+        OnStartMaster s ->
+            ( { model | showState = SS_Master, showMasterDialog = MasterPage1 }, loadParams s, Nothing )
 
         OnCancelMaster ->
             ( { model | showState = SS_Root }, Cmd.none, Nothing )
@@ -110,9 +110,13 @@ update msg model =
             ( model, Cmd.none, Nothing )
 
 
-loadParams : Cmd Msg
-loadParams =
-    Cmd.none
+loadParams : String -> Cmd Msg
+loadParams sysId =
+    API.websocketOut <| System.getParams sysId
+
+
+
+-- view : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> UI Msg
 
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> UI Msg
@@ -125,17 +129,18 @@ view appState model system =
             , UI.cmdIconButton "edit" (OnTitleChangeStart system.title)
             ]
         ]
-            ++ (viewContainer appState model system)
+            -- ++ (viewContainer appState model system mparams)
+            ++ (viewContainer appState model system Nothing)
             ++ (titleChangeDialogView model system.id)
             ++ (viewRemoveWidget model)
 
 
-viewContainer : AppState.AppState -> Model -> SystemDocumentInfo -> List (UI Msg)
-viewContainer appState model system =
+viewContainer : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> List (UI Msg)
+viewContainer appState model system mparams =
     case model.showState of
         SS_Root ->
             [ row [ cmdTextIconButton "edit" "Изменить название" (OnTitleChangeStart system.title) ]
-            , row [ cmdTextIconButton "cogs" "Конфигурация" OnStartMaster ]
+            , row [ cmdTextIconButton "cogs" "Конфигурация" (OnStartMaster system.id) ]
             , row [ linkIconTextButton "clone" "Выбрать другой объект" "/" ]
             , row [ linkIconTextButton "plus-square" "Добавить объект" "/linksys" ]
             , row [ cmdTextIconButton "trash" "Удалить" (OnRemove system.id) ]
@@ -145,7 +150,7 @@ viewContainer appState model system =
             masterDialogView model system.id
 
         SS_Custom ->
-            configCustomView model system.id
+            configCustomView model system.id mparams
 
 
 

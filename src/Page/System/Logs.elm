@@ -23,16 +23,20 @@ type Msg
 
 init : Maybe String -> ( Model, Cmd Msg )
 init sysId =
-    ( { sysId = sysId
-      , expanded = False
-      }
-    , case sysId of
-        Nothing ->
-            Cmd.none
+    let
+        _ =
+            Debug.log "SystemLogs.init" (sysId)
+    in
+        ( { sysId = sysId
+          , expanded = False
+          }
+        , case sysId of
+            Nothing ->
+                Cmd.none
 
-        Just s ->
-            getLogs s 100000000000
-    )
+            Just s ->
+                getLogs s 100000000000
+        )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg, Maybe GMsg.UpMsg )
@@ -65,7 +69,7 @@ viewLogs : AppState.AppState -> Maybe (List SystemDocumentLog) -> List (UI Msg)
 viewLogs appState mlogs =
     case mlogs of
         Nothing ->
-            [ UI.row_item [ text "Не загружено." ] ]
+            [ UI.row_item [ text "Не загружено. Нажимте кнопку Обновить." ] ]
 
         Just logs ->
             let
