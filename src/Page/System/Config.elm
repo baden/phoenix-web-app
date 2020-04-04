@@ -2,6 +2,7 @@ module Page.System.Config exposing (init, update, view)
 
 import Page.System.Config.Types exposing (..)
 import Page.System.Config.Dialogs exposing (..)
+import Page.System.Config.Master exposing (..)
 import AppState
 import API.System as System exposing (SystemDocumentInfo, State, State(..))
 import Components.UI as UI exposing (..)
@@ -16,7 +17,8 @@ init =
       , offId = ""
       , showTitleChangeDialog = False
       , newTitle = ""
-      , showMasterDialog = Nothing
+      , showState = SS_Root
+      , showMasterDialog = MasterPage1
       , masterEcoValue = 1
       , masterTrackValue = 2
       , masterSecurValue = ( False, False )
@@ -48,12 +50,6 @@ update msg model =
 
         OnTitleCancel ->
             ( { model | showTitleChangeDialog = False }, Cmd.none, Nothing )
-
-        OnStartMaster ->
-            ( { model | showMasterDialog = Just MasterPage1 }, Cmd.none, Nothing )
-
-        OnCancelMaster ->
-            ( { model | showMasterDialog = Nothing }, Cmd.none, Nothing )
 
         OnMasterEco1 val _ ->
             ( { model | masterEcoValue = val }, Cmd.none, Nothing )
@@ -94,6 +90,17 @@ update msg model =
         OnAdminCode s ->
             ( { model | adminCode = s }, Cmd.none, Nothing )
 
+        -- OnShowState s ->
+        --     ( { model | showState = s }, Cmd.none, Nothing )
+        OnStartMaster ->
+            ( { model | showState = SS_Master, showMasterDialog = MasterPage1 }, Cmd.none, Nothing )
+
+        OnCancelMaster ->
+            ( { model | showState = SS_Root }, Cmd.none, Nothing )
+
+        OnConfirmMaster ->
+            ( { model | showState = SS_Root }, Cmd.none, Nothing )
+
         OnNoCmd ->
             ( model, Cmd.none, Nothing )
 
@@ -107,15 +114,25 @@ view appState model system =
             , stitle system.title
             , UI.cmdIconButton "edit" (OnTitleChangeStart system.title)
             ]
-        , row [ cmdTextIconButton "edit" "Изменить название" (OnTitleChangeStart system.title) ]
-        , row [ cmdTextIconButton "cogs" "Конфигурация" OnStartMaster ]
-        , row [ linkIconTextButton "clone" "Выбрать другой объект" "/" ]
-        , row [ linkIconTextButton "plus-square" "Добавить объект" "/linksys" ]
-        , row [ cmdTextIconButton "trash" "Удалить" (OnRemove system.id) ]
         ]
+            ++ (viewContainer appState model system)
             ++ (titleChangeDialogView model system.id)
-            ++ (masterDialogView model system.id)
             ++ (viewRemoveWidget model)
+
+
+viewContainer : AppState.AppState -> Model -> SystemDocumentInfo -> List (UI Msg)
+viewContainer appState model system =
+    case model.showState of
+        SS_Root ->
+            [ row [ cmdTextIconButton "edit" "Изменить название" (OnTitleChangeStart system.title) ]
+            , row [ cmdTextIconButton "cogs" "Конфигурация" OnStartMaster ]
+            , row [ linkIconTextButton "clone" "Выбрать другой объект" "/" ]
+            , row [ linkIconTextButton "plus-square" "Добавить объект" "/linksys" ]
+            , row [ cmdTextIconButton "trash" "Удалить" (OnRemove system.id) ]
+            ]
+
+        SS_Master ->
+            masterDialogView model system.id
 
 
 

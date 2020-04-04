@@ -1,6 +1,11 @@
 module Page.System.Config.Types exposing (..)
 
 
+type ShowState
+    = SS_Root
+    | SS_Master
+
+
 type MasterPage
     = MasterPage1
     | MasterPage2
@@ -13,7 +18,8 @@ type alias Model =
     , offId : String
     , showTitleChangeDialog : Bool
     , newTitle : String
-    , showMasterDialog : Maybe MasterPage
+    , showState : ShowState
+    , showMasterDialog : MasterPage
     , masterEcoValue : Int
     , masterTrackValue : Int
     , masterSecurValue : ( Bool, Bool )
@@ -36,6 +42,7 @@ type Msg
     | OnMasterSecur1 Int Bool
     | OnMasterNext
     | OnMasterPrev
+    | OnConfirmMaster
     | OnNoCmd
     | OnRemove String
     | OnCancelRemove
@@ -45,4 +52,5 @@ type Msg
 
 
 
+-- | OnShowState ShowState
 -- | OnAdminPhoneDone
