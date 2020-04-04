@@ -29,6 +29,7 @@ import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Json.Encode as Encode
 import API.Document as Document
 import Types.Dt as DT
+import Dict exposing (Dict)
 
 
 -- type alias SysId =
@@ -304,7 +305,7 @@ type alias SystemDocumentLog =
 type alias SystemDocumentParams =
     { id : String -- Дублирующее поле?
     , data : List ( String, SystemDocumentParam )
-    , queue : List ( String, String )
+    , queue : Dict String String
     }
 
 
@@ -313,7 +314,7 @@ systemDocumentParamsDecoder =
     JD.succeed SystemDocumentParams
         |> required "id" JD.string
         |> required "data" (JD.keyValuePairs systemDocumentParamDecoder)
-        |> required "queue" (JD.keyValuePairs JD.string)
+        |> required "queue" (JD.dict JD.string)
 
 
 type alias SystemDocumentParam =

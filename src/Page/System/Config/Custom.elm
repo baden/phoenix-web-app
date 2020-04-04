@@ -37,14 +37,28 @@ footer =
 paramsWidget : String -> SystemDocumentParams -> List (UI Msg)
 paramsWidget sysId params =
     let
-        prow ( name, { type_, value, default } ) =
-            Html.div [ HA.class "row" ]
-                [ Html.div [ HA.class "col s6 m3 offset-m3 l2 offset-l4 left-align" ] [ Html.text name ]
-                , Html.div [ HA.class "col s6 m3 l2 right-align" ]
-                    [ Html.text <| value ++ " "
-                    , cmdIconButton "edit" (OnStartEditParam name)
+        prow queue ( name, { type_, value, default } ) =
+            let
+                valueField =
+                    case Dict.get name queue of
+                        Nothing ->
+                            [ Html.span [ HA.class "params params_default" ] [ Html.text value ]
+                            , cmdIconButton "edit" (OnStartEditParam name)
+                            ]
+
+                        Just expect ->
+                            [ Html.span [ HA.class "params params_waited" ]
+                                [ Html.text value
+                                , Html.i [ HA.class "fas fa-arrow-right", HA.style "margin" "0 5px 0 5px" ] []
+                                , Html.text expect
+                                ]
+                            , cmdIconButtonR "trash-restore" (OnStartEditParam name)
+                            ]
+            in
+                Html.div [ HA.class "row" ]
+                    [ Html.div [ HA.class "col s6 m3 offset-m3 l2 offset-l4 left-align" ] [ Html.text name ]
+                    , Html.div [ HA.class "col s6 m3 l2 right-align" ] valueField
                     ]
-                ]
     in
         params.data
-            |> List.map prow
+            |> List.map (prow params.queue)

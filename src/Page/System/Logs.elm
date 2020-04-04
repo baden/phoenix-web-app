@@ -23,20 +23,16 @@ type Msg
 
 init : Maybe String -> ( Model, Cmd Msg )
 init sysId =
-    let
-        _ =
-            Debug.log "SystemLogs.init" (sysId)
-    in
-        ( { sysId = sysId
-          , expanded = False
-          }
-        , case sysId of
-            Nothing ->
-                Cmd.none
+    ( { sysId = sysId
+      , expanded = False
+      }
+    , case sysId of
+        Nothing ->
+            Cmd.none
 
-            Just s ->
-                getLogs s 100000000000
-        )
+        Just s ->
+            getLogs s 100000000000
+    )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg, Maybe GMsg.UpMsg )

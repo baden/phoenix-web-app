@@ -397,13 +397,13 @@ update msg model =
                         )
 
                     Just (API.Document sysId (API.SystemParamsDocument document)) ->
-                        let
-                            _ =
-                                Debug.log "params" document
-                        in
-                            ( { model | params = Dict.insert sysId document model.params }
-                            , Cmd.none
-                            )
+                        -- let
+                        --     _ =
+                        --         Debug.log "params" document
+                        -- in
+                        ( { model | params = Dict.insert sysId document model.params }
+                        , Cmd.none
+                        )
 
                     Just (API.Error error) ->
                         case errorMessageString error of

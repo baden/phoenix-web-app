@@ -235,3 +235,16 @@ span.title {
         background-color: black;
     }
 }
+
+span.params {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+span.params_default {
+}
+
+span.params_waited {
+    color: green;
+    font-weight: bold;
+}
