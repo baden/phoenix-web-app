@@ -4,6 +4,7 @@ module Page.System.Config.Types exposing (..)
 type ShowState
     = SS_Root
     | SS_Master
+    | SS_Custom
 
 
 type MasterPage
@@ -27,6 +28,7 @@ type alias Model =
     , removeId : String
     , adminPhone : String
     , adminCode : String
+    , systemId : Maybe String
     }
 
 
@@ -42,6 +44,7 @@ type Msg
     | OnMasterSecur1 Int Bool
     | OnMasterNext
     | OnMasterPrev
+    | OnMasterCustom
     | OnConfirmMaster
     | OnNoCmd
     | OnRemove String

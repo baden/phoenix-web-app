@@ -3,6 +3,7 @@ module Page.System.Config exposing (init, update, view)
 import Page.System.Config.Types exposing (..)
 import Page.System.Config.Dialogs exposing (..)
 import Page.System.Config.Master exposing (..)
+import Page.System.Config.Custom exposing (..)
 import AppState
 import API.System as System exposing (SystemDocumentInfo, State, State(..))
 import Components.UI as UI exposing (..)
@@ -10,8 +11,8 @@ import API
 import Msg as GMsg
 
 
-init : ( Model, Cmd Msg )
-init =
+init : Maybe String -> ( Model, Cmd Msg )
+init sysId =
     ( { extendInfo = False
       , showConfirmOffDialog = False
       , offId = ""
@@ -26,6 +27,7 @@ init =
       , removeId = ""
       , adminPhone = ""
       , adminCode = ""
+      , systemId = sysId
       }
     , Cmd.none
     )
@@ -93,7 +95,7 @@ update msg model =
         -- OnShowState s ->
         --     ( { model | showState = s }, Cmd.none, Nothing )
         OnStartMaster ->
-            ( { model | showState = SS_Master, showMasterDialog = MasterPage1 }, Cmd.none, Nothing )
+            ( { model | showState = SS_Master, showMasterDialog = MasterPage1 }, loadParams, Nothing )
 
         OnCancelMaster ->
             ( { model | showState = SS_Root }, Cmd.none, Nothing )
@@ -101,8 +103,16 @@ update msg model =
         OnConfirmMaster ->
             ( { model | showState = SS_Root }, Cmd.none, Nothing )
 
+        OnMasterCustom ->
+            ( { model | showState = SS_Custom }, Cmd.none, Nothing )
+
         OnNoCmd ->
             ( model, Cmd.none, Nothing )
+
+
+loadParams : Cmd Msg
+loadParams =
+    Cmd.none
 
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> UI Msg
@@ -133,6 +143,9 @@ viewContainer appState model system =
 
         SS_Master ->
             masterDialogView model system.id
+
+        SS_Custom ->
+            configCustomView model system.id
 
 
 

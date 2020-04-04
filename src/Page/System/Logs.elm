@@ -12,7 +12,8 @@ import Components.DateTime exposing (dateTimeFormat)
 
 
 type alias Model =
-    { expanded : Bool
+    { sysId : Maybe String
+    , expanded : Bool
     }
 
 
@@ -20,11 +21,17 @@ type Msg
     = OnToday String Int
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( { expanded = False
+init : Maybe String -> ( Model, Cmd Msg )
+init sysId =
+    ( { sysId = sysId
+      , expanded = False
       }
-    , Cmd.none
+    , case sysId of
+        Nothing ->
+            Cmd.none
+
+        Just s ->
+            getLogs s 100000000000
     )
 
 
@@ -49,7 +56,7 @@ view appState model system logs =
             ]
         , row_item [ text "События" ]
         , row
-            [ UI.cmdTextIconButton "list-ol" "Загрузить" (OnToday system.id 100000000000) ]
+            [ UI.cmdTextIconButton "sync" "Обновить" (OnToday system.id 100000000000) ]
         ]
             ++ viewLogs appState logs
 

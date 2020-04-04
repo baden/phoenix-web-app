@@ -61,6 +61,7 @@ masterDialogView model sysId =
 masterFooterFirst : List (UI Msg)
 masterFooterFirst =
     [ UI.cmdTextIconButton "times-circle" "Отмена" (OnCancelMaster)
+    , UI.cmdTextIconButton "cogs" "Ручное" (OnMasterCustom)
     , UI.cmdTextIconButton "arrow-right" "Далее" (OnMasterNext)
     ]
 

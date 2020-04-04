@@ -53,10 +53,10 @@ init flags url key =
             SystemInfo.init
 
         ( systemConfigModel, _ ) =
-            SystemConfig.init
+            SystemConfig.init Nothing
 
         ( systemLogsModel, _ ) =
-            SystemLogs.init
+            SystemLogs.init Nothing
 
         model =
             { token = flags.token
@@ -301,20 +301,18 @@ update msg model =
                     ( model, Nav.load href )
 
         UrlChanged url ->
-            let
-                setModel4Page page oldModel =
-                    { oldModel | page = page } |> computeViewForPage page
+            case Parser.parse Route.routeParser url of
+                Just page ->
+                    let
+                        updateModel =
+                            { model | page = page }
+                    in
+                        computeViewForPage page updateModel
 
-                -- _ =
-                --     Debug.log "UrlChanged" url
-            in
-                case Parser.parse Route.routeParser url of
-                    Just page ->
-                        ( setModel4Page page model, Cmd.none )
-
-                    Nothing ->
-                        -- 404 would be nice
-                        ( model, Cmd.none )
+                -- ( setModel4Page page model, Cmd.none )
+                Nothing ->
+                    -- 404 would be nice
+                    ( model, Cmd.none )
 
         WebsocketIn message ->
             let
@@ -448,14 +446,34 @@ update msg model =
             ( { model | showQrCode = False }, Cmd.none )
 
 
-computeViewForPage : Route.Page -> Model -> Model
+computeViewForPage : Route.Page -> Model -> ( Model, Cmd Msg )
 computeViewForPage page model =
     case page of
         Route.LinkSys ->
-            { model | linkSys = Tuple.first LinkSys.init }
+            let
+                ( init_model, init_cmd ) =
+                    LinkSys.init
+            in
+                ( { model | linkSys = init_model }, Cmd.none )
+
+        Route.SystemConfig s ->
+            let
+                --TOTO: systemConfigRec.init
+                ( init_model, init_cmd ) =
+                    SystemConfig.init (Just s)
+            in
+                ( { model | systemConfig = init_model }, Cmd.none )
+
+        Route.SystemLogs s ->
+            let
+                --TOTO: systemConfigRec.init
+                ( init_model, init_cmd ) =
+                    SystemLogs.init (Just s)
+            in
+                ( { model | systemLogs = init_model }, Cmd.map (SystemLogsMsg >> OnPageMsg) init_cmd )
 
         _ ->
-            model
+            ( model, Cmd.none )
 
 
 
