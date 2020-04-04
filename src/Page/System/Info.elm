@@ -204,6 +204,16 @@ viewNextSession dynamic =
 --    )
 
 
+maybeRow : String -> Maybe a -> (a -> String) -> List (Html Msg)
+maybeRow label field foo =
+    case field of
+        Nothing ->
+            []
+
+        Just v ->
+            [ UI.row_item [ text <| label ++ ": " ++ (foo v) ] ]
+
+
 viewInfoEntended : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
 viewInfoEntended appState model system =
     if model.extendInfo then
@@ -222,11 +232,14 @@ viewInfoEntended appState model system =
                     Just any_ ->
                         any_
         in
-            [ UI.row_item [ ChartSvg.chartView "Батарея" 80 ]
-            , UI.row_item [ text <| "IMEI: " ++ imei ]
-            , UI.row_item [ text <| "Номер телефона: " ++ phone ]
-            , UI.row [ UI.cmdTextIconButton "arrow-up" "Меньше информации" OnExtendInfo ]
-            ]
+            [ UI.row_item [ ChartSvg.chartView "Батарея" 80 ] ]
+                ++ (maybeRow "Плата" system.hwid identity)
+                ++ (maybeRow "Версия" system.swid identity)
+                ++ (maybeRow "IMEI" system.imei identity)
+                ++ (maybeRow "Номер телефона" system.phone identity)
+                ++ (maybeRow "Баланс" system.balance (\{ dt, value } -> String.fromFloat value))
+                ++ [ UI.row [ UI.cmdTextIconButton "arrow-up" "Меньше информации" OnExtendInfo ]
+                   ]
     else
         [ UI.row [ UI.cmdTextIconButton "arrow-down" "Больше информации…" OnExtendInfo ] ]
 

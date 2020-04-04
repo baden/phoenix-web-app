@@ -36,6 +36,19 @@ import Dict exposing (Dict)
 --     String
 
 
+type alias Balance =
+    { dt : DT.Dt
+    , value : Float
+    }
+
+
+balanceDecoder : JD.Decoder Balance
+balanceDecoder =
+    JD.succeed Balance
+        |> required "dt" DT.decoder
+        |> required "value" JD.float
+
+
 type alias SystemDocumentInfo =
     { id : String
     , title : String
@@ -45,6 +58,9 @@ type alias SystemDocumentInfo =
     -- , lastPosition : Maybe LastPosition
     -- , lastSession : Maybe LastSession
     , dynamic : Maybe Dynamic
+    , balance : Maybe Balance
+    , hwid : Maybe String
+    , swid : Maybe String
     }
 
 
@@ -58,6 +74,9 @@ systemDocumentDecoder =
         -- |> optional "last_position" (JD.maybe lastPositionDecoder) Nothing
         -- |> optional "last_session" (JD.maybe lastSessionDecoder) Nothing
         |> optional "dynamic" (JD.maybe dynamicDecoder) Nothing
+        |> optional "balance" (JD.maybe balanceDecoder) Nothing
+        |> optional "hwid" (JD.maybe JD.string) Nothing
+        |> optional "swid" (JD.maybe JD.string) Nothing
 
 
 type alias Dynamic =
