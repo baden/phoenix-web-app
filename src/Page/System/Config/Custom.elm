@@ -39,7 +39,7 @@ footer sysId queue =
         False ->
             [ Html.div [ HA.class "row param_row_filler" ] []
             , Html.div [ HA.class "params_footer right-align" ]
-                [ Html.div [ HA.class "container" ] [ UI.cmdTextIconButtonR "trash" "Очистить очередь" (OnClearQueue sysId) ] ]
+                [ Html.div [ HA.class "container" ] [ UI.cmdTextIconButtonR "trash" "Отменить внесенные изменения" (OnClearQueue sysId) ] ]
             ]
 
 
