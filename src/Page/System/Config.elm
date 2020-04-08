@@ -1,7 +1,7 @@
 module Page.System.Config exposing (init, update, view)
 
 import Page.System.Config.Types exposing (..)
-import Page.System.Config.Dialogs exposing (..)
+import Page.System.Config.Dialogs as Dialogs exposing (..)
 import Page.System.Config.Master exposing (..)
 import Page.System.Config.Custom exposing (..)
 import AppState
@@ -9,6 +9,7 @@ import API.System as System exposing (SystemDocumentInfo, State, State(..), Syst
 import Components.UI as UI exposing (..)
 import API
 import Msg as GMsg
+import Dict exposing (Dict)
 
 
 init : Maybe String -> ( Model, Cmd Msg )
@@ -28,6 +29,7 @@ init sysId =
       , adminPhone = ""
       , adminCode = ""
       , systemId = sysId
+      , showParamChangeDialog = Nothing
       }
     , Cmd.none
     )
@@ -106,8 +108,49 @@ update msg model =
         OnMasterCustom ->
             ( { model | showState = SS_Custom }, Cmd.none, Nothing )
 
-        OnStartEditParam _ ->
-            ( model, Cmd.none, Nothing )
+        OnStartEditParam sysId name value description ->
+            let
+                showParamChangeDialog =
+                    { name = name
+                    , value = value
+                    , sysId = sysId
+                    , description = description
+                    }
+            in
+                ( { model | showParamChangeDialog = Just showParamChangeDialog }, Cmd.none, Nothing )
+
+        OnRestoreParam sysId queue name ->
+            let
+                -- queue = model.
+                newQueue =
+                    Dict.remove name queue
+            in
+                ( model, paramsSetQueue sysId newQueue, Nothing )
+
+        OnChangeParamValue value ->
+            case model.showParamChangeDialog of
+                Nothing ->
+                    ( model, Cmd.none, Nothing )
+
+                Just showParamChangeDialog ->
+                    let
+                        newShowParamChangeDialog =
+                            { showParamChangeDialog | value = value }
+                    in
+                        ( { model | showParamChangeDialog = Just newShowParamChangeDialog }, Cmd.none, Nothing )
+
+        OnConfirmParam sysId oldQueue name value ->
+            let
+                newQueue =
+                    Dict.insert name value oldQueue
+            in
+                ( { model | showParamChangeDialog = Nothing }, paramsSetQueue sysId newQueue, Nothing )
+
+        OnClearQueue sysId ->
+            ( { model | showParamChangeDialog = Nothing }, paramsSetQueue sysId Dict.empty, Nothing )
+
+        OnCancelParam ->
+            ( { model | showParamChangeDialog = Nothing }, Cmd.none, Nothing )
 
         OnNoCmd ->
             ( model, Cmd.none, Nothing )
@@ -116,6 +159,11 @@ update msg model =
 loadParams : String -> Cmd Msg
 loadParams sysId =
     API.websocketOut <| System.getParams sysId
+
+
+paramsSetQueue : String -> Dict String String -> Cmd Msg
+paramsSetQueue sysId newQueue =
+    API.websocketOut <| System.paramQueue sysId newQueue
 
 
 
@@ -136,6 +184,7 @@ view appState model system mparams =
             -- ++ (viewContainer appState model system Nothing)
             ++ (titleChangeDialogView model system.id)
             ++ (viewRemoveWidget model)
+            ++ (Dialogs.paramChangeDialogView model mparams)
 
 
 viewContainer : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> List (UI Msg)

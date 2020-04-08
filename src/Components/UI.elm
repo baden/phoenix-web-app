@@ -7,6 +7,7 @@ module Components.UI
         , cmdIconButton
         , cmdIconButtonR
         , cmdTextIconButton
+        , cmdTextIconButtonR
         , formHeader
         , formInput
         , formPassword
@@ -71,6 +72,12 @@ cmdIconButtonR label cmd =
 cmdTextIconButton : String -> String -> m -> Html m
 cmdTextIconButton icon label cmd =
     Html.button [ class "waves-effect waves-light btn", onClick cmd ]
+        [ Html.i [ HA.class ("left fas fa-" ++ icon) ] [], Html.text label ]
+
+
+cmdTextIconButtonR : String -> String -> m -> Html m
+cmdTextIconButtonR icon label cmd =
+    Html.button [ class "waves-effect waves-light btn red", onClick cmd ]
         [ Html.i [ HA.class ("left fas fa-" ++ icon) ] [], Html.text label ]
 
 

@@ -5,18 +5,19 @@ import Components.UI as UI exposing (..)
 import Html exposing (Html, div, text, a, form, p, label, input, span)
 import Html.Attributes as HA exposing (class, href, attribute, type_, checked)
 import Html.Events as HE
-import Dict
+import Dict exposing (Dict)
 import API.System exposing (SystemDocumentParams)
+import Page.System.Config.ParamDesc as ParamDesc
 
 
 configCustomView : Model -> String -> Maybe SystemDocumentParams -> List (UI Msg)
 configCustomView model sysId sysparams =
     case sysparams of
         Nothing ->
-            errorMsg ++ footer
+            errorMsg ++ (footer sysId Dict.empty)
 
         Just params ->
-            warnMgs ++ (paramsWidget sysId params) ++ footer
+            warnMgs ++ (paramsWidget sysId params) ++ (footer sysId params.queue)
 
 
 warnMgs : List (UI Msg)
@@ -29,9 +30,17 @@ errorMsg =
     [ row [ UI.text "Ошибка загрузки или данные от трекера еще не получены." ] ]
 
 
-footer : List (UI Msg)
-footer =
-    [ row [ UI.cmdTextIconButton "times-circle" "Отмена" (OnCancelMaster) ] ]
+footer : String -> Dict String String -> List (UI Msg)
+footer sysId queue =
+    case Dict.isEmpty queue of
+        True ->
+            []
+
+        False ->
+            [ Html.div [ HA.class "row param_row_filler" ] []
+            , Html.div [ HA.class "params_footer right-align" ]
+                [ Html.div [ HA.class "container" ] [ UI.cmdTextIconButtonR "trash" "Очистить очередь" (OnClearQueue sysId) ] ]
+            ]
 
 
 paramsWidget : String -> SystemDocumentParams -> List (UI Msg)
@@ -43,7 +52,7 @@ paramsWidget sysId params =
                     case Dict.get name queue of
                         Nothing ->
                             [ Html.span [ HA.class "params params_default" ] [ Html.text value ]
-                            , cmdIconButton "edit" (OnStartEditParam name)
+                            , cmdIconButton "edit" (OnStartEditParam sysId name value (ParamDesc.description name))
                             ]
 
                         Just expect ->
@@ -52,12 +61,15 @@ paramsWidget sysId params =
                                 , Html.i [ HA.class "fas fa-arrow-right", HA.style "margin" "0 5px 0 5px" ] []
                                 , Html.text expect
                                 ]
-                            , cmdIconButtonR "trash-restore" (OnStartEditParam name)
+                            , cmdIconButtonR "trash-restore" (OnRestoreParam sysId queue name)
                             ]
             in
-                Html.div [ HA.class "row" ]
-                    [ Html.div [ HA.class "col s6 m3 offset-m3 l2 offset-l4 left-align" ] [ Html.text name ]
-                    , Html.div [ HA.class "col s6 m3 l2 right-align" ] valueField
+                Html.div [ HA.class "row param_row valign-wrapper" ]
+                    [ Html.div [ HA.class "col s8 m9 left-align" ]
+                        [ Html.div [ HA.class "name" ] [ Html.text name ]
+                        , Html.text (ParamDesc.description name)
+                        ]
+                    , Html.div [ HA.class "col s4 m3 right-align" ] valueField
                     ]
     in
         params.data

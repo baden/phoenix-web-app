@@ -18,6 +18,7 @@ module API.System
         , cancelSystemState
         , getLogs
         , getParams
+        , paramQueue
         , SystemDocumentLog
         , SystemDocumentParams
         , systemDocumentLogDecoder
@@ -332,8 +333,23 @@ systemDocumentParamsDecoder : JD.Decoder SystemDocumentParams
 systemDocumentParamsDecoder =
     JD.succeed SystemDocumentParams
         |> required "id" JD.string
-        |> required "data" (JD.keyValuePairs systemDocumentParamDecoder)
+        -- |> required "data" (JD.keyValuePairs systemDocumentParamDecoder)
+        |> required "data" (JD.keyValuePairs systemDocumentParamDecoder |> JD.andThen sortParamList)
         |> required "queue" (JD.dict JD.string)
+
+
+sortParamList : List ( String, SystemDocumentParam ) -> JD.Decoder (List ( String, SystemDocumentParam ))
+sortParamList =
+    JD.succeed << List.sortBy Tuple.first
+
+
+
+-- sortParamList : List ( String, SystemDocumentParam ) -> JD.Decoder (List ( String, SystemDocumentParam ))
+-- sortParamList l =
+--     l
+--         |> List.sortBy Tuple.first
+--         |> JD.succeed
+-- |> JD.map (List.sortBy Tuple.first >> List.map Tuple.second)
 
 
 type alias SystemDocumentParam =
@@ -475,6 +491,15 @@ getParams sysId =
     Encode.object
         [ ( "cmd", Encode.string "system_params" )
         , ( "id", Encode.string sysId )
+        ]
+
+
+paramQueue : String -> Dict String String -> Encode.Value
+paramQueue sysId queue =
+    Encode.object
+        [ ( "cmd", Encode.string "params_queue" )
+        , ( "id", Encode.string sysId )
+        , ( "value", Encode.dict identity Encode.string queue )
         ]
 
 

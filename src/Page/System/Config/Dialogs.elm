@@ -1,10 +1,12 @@
 module Page.System.Config.Dialogs exposing (..)
 
 import Page.System.Config.Types exposing (..)
+import API.System as System exposing (SystemDocumentParams)
 import Components.UI as UI exposing (..)
 import Html exposing (Html, div, text, a, form, p, label, input, span)
 import Html.Attributes as HA exposing (class, href, attribute, type_, checked)
 import Html.Events as HE
+import Dict exposing (Dict)
 
 
 titleChangeDialogView : Model -> String -> List (UI Msg)
@@ -39,3 +41,31 @@ viewRemoveWidget model =
         ]
     else
         []
+
+
+paramChangeDialogView : Model -> Maybe SystemDocumentParams -> List (UI Msg)
+paramChangeDialogView model mparams =
+    let
+        oldQueue =
+            case mparams of
+                Nothing ->
+                    Dict.empty
+
+                Just { queue } ->
+                    queue
+    in
+        case model.showParamChangeDialog of
+            Nothing ->
+                []
+
+            Just { sysId, name, value, description } ->
+                [ UI.modal
+                    name
+                    [ UI.ModalText description
+                    , UI.ModalHtml <| UI.formInput "" value OnChangeParamValue
+                    ]
+                    [ UI.cmdButton "Применить" (OnConfirmParam sysId oldQueue name value)
+                    , UI.cmdButton "Отменить" (OnCancelParam)
+                    ]
+                , UI.modal_overlay OnTitleCancel
+                ]

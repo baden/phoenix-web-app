@@ -216,7 +216,7 @@ ledHelpDialogView s =
             , UI.ModalIconText "images/gifs/led_slow_flash.gif" "Редкие одиночные вспышки – режим трекера"
             , UI.ModalIconText "images/gifs/led_slow2_flash.gif" "Редкие двойные вспышки – зарегистрированы спутники"
             , UI.ModalIconText "images/gifs/led_long_flash.gif" "Серия нечастых вспышек – выключение трекера"
-            , UI.ModalIconText "images/gifs/led_5sec_flash.gif" "Горит 5 секунд – привязка экзекуторов"
+            , UI.ModalIconText "images/gifs/led_5sec_flash.gif" "Загорается на 5 секунд – привязка экзекуторов"
             ]
             [ UI.cmdButton "Закрыть" (OnLedHelpCancel)
             ]
