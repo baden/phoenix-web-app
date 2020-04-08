@@ -901,6 +901,7 @@ paramDesc =
 --     ]
 
 
+description : String -> String
 description name =
     case Dict.get name paramDesc of
         Nothing ->
@@ -908,3 +909,18 @@ description name =
 
         Just { title } ->
             title
+
+
+disabled : String -> Bool
+disabled name =
+    not <|
+        List.member name
+            [ "executor.id"
+            , "executor.key"
+            , "factory.reset"
+            , "fwupdate.path"
+            , "fwupdate.port"
+            , "fwupdate.port"
+            , "gsm.server"
+            , "sim900.init"
+            ]

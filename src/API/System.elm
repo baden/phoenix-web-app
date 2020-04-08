@@ -31,6 +31,7 @@ import Json.Encode as Encode
 import API.Document as Document
 import Types.Dt as DT
 import Dict exposing (Dict)
+import Page.System.Config.ParamDesc as ParamDesc
 
 
 -- type alias SysId =
@@ -340,7 +341,13 @@ systemDocumentParamsDecoder =
 
 sortParamList : List ( String, SystemDocumentParam ) -> JD.Decoder (List ( String, SystemDocumentParam ))
 sortParamList =
-    JD.succeed << List.sortBy Tuple.first
+    let
+        ffilter : ( String, SystemDocumentParam ) -> Bool
+        ffilter =
+            \( name, _ ) ->
+                ParamDesc.disabled name
+    in
+        JD.succeed << List.sortBy Tuple.first << List.filter ffilter
 
 
 
