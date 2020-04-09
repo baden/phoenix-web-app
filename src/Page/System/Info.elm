@@ -232,7 +232,7 @@ viewInfoEntended appState model system =
                     Just any_ ->
                         any_
         in
-            [ UI.row_item [ ChartSvg.chartView "Батарея" 80 ] ]
+            [ chartView model ]
                 ++ (maybeRow "Плата" system.hwid identity)
                 ++ (maybeRow "Версия" system.swid identity)
                 ++ (maybeRow "IMEI" system.imei identity)
@@ -242,6 +242,18 @@ viewInfoEntended appState model system =
                    ]
     else
         [ UI.row [ UI.cmdTextIconButton "arrow-down" "Больше информации…" OnExtendInfo ] ]
+
+
+chartView : Model -> Html Msg
+chartView _ =
+    Html.div [ HA.class "row", HA.style "margin-bottom" "0" ]
+        [ Html.div [ HA.class "col s12 m6 l4 right-align" ] [ ChartSvg.chartView "Батарея" 80 ]
+        , Html.div [ HA.class "col s12 m6 l8 left-align" ]
+            [ Html.p [] [ Html.text "Ожидаемое время работы:" ]
+            , Html.p [] [ Html.text "В режиме ожидания: около 2 лет" ]
+            , Html.p [] [ Html.text "В режиме слежения: около 2 суток" ]
+            ]
+        ]
 
 
 cmdPanel : String -> Maybe System.Dynamic -> List (Html Msg)

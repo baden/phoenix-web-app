@@ -42,28 +42,12 @@ paramDesc =
         , ( "akkum.i.charge", PDI "-- добавить описание ---" PD_String )
         , ( "akkum.u.0", PDI "?Минимальное напряжение для обновления прошивки, /310.29, V (1100-1300)" (PD_Int 1000 1300) )
         , ( "sleep", PDI "Время сна в режимах Beacon и Tracker, мин" PD_String )
+        , ( "adc.vi.fix", PDI "Коррекция показаний резервного питания." PD_String )
+        , ( "admin", PDI "Телефон администратора." PD_String )
         ]
 
 
 
---       , ( "akkum.u.1"
---     , PDI "?Напряжение полного заряда батареи, /310.29, V (1250-1350)",
---     "min": 1200,
---     "max": 1400,
---     "comment": " - INT 1306 1306"
--- },
--- , ( "akkum.u.2"
---     "comment": " - INT 1306 1306"
--- },
--- , ( "akkum.u.3"
---     , PDI "?Напряжение поддержания заряда батареи, /310.29, V (1250-1350)",
---     "min": 1200,
---     "max": 1400,
---     "comment": " - INT 1309 1309"
--- },
--- , ( "akkum.u.4"
---     "comment": " - INT 1309 1309"
--- },
 -- , ( "gps.A1.0"
 --     , PDI "Минимальный регистрируемый угол поворота, градусы (1-10)",
 --     primary: false,
@@ -920,7 +904,7 @@ disabled name =
             , "factory.reset"
             , "fwupdate.path"
             , "fwupdate.port"
-            , "fwupdate.port"
+            , "fwupdate.server"
             , "gsm.server"
             , "sim900.init"
             ]

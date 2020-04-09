@@ -320,3 +320,95 @@ span.params_waited {
 .modal .modal-footer .btn, .modal .modal-footer .btn-large, .modal .modal-footer .btn-small, .modal .modal-footer .btn-flat  {
     margin-left: 3px !important;
 }
+
+
+.single-chart {
+  /* width: 180px; */
+  /* justify-content: space-around ; */
+  position: relative;
+  width: 150px;
+  height: 150px;
+  left: 50%;
+  margin-left: -75px;
+}
+
+/* @media only screen and (min-height: 500px) {
+    .single-chart {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        height: 20px;
+        right: 0;
+    }
+} */
+
+
+.single-chart .title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -28px;
+    margin-top: -48px;
+    /* font-size: 3em; */
+    font-size: 50px;
+    color: #777777;
+}
+
+.circular-chart {
+  display: block;
+  margin: 0;
+  /* max-width: 80%;
+  max-height: 150px; */
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 5.0;
+}
+
+.circle {
+  fill: none;
+  stroke-width: 4.0;
+  stroke-linecap: round;
+  animation: progress 1s ease-out forwards;
+}
+
+@keyframes progress {
+  0% {
+    stroke-dasharray: 0 100;
+  }
+}
+
+.circular-chart.orange .circle {
+  stroke: #ff9f00;
+}
+
+.circular-chart.chart_green .circle {
+  stroke: #4CC790;
+}
+
+.circular-chart.chart_blue .circle {
+  stroke: #3c9ee5;
+}
+
+.percentage_title {
+  fill: #666;
+  font-family: sans-serif;
+  font-size: 0.4em;
+  text-anchor: middle;
+}
+.percentage {
+  fill: #666;
+  font-family: sans-serif;
+  font-size: 0.5em;
+  text-anchor: middle;
+}
+
+.percentage_title {
+   font-family: "Font Awesome 5 Free";
+}
+
+.percentage_title:before {
+    content: "\f013";
+}
