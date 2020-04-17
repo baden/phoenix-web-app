@@ -8,6 +8,7 @@ import AppState
 import DateFormat
 import Time exposing (Zone, Posix)
 import Types.Dt as DT
+import Components.Dates.Russian exposing (russian)
 
 
 -- import Date
@@ -41,22 +42,22 @@ nextSession appState maybeSystemDynamic =
                             []
 
                         _ ->
-                            [ Html.div [ HA.class "row" ]
-                                [ Html.div [ HA.class "col s6" ] [ text "Следующий сеанс связи: " ]
-                                , Html.div [ HA.class "col s6" ] [ text <| nextSessionText last_session dynamic.next tz ]
+                            [ Html.div [ HA.class "row sessions" ]
+                                [ Html.div [ HA.class "col s8 l6" ] [ text "Следующий сеанс связи: " ]
+                                , Html.div [ HA.class "col s4 l6" ] [ text <| nextSessionText last_session dynamic.next tz ]
                                 ]
                             ]
             in
-                [ Html.div [ HA.class "row" ]
-                    [ Html.div [ HA.class "col s6" ] [ Html.text "Последний сеанс связи: " ]
-                    , Html.div [ HA.class "col s6" ] [ Html.text <| (last_session |> DT.toPosix |> dateTimeFormat tz) ]
+                [ Html.div [ HA.class "row sessions" ]
+                    [ Html.div [ HA.class "col s8 l6" ] [ Html.text "Последний сеанс связи: " ]
+                    , Html.div [ HA.class "col s4 l6" ] [ Html.text <| (last_session |> DT.toPosix |> dateTimeFormat tz) ]
                     ]
                 ]
                     ++ nextSessionTextRow
 
 
-expectSleepIn : AppState.AppState -> System.Dynamic -> List (Html msg)
-expectSleepIn appState dynamic =
+expectSleepIn : AppState.AppState -> System.Dynamic -> List (Html msg) -> List (Html msg)
+expectSleepIn appState dynamic prolongCmd =
     let
         now =
             appState.now
@@ -81,10 +82,12 @@ expectSleepIn appState dynamic =
         tz =
             appState.timeZone
     in
-        [ Html.div [ HA.class "row" ]
-            [ Html.div [ HA.class "col s6" ] [ text "Трекер уснет: " ]
-            , Html.div [ HA.class "col s6" ] [ text <| (autosleep) ]
-            ]
+        [ Html.div [ HA.class "row sessions" ]
+            ([ Html.div [ HA.class "col s8 l6" ] [ text "Переход в режим Ожидание:" ]
+             , Html.div [ HA.class "col s4 l3" ] [ text <| (autosleep) ]
+             ]
+                ++ prolongCmd
+            )
         ]
 
 
@@ -107,11 +110,13 @@ sysPosition appState sid maybe_dynamic =
         Just dynamic ->
             case ( dynamic.latitude, dynamic.longitude, dynamic.dt ) of
                 ( Just latitude, Just longitude, Just dt ) ->
-                    [ Html.div [ HA.class "row" ]
+                    [ Html.div [ HA.class "row sessions" ]
                         [ --text <| "Последнее положение определено: " ++ (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ++ " "
-                          Html.div [ HA.class "col s6" ] [ text "Последнее положение определено:" ]
-                        , Html.div [ HA.class "col s6" ] [ text <| (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ]
-                        , Html.div [ HA.class "col s12" ] [ UI.linkIconTextButton "map" "Смотреть на карте" ("/map/" ++ sid) ]
+                          Html.div [ HA.class "col s8 l6" ] [ text "Положение определено:" ]
+                        , Html.div [ HA.class "col s4 l3" ] [ text <| (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ]
+                        , Html.div [ HA.class "col s12 l3" ] [ UI.linkIconTextButton "map" "Карта" ("/map/" ++ sid) ]
+
+                        -- , Html.div [ HA.class "col s12 l3", HA.style "text-align" "left" ] [ UI.iconButton "map" ("/map/" ++ sid) ]
                         ]
                     ]
 
@@ -153,14 +158,20 @@ dateTimeFormat zone time =
     (dateFormat zone time) ++ " " ++ (timeFormat zone time)
 
 
+
+-- russianDate time zone
+
+
 dateFormat : Zone -> Posix -> String
 dateFormat =
-    DateFormat.format
+    -- DateFormat.format
+    DateFormat.formatWithLanguage russian
         [ DateFormat.dayOfMonthNumber
         , divToken
         , DateFormat.monthNameAbbreviated
-        , divToken
-        , DateFormat.yearNumber
+
+        -- , divToken
+        -- , DateFormat.yearNumber
         ]
 
 
@@ -170,8 +181,9 @@ timeFormat =
         [ DateFormat.hourMilitaryFixed
         , colonToken
         , DateFormat.minuteFixed
-        , colonToken
-        , DateFormat.secondFixed
+
+        -- , colonToken
+        -- , DateFormat.secondFixed
         ]
 
 
@@ -187,4 +199,4 @@ spaceToken =
 
 divToken : DateFormat.Token
 divToken =
-    DateFormat.text "/"
+    DateFormat.text " "

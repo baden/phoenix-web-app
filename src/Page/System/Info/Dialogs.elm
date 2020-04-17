@@ -28,9 +28,9 @@ viewModalDialogs : Model -> List (Html Msg)
 viewModalDialogs model =
     if model.showConfirmOffDialog then
         [ UI.modal
-            "Выключение"
-            [ UI.ModalText "Предупреждение! Это действие необратимо."
-            , UI.ModalText "Включить трекер можно будет только нажатием кнопки на плате прибора."
+            "Внимание!"
+            [ UI.ModalText "Это действие необратимо."
+            , UI.ModalText "Для включения потребуется доступ к трекеру."
             , UI.ModalText "Вы действительно хотите выключить трекер?"
             ]
             [ UI.cmdButton "Да" (OnConfirmOff)

@@ -241,19 +241,19 @@ stateAsString : State -> String
 stateAsString state =
     case state of
         Tracking ->
-            "Слежение"
+            "Поиск"
 
         Sleep ->
-            "Сон"
+            "СОН"
 
         Locked ->
             "Блокировка"
 
         Beacon ->
-            "Сон (маяк)"
+            "СОН"
 
         Hidden ->
-            "Сон (маяк)"
+            "Ожидание"
 
         Off ->
             "Выключен"
@@ -281,7 +281,7 @@ stateAsCmdString : State -> String
 stateAsCmdString state =
     case state of
         Tracking ->
-            "Отследить"
+            "→ПОИСК"
 
         Sleep ->
             "Усыпить"
@@ -293,7 +293,7 @@ stateAsCmdString state =
             "Усыпить"
 
         Hidden ->
-            "Усыпить сейчас"
+            "→ОЖИДАНИЕ"
 
         Off ->
             "Выключить"
@@ -302,7 +302,7 @@ stateAsCmdString state =
             "Конфигурация"
 
         Point ->
-            "Запросить положение"
+            "?Положение"
 
         Lock ->
             "Заблокировать"

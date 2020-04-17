@@ -68,6 +68,7 @@ view appState model system =
         , UI.widget <|
             (viewHeader appState model system)
                 ++ (viewInfo appState model system)
+                ++ [ chartView model ]
                 ++ (viewInfoEntended appState model system)
                 ++ [ UI.row [ UI.linkIconTextButton "clone" "Выбрать другой объект" "/" ] ]
                 ++ (prolongSleepDialogView model system.id)
@@ -113,9 +114,9 @@ viewHeader appState model system =
 viewInfo : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
 viewInfo appState model system =
     (sysState_of appState system.dynamic)
-        ++ (cmdPanel system.id system.dynamic)
         ++ (Dates.nextSession appState system.dynamic)
         ++ (Dates.sysPosition appState system.id system.dynamic)
+        ++ (cmdPanel appState system.id system.dynamic)
         ++ [ UI.row [ UI.linkIconTextButton "eye" "Cобытия" ("/system/" ++ system.id ++ "/logs") ] ]
 
 
@@ -148,7 +149,7 @@ sysState_of appState maybe_dynamic =
         Just dynamic ->
             case dynamic.state of
                 Nothing ->
-                    [ UI.row_item [ text <| "Состояние: -" ] ]
+                    [ UI.row_item [ text <| "Текущий режим: -" ] ]
 
                 Just Off ->
                     [ UI.row_item [ text <| "Трекер выключен." ]
@@ -177,18 +178,19 @@ sysState_of appState maybe_dynamic =
                         prolongCmd =
                             case dynamic.waitState of
                                 Nothing ->
-                                    [ Html.div [ HA.class "row" ] [ UI.cmdButton "Отложить засыпание" OnShowProlongSleepDialog ] ]
+                                    -- [ Html.div [ HA.class "row" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
+                                    [ Html.div [ HA.class "col s12 l3" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
 
                                 _ ->
                                     []
                     in
-                        [ UI.row_item [ text <| "Трекер под наблюдением." ]
+                        [ UI.row_item [ text <| "Текущий режим: Поиск" ]
                         ]
-                            ++ (Dates.expectSleepIn appState dynamic)
-                            ++ prolongCmd
+                            ++ (Dates.expectSleepIn appState dynamic prolongCmd)
 
+                -- ++ prolongCmd
                 Just state ->
-                    [ UI.row_item [ text <| "Состояние: " ++ (System.stateAsString state) ] ]
+                    [ UI.row_item [ text <| "Текущий режим: " ++ (System.stateAsString state) ] ]
 
 
 viewNextSession : Maybe System.Dynamic -> Html Msg
@@ -215,8 +217,8 @@ maybeRow label field foo =
 
 
 viewInfoEntended : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
-viewInfoEntended appState model system =
-    if model.extendInfo then
+viewInfoEntended appState ({ extendInfo } as model) system =
+    if extendInfo then
         let
             imei =
                 system.imei |> Maybe.withDefault "скрыт"
@@ -232,11 +234,11 @@ viewInfoEntended appState model system =
                     Just any_ ->
                         any_
         in
-            [ chartView model ]
+            []
                 ++ (maybeRow "Плата" system.hwid identity)
                 ++ (maybeRow "Версия" system.swid identity)
                 ++ (maybeRow "IMEI" system.imei identity)
-                ++ (maybeRow "Номер телефона" system.phone identity)
+                ++ (maybeRow "SIM-карта" system.phone identity)
                 ++ (maybeRow "Баланс" system.balance (\{ dt, value } -> String.fromFloat value))
                 ++ [ UI.row [ UI.cmdTextIconButton "arrow-up" "Меньше информации" OnExtendInfo ]
                    ]
@@ -256,45 +258,103 @@ chartView _ =
         ]
 
 
-cmdPanel : String -> Maybe System.Dynamic -> List (Html Msg)
-cmdPanel sysId maybe_dynamic =
+preloader : Html Msg
+preloader =
+    Html.div [ HA.class "progress" ]
+        [ Html.div [ HA.class "indeterminate" ] []
+        ]
+
+
+cmdPanel : AppState.AppState -> String -> Maybe System.Dynamic -> List (Html Msg)
+cmdPanel appState sysId maybe_dynamic =
     case maybe_dynamic of
         Nothing ->
             []
 
         Just dynamic ->
-            case dynamic.waitState of
-                Nothing ->
-                    case dynamic.state of
+            let
+                last_session =
+                    case dynamic.lastping of
                         Nothing ->
-                            []
+                            DT.fromInt 0
 
-                        Just Config ->
-                            cmdPanelConfig sysId
+                        Just lastping ->
+                            lastping
 
-                        Just state ->
-                            let
-                                b =
-                                    \i ->
-                                        Html.div [ HA.class "col s12 m6 l3 xl3" ]
-                                            [ UI.cmdButton (System.stateAsCmdString i) (OnSysCmd sysId i) ]
-                            in
-                                [ Html.div [ HA.class "row" ] (dynamic.available |> List.map b) ]
+                tz =
+                    appState.timeZone
 
-                Just Point ->
-                    [ text <| "При следуюем сеансе связи, будет определено текущее местоположение системы"
-                    , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
-                    ]
+                pre_date =
+                    Dates.nextSessionText last_session dynamic.next tz
 
-                Just (ProlongSleep duration) ->
-                    [ text <| "При следуюем сеансе связи, будет продлена работа прибора в режиме Трекер на " ++ (String.fromInt duration) ++ "ч."
-                    , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
-                    ]
+                pre =
+                    pre_date ++ ", при следующем сеансе связи, "
+            in
+                case dynamic.waitState of
+                    Nothing ->
+                        case dynamic.state of
+                            Nothing ->
+                                []
 
-                Just wState ->
-                    [ text <| "При следуюем сеансе связи, система будет переведена в режим: " ++ (System.stateAsString wState)
-                    , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
-                    ]
+                            Just Config ->
+                                cmdPanelConfig sysId
+
+                            Just state ->
+                                let
+                                    b =
+                                        \i ->
+                                            Html.div [ HA.class "col s12 m6 l3 xl3" ]
+                                                [ UI.cmdButton (System.stateAsCmdString i) (OnSysCmd sysId i) ]
+                                in
+                                    [ Html.div [ HA.class "row" ] (dynamic.available |> List.map b) ]
+
+                    Just Point ->
+                        [ row
+                            [ preloader
+                            , text <| pre ++ "будет определено текущее местоположение системы"
+                            , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+                            ]
+                        ]
+
+                    Just (ProlongSleep duration) ->
+                        [ row
+                            [ preloader
+                            , text <| pre ++ "будет продлена работа прибора в режиме Поиск на " ++ (String.fromInt duration) ++ "ч."
+                            , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+                            ]
+                        ]
+
+                    Just Lock ->
+                        [ row
+                            [ preloader
+                            , text <| pre ++ "двигатель будет заблокирован"
+                            , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+                            ]
+                        ]
+
+                    Just Unlock ->
+                        [ row
+                            [ preloader
+                            , text <| pre ++ "двигатель будет разблокирован"
+                            , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+                            ]
+                        ]
+
+                    Just Off ->
+                        [ row
+                            [ preloader
+                            , text <| pre ++ "трекер будет выключен"
+                            , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+                            ]
+                        ]
+
+                    Just wState ->
+                        [ row
+                            [ preloader
+                            , text <| pre ++ "система будет переведена в режим: " ++ (System.stateAsString wState)
+                            , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+                            ]
+                        ]
 
 
 cmdPanelConfig : String -> List (Html Msg)

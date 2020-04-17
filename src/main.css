@@ -135,6 +135,7 @@ dd {
 
 .btn {
     text-transform: initial !important;
+    white-space: nowrap;
 }
 
 /* @import './leaflet.scss';*/
@@ -411,4 +412,20 @@ span.params_waited {
 
 .percentage_title:before {
     content: "\f013";
+}
+
+
+.sessions .col:first-child {
+    /* background-color: green; */
+    text-align: right;
+    padding-right: 5px;
+    padding-left: 0;
+}
+
+.sessions .col:nth-child(2) {
+    /* background-color: red; */
+    text-align: left;
+    padding-left: 5px;
+    padding-right: 0;
+    white-space: nowrap;
 }

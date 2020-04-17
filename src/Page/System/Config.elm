@@ -191,8 +191,8 @@ viewContainer : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe System
 viewContainer appState model system mparams =
     case model.showState of
         SS_Root ->
-            [ row [ cmdTextIconButton "edit" "Изменить название" (OnTitleChangeStart system.title) ]
-            , row [ cmdTextIconButton "cogs" "Конфигурация" (OnStartMaster system.id) ]
+            [ --  row [ cmdTextIconButton "edit" "Изменить название" (OnTitleChangeStart system.title) ]
+              row [ cmdTextIconButton "cogs" "Конфигурация" (OnStartMaster system.id) ]
             , row [ linkIconTextButton "clone" "Выбрать другой объект" "/" ]
             , row [ linkIconTextButton "plus-square" "Добавить объект" "/linksys" ]
             , row [ cmdTextIconButton "trash" "Удалить" (OnRemove system.id) ]

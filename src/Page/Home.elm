@@ -127,7 +127,7 @@ systemItem systems timeZone index sysId =
 
                 Just system ->
                     [ UI.info_2_10 "Название:" system.title
-                    , UI.info_2_10 "Состояние:" (sysState_of system.dynamic timeZone)
+                    , UI.info_2_10 "Текущий режим:" (sysState_of system.dynamic timeZone)
                     ]
 
         footer =

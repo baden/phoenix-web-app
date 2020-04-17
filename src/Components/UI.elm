@@ -22,6 +22,7 @@ module Components.UI
         , info_2_10
         , linkButton
         , linkIconTextButton
+        , linkIconButton
         , linkIconTextButtonR
         , text
         , qr_code
@@ -239,6 +240,13 @@ linkButton text_title link_ref =
     Html.a
         [ class "waves-effect waves-light btn", href link_ref ]
         [ text text_title ]
+
+
+linkIconButton : String -> String -> Html a
+linkIconButton icon link_ref =
+    Html.a
+        [ class "waves-effect waves-light btn", href link_ref ]
+        [ Html.i [ HA.class ("left fas fa-" ++ icon) ] [] ]
 
 
 linkIconTextButton : String -> String -> String -> Html a

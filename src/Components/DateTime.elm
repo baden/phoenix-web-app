@@ -6,9 +6,8 @@ import Time
 dateTimeFormat : Time.Zone -> Time.Posix -> String
 dateTimeFormat timeZone time =
     let
-        year =
-            Time.toYear timeZone time |> String.fromInt
-
+        -- year =
+        --     Time.toYear timeZone time |> String.fromInt
         month =
             Time.toMonth timeZone time |> toNumMonth
 
@@ -21,10 +20,11 @@ dateTimeFormat timeZone time =
         minute =
             Time.toMinute timeZone time |> String.fromInt |> String.padLeft 2 '0'
 
-        second =
-            Time.toSecond timeZone time |> String.fromInt |> String.padLeft 2 '0'
+        -- second =
+        --     Time.toSecond timeZone time |> String.fromInt |> String.padLeft 2 '0'
     in
-        day ++ "/" ++ month ++ "/" ++ year ++ " " ++ hour ++ ":" ++ minute ++ ":" ++ second
+        -- day ++ "/" ++ month ++ "/" ++ year ++ " " ++ hour ++ ":" ++ minute ++ ":" ++ second
+        day ++ "/" ++ month ++ " " ++ hour ++ ":" ++ minute
 
 
 toNumMonth : Time.Month -> String
