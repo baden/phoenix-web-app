@@ -175,6 +175,23 @@ dateFormat =
         ]
 
 
+dateTimeFormatFull : Zone -> Posix -> String
+dateTimeFormatFull zone time =
+    (dateFormatFull zone time) ++ " " ++ (timeFormat zone time)
+
+
+dateFormatFull : Zone -> Posix -> String
+dateFormatFull =
+    -- DateFormat.format
+    DateFormat.formatWithLanguage russian
+        [ DateFormat.dayOfMonthNumber
+        , divToken
+        , DateFormat.monthNameAbbreviated
+        , divToken
+        , DateFormat.yearNumber
+        ]
+
+
 timeFormat : Zone -> Posix -> String
 timeFormat =
     DateFormat.format

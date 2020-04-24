@@ -1,44 +1,47 @@
-module Components.ChartSvg exposing (chartView)
+module Components.ChartSvg exposing (chartSvg)
 
-import Html exposing (..)
+import Html exposing (Html)
 import Html.Attributes as HA
-import Svg
-import Svg.Attributes
+import Svg exposing (svg, path, text_)
+import Svg.Attributes exposing (viewBox, class, d, strokeDasharray, x, y)
 
 
-chartView : String -> Float -> Html a
-chartView title percentage =
-    chartSvg percentage
+-- chartView : String -> Float -> Html a
+-- chartView title percentage =
+--     chartSvg percentage
 
 
-chartSvg : Float -> Html a
-chartSvg percentage =
-    Html.div
-        [ HA.class "single-chart" ]
-        [ Svg.svg
-            [ Svg.Attributes.class "circular-chart chart_green"
-            , Svg.Attributes.viewBox "0 0 36 36"
-            ]
-            [ Svg.path
-                [ Svg.Attributes.class "circle-bg"
-                , Svg.Attributes.d <| circlePath 18 18 15
+chartSvg : Float -> String -> String -> Html a
+chartSvg percentage ptext colour =
+    let
+        -- В теории этого никогда не будет. Информация о батарее должна подтягиваться после первого же включения.
+        progressBar =
+            if percentage > 0 then
+                [ path
+                    [ class <| "circle " ++ colour
+                    , d <| circlePath 18 18 15
+                    , strokeDasharray <| (String.fromFloat percentage) ++ ", 100"
+                    ]
+                    []
                 ]
+            else
                 []
-            , Svg.path
-                [ Svg.Attributes.class "circle"
-                , Svg.Attributes.d <| circlePath 18 18 15
-                , Svg.Attributes.strokeDasharray <| (String.fromFloat percentage) ++ ", 100"
+    in
+        Html.div
+            [ HA.class "single-chart" ]
+            [ svg
+                [ class "circular-chart chart_green", viewBox "0 0 36 36" ]
+              <|
+                [ path
+                    [ class "circle-bg", d <| circlePath 18 18 15 ]
+                    []
+                , text_
+                    [ class "percentage", x "18", y "25.35" ]
+                    [ Svg.text ptext ]
                 ]
-                []
-            , Svg.text_
-                [ Svg.Attributes.class "percentage"
-                , Svg.Attributes.x "18"
-                , Svg.Attributes.y "25.35"
-                ]
-                [ Svg.text "80%" ]
+                    ++ progressBar
+            , Html.div [ HA.class "title" ] [ Html.i [ HA.class "fas fa-battery-full" ] [] ]
             ]
-        , Html.div [ HA.class "title" ] [ Html.i [ HA.class "fas fa-battery-full" ] [] ]
-        ]
 
 
 circlePath : Float -> Float -> Float -> String

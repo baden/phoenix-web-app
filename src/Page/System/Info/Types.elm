@@ -8,6 +8,7 @@ type alias Model =
     , showConfirmOffDialog : Bool
     , showSleepProlongDialog : Bool
     , offId : String
+    , batteryExtendView : Bool
     }
 
 
@@ -20,4 +21,5 @@ type Msg
     | OnShowProlongSleepDialog
     | OnHideProlongSleepDialog
     | OnProlongSleep String Int
+    | OnBatteryClick
     | OnNoCmd

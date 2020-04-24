@@ -3,7 +3,7 @@ module Page.System.Info exposing (init, update, view)
 import Page
 import Html exposing (Html, div, a)
 import Html.Attributes as HA exposing (class, href)
-import Components.ChartSvg as ChartSvg
+import Html.Events as HE
 import Components.UI as UI exposing (..)
 import Components.Dates as Dates
 import API
@@ -13,6 +13,7 @@ import Components.DateTime exposing (dateTimeFormat)
 import Types.Dt as DT
 import Page.System.Info.Types exposing (Model, Msg, Msg(..))
 import Page.System.Info.Dialogs exposing (..)
+import Page.System.Info.Battery exposing (chartView)
 import Msg as GMsg
 
 
@@ -22,6 +23,7 @@ init =
       , showConfirmOffDialog = False
       , showSleepProlongDialog = False
       , offId = ""
+      , batteryExtendView = False
       }
     , Cmd.none
     )
@@ -57,6 +59,9 @@ update msg model =
         OnProlongSleep sysId hours ->
             ( { model | showSleepProlongDialog = False }, Cmd.batch [ API.websocketOut <| System.prolongSleep sysId hours ], Nothing )
 
+        OnBatteryClick ->
+            ( { model | batteryExtendView = not model.batteryExtendView }, Cmd.none, Nothing )
+
         OnNoCmd ->
             ( model, Cmd.none, Nothing )
 
@@ -68,7 +73,7 @@ view appState model system =
         , UI.widget <|
             (viewHeader appState model system)
                 ++ (viewInfo appState model system)
-                ++ [ chartView model ]
+                ++ [ chartView appState model system ]
                 ++ (viewInfoEntended appState model system)
                 ++ [ UI.row [ UI.linkIconTextButton "clone" "Выбрать другой объект" "/" ] ]
                 ++ (prolongSleepDialogView model system.id)
@@ -244,18 +249,6 @@ viewInfoEntended appState ({ extendInfo } as model) system =
                    ]
     else
         [ UI.row [ UI.cmdTextIconButton "arrow-down" "Больше информации…" OnExtendInfo ] ]
-
-
-chartView : Model -> Html Msg
-chartView _ =
-    Html.div [ HA.class "row", HA.style "margin-bottom" "0" ]
-        [ Html.div [ HA.class "col s12 m6 l4 right-align" ] [ ChartSvg.chartView "Батарея" 80 ]
-        , Html.div [ HA.class "col s12 m6 l8 left-align" ]
-            [ Html.p [] [ Html.text "Ожидаемое время работы:" ]
-            , Html.p [] [ Html.text "В режиме ожидания: около 2 лет" ]
-            , Html.p [] [ Html.text "В режиме слежения: около 2 суток" ]
-            ]
-        ]
 
 
 preloader : Html Msg

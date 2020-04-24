@@ -17,6 +17,7 @@
             "elm/url": "1.0.0",
             "elm-community/list-extra": "8.2.0",
             "justinmimbs/date": "3.1.2",
+            "myrho/elm-round": "1.0.4",
             "ryannhg/date-format": "2.3.0",
             "truqu/elm-md5": "1.1.0"
         },

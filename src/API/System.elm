@@ -29,6 +29,7 @@ import Json.Decode as JD
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Json.Encode as Encode
 import API.Document as Document
+import API.System.Battery as Battery exposing (Battery)
 import Types.Dt as DT
 import Dict exposing (Dict)
 import Page.System.Config.ParamDesc as ParamDesc
@@ -63,6 +64,7 @@ type alias SystemDocumentInfo =
     , balance : Maybe Balance
     , hwid : Maybe String
     , swid : Maybe String
+    , battery : Maybe Battery
     }
 
 
@@ -79,6 +81,7 @@ systemDocumentDecoder =
         |> optional "balance" (JD.maybe balanceDecoder) Nothing
         |> optional "hwid" (JD.maybe JD.string) Nothing
         |> optional "swid" (JD.maybe JD.string) Nothing
+        |> optional "battery" (JD.maybe Battery.batteryDecoder) Nothing
 
 
 type alias Dynamic =
