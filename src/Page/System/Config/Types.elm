@@ -36,6 +36,7 @@ type alias Model =
     , adminCode : String
     , systemId : Maybe String
     , showParamChangeDialog : Maybe ParamChange
+    , showQueue : Bool
     }
 
 
@@ -73,6 +74,7 @@ type Msg
     | OnChangeParamValue String
     | OnConfirmParam String (Dict String String) String String
     | OnClearQueue String
+    | OnShowQueue
     | OnCancelParam
 
 

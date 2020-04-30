@@ -31,6 +31,7 @@ init sysId =
       , adminCode = ""
       , systemId = sysId
       , showParamChangeDialog = Nothing
+      , showQueue = False
       }
     , Cmd.none
     )
@@ -153,6 +154,9 @@ update msg model =
 
         OnClearQueue sysId ->
             ( { model | showParamChangeDialog = Nothing }, paramsSetQueue sysId Dict.empty, Nothing )
+
+        OnShowQueue ->
+            ( { model | showQueue = not model.showQueue }, Cmd.none, Nothing )
 
         OnCancelParam ->
             ( { model | showParamChangeDialog = Nothing }, Cmd.none, Nothing )

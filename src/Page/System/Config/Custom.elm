@@ -17,7 +17,7 @@ configCustomView model sysId sysparams =
             errorMsg ++ (footer sysId Dict.empty)
 
         Just params ->
-            warnMgs ++ (paramsWidget sysId params) ++ (footer sysId params.queue)
+            warnMgs ++ (paramsWidget sysId params model.showQueue) ++ (footer sysId params.queue)
 
 
 warnMgs : List (UI Msg)
@@ -39,12 +39,16 @@ footer sysId queue =
         False ->
             [ Html.div [ HA.class "row param_row_filler" ] []
             , Html.div [ HA.class "params_footer right-align" ]
-                [ Html.div [ HA.class "container" ] [ UI.cmdTextIconButtonR "trash" "Отменить внесенные изменения" (OnClearQueue sysId) ] ]
+                [ Html.div [ HA.class "container" ]
+                    [ UI.cmdTextIconButtonR "trash" "Отменить внесенные изменения" (OnClearQueue sysId)
+                    , UI.cmdIconButton "question-circle" OnShowQueue
+                    ]
+                ]
             ]
 
 
-paramsWidget : String -> SystemDocumentParams -> List (UI Msg)
-paramsWidget sysId params =
+paramsWidget : String -> SystemDocumentParams -> Bool -> List (UI Msg)
+paramsWidget sysId params showQueue =
     let
         prow queue ( name, { type_, value, default } ) =
             let
@@ -71,6 +75,18 @@ paramsWidget sysId params =
                         ]
                     , Html.div [ HA.class "col s4 m3 right-align" ] valueField
                     ]
+
+        _ =
+            Debug.log "params" params
+
+        data =
+            case showQueue of
+                False ->
+                    params.data
+
+                True ->
+                    params.data
+                        |> List.filter (\( name, _ ) -> Dict.member name params.queue)
     in
-        params.data
+        data
             |> List.map (prow params.queue)
