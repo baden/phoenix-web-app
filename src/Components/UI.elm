@@ -10,6 +10,7 @@ module Components.UI
         , cmdTextIconButtonR
         , formHeader
         , formInput
+        , formInputInline
         , formPassword
         , formButton
         , column12
@@ -105,6 +106,17 @@ formInput text_title value_ update =
         [ onInput update
         , placeholder text_title
         , value value_
+        ]
+        []
+
+
+formInputInline : String -> String -> (String -> msg) -> Html msg
+formInputInline text_title value_ update =
+    input
+        [ onInput update
+        , placeholder text_title
+        , value value_
+        , class "inline"
         ]
         []
 

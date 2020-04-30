@@ -1,4 +1,4 @@
-module Page.System.Info.Types exposing (Model, Msg(..))
+module Page.System.Info.Types exposing (..)
 
 import API.System as System exposing (SystemDocumentInfo, State, State(..))
 
@@ -8,8 +8,21 @@ type alias Model =
     , showConfirmOffDialog : Bool
     , showSleepProlongDialog : Bool
     , offId : String
-    , batteryExtendView : Bool
+    , batteryExtendView : BatteryViewPage
+    , newBatteryCapacity : BatteryChange
     }
+
+
+type BatteryViewPage
+    = BVP1
+    | BVP2
+    | BVP3
+
+
+type BatteryChange
+    = BC_None
+    | BC_Change String
+    | BC_Capacity String
 
 
 type Msg
@@ -22,4 +35,9 @@ type Msg
     | OnHideProlongSleepDialog
     | OnProlongSleep String Int
     | OnBatteryClick
+    | OnBatteryMaintance
+    | OnBatteryMaintanceDone
+    | OnBatteryChange BatteryChange
+    | OnBatteryCapacityConfirm String String
+    | OnBatteryCapacityCancel
     | OnNoCmd

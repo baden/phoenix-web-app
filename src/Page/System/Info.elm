@@ -11,7 +11,7 @@ import API.System as System exposing (SystemDocumentInfo, State, State(..))
 import AppState
 import Components.DateTime exposing (dateTimeFormat)
 import Types.Dt as DT
-import Page.System.Info.Types exposing (Model, Msg, Msg(..))
+import Page.System.Info.Types exposing (..)
 import Page.System.Info.Dialogs exposing (..)
 import Page.System.Info.Battery exposing (chartView)
 import Msg as GMsg
@@ -23,7 +23,8 @@ init =
       , showConfirmOffDialog = False
       , showSleepProlongDialog = False
       , offId = ""
-      , batteryExtendView = False
+      , batteryExtendView = BVP1
+      , newBatteryCapacity = BC_None
       }
     , Cmd.none
     )
@@ -60,7 +61,43 @@ update msg model =
             ( { model | showSleepProlongDialog = False }, Cmd.batch [ API.websocketOut <| System.prolongSleep sysId hours ], Nothing )
 
         OnBatteryClick ->
-            ( { model | batteryExtendView = not model.batteryExtendView }, Cmd.none, Nothing )
+            case model.batteryExtendView of
+                BVP1 ->
+                    ( { model | batteryExtendView = BVP2 }, Cmd.none, Nothing )
+
+                BVP2 ->
+                    ( { model | batteryExtendView = BVP1 }, Cmd.none, Nothing )
+
+                BVP3 ->
+                    ( model, Cmd.none, Nothing )
+
+        OnBatteryMaintance ->
+            ( { model | batteryExtendView = BVP3 }, Cmd.none, Nothing )
+
+        OnBatteryMaintanceDone ->
+            ( { model | batteryExtendView = BVP1 }, Cmd.none, Nothing )
+
+        -- OnBatteryChange capacity ->
+        OnBatteryChange capacity ->
+            ( { model | newBatteryCapacity = capacity }, Cmd.none, Nothing )
+
+        OnBatteryCapacityConfirm sysId capacity ->
+            let
+                cmd =
+                    case model.newBatteryCapacity of
+                        BC_None ->
+                            Cmd.none
+
+                        BC_Change _ ->
+                            Cmd.batch [ API.websocketOut <| System.resetBattery sysId capacity ]
+
+                        BC_Capacity _ ->
+                            Cmd.batch [ API.websocketOut <| System.setBatteryCapacity sysId capacity ]
+            in
+                ( { model | newBatteryCapacity = BC_None }, cmd, Nothing )
+
+        OnBatteryCapacityCancel ->
+            ( { model | newBatteryCapacity = BC_None }, Cmd.none, Nothing )
 
         OnNoCmd ->
             ( model, Cmd.none, Nothing )

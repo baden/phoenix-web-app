@@ -14,6 +14,8 @@ module API.System
         , stateAsCmdString
         , setSystemTitle
         , setSystemState
+        , setBatteryCapacity
+        , resetBattery
         , prolongSleep
         , cancelSystemState
         , getLogs
@@ -65,7 +67,19 @@ type alias SystemDocumentInfo =
     , hwid : Maybe String
     , swid : Maybe String
     , battery : Maybe Battery
+    , params : SystemParams
     }
+
+
+type alias SystemParams =
+    { sleep : Maybe Int
+    }
+
+
+systemParamsDecoder : JD.Decoder SystemParams
+systemParamsDecoder =
+    JD.succeed SystemParams
+        |> optional "sleep" (JD.maybe JD.int) Nothing
 
 
 systemDocumentDecoder : JD.Decoder SystemDocumentInfo
@@ -82,6 +96,7 @@ systemDocumentDecoder =
         |> optional "hwid" (JD.maybe JD.string) Nothing
         |> optional "swid" (JD.maybe JD.string) Nothing
         |> optional "battery" (JD.maybe Battery.batteryDecoder) Nothing
+        |> required "params" systemParamsDecoder
 
 
 type alias Dynamic =
@@ -419,6 +434,25 @@ setSystemTitle sysId newTitle =
             , ( "path", Encode.string "title" )
             , ( "value", Encode.string newTitle )
             ]
+
+
+setBatteryCapacity : String -> String -> Encode.Value
+setBatteryCapacity sysId capacity =
+    Document.updateDocumentRequest "system" <|
+        Encode.object
+            [ ( "key", Encode.string sysId )
+            , ( "path", Encode.string "battery.init_capacity" )
+            , ( "value", Encode.float <| Maybe.withDefault 5800 (String.toFloat capacity) )
+            ]
+
+
+resetBattery : String -> String -> Encode.Value
+resetBattery sysId capacity =
+    Encode.object
+        [ ( "cmd", Encode.string "system_reset_battery" )
+        , ( "id", Encode.string sysId )
+        , ( "value", Encode.float <| Maybe.withDefault 5800 (String.toFloat capacity) )
+        ]
 
 
 setSystemState : String -> State -> Encode.Value
