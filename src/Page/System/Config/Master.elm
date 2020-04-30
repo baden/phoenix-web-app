@@ -5,6 +5,8 @@ import Components.UI as UI exposing (..)
 import Html exposing (Html, div, text, a, form, p, label, input, span)
 import Html.Attributes as HA exposing (class, href, attribute, type_, checked)
 import Html.Events as HE
+import Dict exposing (Dict)
+import API.System exposing (SystemDocumentParams)
 
 
 masterNextPage : MasterPage -> MasterPage
@@ -33,30 +35,36 @@ masterPrevPage showMasterDialog =
             MasterPage1
 
 
-masterDialogView : Model -> String -> List (UI Msg)
-masterDialogView model sysId =
-    case model.showMasterDialog of
-        MasterPage1 ->
-            [ row [ UI.text "Период выхода на связь" ]
-            , row [ UI.text <| masterPage1Help model.masterEcoValue ]
-            , row [ masterPage1View model.masterEcoValue ]
-            ]
-                ++ masterFooterFirst
+masterDialogView : Model -> String -> Maybe SystemDocumentParams -> List (UI Msg)
+masterDialogView model sysId mparams =
+    -- Тут наверное не очень красиво проброшена очерель параметров
+    case mparams of
+        Nothing ->
+            [ row [ UI.text "Ошибка загрузки или данные от трекера еще не получены." ] ]
 
-        MasterPage2 ->
-            [ row [ UI.text "Время работы в режиме Поиск" ]
-            , row [ UI.text <| masterPage2Help model.masterTrackValue ]
-            , row [ masterPage2View model.masterTrackValue ]
-            ]
-                ++ masterFooterMiddle
+        Just params ->
+            case model.showMasterDialog of
+                MasterPage1 ->
+                    [ row [ UI.text "Период выхода на связь" ]
+                    , row [ UI.text <| masterPage1Help model.masterEcoValue ]
+                    , row [ masterPage1View model.masterEcoValue ]
+                    ]
+                        ++ masterFooterFirst
 
-        MasterPage3 ->
-            [ row [ UI.text "Безопасность" ]
-            , row [ UI.text <| masterPage3Help model.masterSecurValue ]
-            , row [ masterPage3View model.masterSecurValue model ]
-            ]
-                ++ showChanges model sysId
-                ++ masterFooterLast sysId
+                MasterPage2 ->
+                    [ row [ UI.text "Время работы в режиме Поиск" ]
+                    , row [ UI.text <| masterPage2Help model.masterTrackValue ]
+                    , row [ masterPage2View model.masterTrackValue ]
+                    ]
+                        ++ masterFooterMiddle
+
+                MasterPage3 ->
+                    [ row [ UI.text "Безопасность" ]
+                    , row [ UI.text <| masterPage3Help model.masterSecurValue ]
+                    , row [ masterPage3View model.masterSecurValue model ]
+                    ]
+                        ++ showChanges model sysId
+                        ++ masterFooterLast sysId params.queue (changesList model)
 
 
 ecoToValue : Int -> String
@@ -91,7 +99,7 @@ trackToValue v =
             "60"
 
 
-changesList : Model -> List ( String, String )
+changesList : Model -> Dict String String
 changesList model =
     let
         ( s1, s2 ) =
@@ -113,11 +121,12 @@ changesList model =
                 False ->
                     ""
     in
-        [ ( "sleep", (ecoToValue model.masterEcoValue) )
-        , ( "auto.sleep", (trackToValue model.masterTrackValue) )
-        , ( "admin", phone )
-        , ( "secur.code", code )
-        ]
+        Dict.fromList
+            [ ( "sleep", (ecoToValue model.masterEcoValue) )
+            , ( "auto.sleep", (trackToValue model.masterTrackValue) )
+            , ( "admin", phone )
+            , ( "secur.code", code )
+            ]
 
 
 showChanges : Model -> String -> List (UI Msg)
@@ -139,7 +148,7 @@ showChanges model sysId =
                     [ Html.div [ HA.class "col s12 m10 offset-m1 l8 offset-l2 xl6 offset-xl3" ]
                         [ Html.text "Следующие параметры будут изменены:"
                         , Html.table []
-                            [ Html.tbody [] (changesList model |> List.map row)
+                            [ Html.tbody [] (changesList model |> Dict.toList |> List.map row)
                             ]
                         ]
                     ]
@@ -167,13 +176,17 @@ masterFooterMiddle =
     ]
 
 
-masterFooterLast : String -> List (UI Msg)
-masterFooterLast sysId =
-    [ UI.cmdTextIconButton "times-circle" "Отмена" (OnCancelMaster)
-    , UI.cmdTextIconButton "arrow-left" "Назад" (OnMasterPrev)
-    , UI.cmdTextIconButton "thumbs-up" "Применить" (OnConfirmMaster sysId)
-    , UI.cmdIconButton "question-circle" (OnShowChanges)
-    ]
+masterFooterLast : String -> Dict String String -> Dict String String -> List (UI Msg)
+masterFooterLast sysId customQueue masterQueue =
+    let
+        mixedQueue =
+            Dict.union masterQueue customQueue
+    in
+        [ UI.cmdTextIconButton "times-circle" "Отмена" (OnCancelMaster)
+        , UI.cmdTextIconButton "arrow-left" "Назад" (OnMasterPrev)
+        , UI.cmdTextIconButton "thumbs-up" "Применить" (OnConfirmMaster sysId mixedQueue)
+        , UI.cmdIconButton "question-circle" (OnShowChanges)
+        ]
 
 
 

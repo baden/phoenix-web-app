@@ -104,15 +104,16 @@ update msg model =
         OnCancelMaster ->
             ( { model | showState = SS_Root }, Cmd.none, Nothing )
 
-        OnConfirmMaster sysId ->
+        OnConfirmMaster sysId queue ->
             -- paramsSetQueue : String -> Dict String String -> Cmd Msg
-            ( { model | showState = SS_Root }, paramsSetQueue sysId (Dict.fromList (changesList model)), Nothing )
+            -- ( { model | showState = SS_Root }, paramsSetQueue sysId (changesList model), Nothing )
+            ( { model | showState = SS_Root }, paramsSetQueue sysId queue, Nothing )
 
         OnShowChanges ->
             ( { model | showChanges = not model.showChanges }, Cmd.none, Nothing )
 
         OnMasterCustom ->
-            ( { model | showState = SS_Custom }, Cmd.none, Nothing )
+            ( { model | showState = SS_Custom, showQueue = False }, Cmd.none, Nothing )
 
         OnStartEditParam sysId name value description ->
             let
@@ -153,7 +154,7 @@ update msg model =
                 ( { model | showParamChangeDialog = Nothing }, paramsSetQueue sysId newQueue, Nothing )
 
         OnClearQueue sysId ->
-            ( { model | showParamChangeDialog = Nothing }, paramsSetQueue sysId Dict.empty, Nothing )
+            ( { model | showParamChangeDialog = Nothing, showQueue = False }, paramsSetQueue sysId Dict.empty, Nothing )
 
         OnShowQueue ->
             ( { model | showQueue = not model.showQueue }, Cmd.none, Nothing )
@@ -208,7 +209,7 @@ viewContainer appState model system mparams =
             ]
 
         SS_Master ->
-            masterDialogView model system.id
+            masterDialogView model system.id mparams
 
         SS_Custom ->
             configCustomView model system.id mparams

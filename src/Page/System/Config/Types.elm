@@ -61,7 +61,7 @@ type Msg
     | OnMasterNext
     | OnMasterPrev
     | OnMasterCustom
-    | OnConfirmMaster String
+    | OnConfirmMaster String (Dict String String)
     | OnShowChanges
     | OnNoCmd
     | OnRemove String
