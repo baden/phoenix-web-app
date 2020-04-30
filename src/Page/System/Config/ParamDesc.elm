@@ -6,12 +6,18 @@ import Dict exposing (Dict)
 type ParamDesc
     = PD_String
     | PD_Int Int Int
+    | PD_Enum (List ( String, PDI_Enum ))
 
 
 type alias PDI =
     { title : String
     , ptype : ParamDesc
     }
+
+
+type PDI_Enum
+    = PDIE_Desc String
+    | PDIE_Link String -- TODO: Ссылка на другой параметр (например запрограммированные телефоны alarm1..4)
 
 
 paramDesc : Dict String PDI
@@ -44,10 +50,185 @@ paramDesc =
         , ( "sleep", PDI "Время сна в режимах Beacon и Tracker, мин" PD_String )
         , ( "adc.vi.fix", PDI "Коррекция показаний резервного питания." PD_String )
         , ( "admin", PDI "Телефон администратора." PD_String )
+        , ( "alarm.balance"
+          , PDI "SMS о критическом балансе"
+                (PD_Enum
+                    [ ( "0", PDIE_Desc "Выключено" )
+                    , ( "1", PDIE_Link "alarm1" )
+                    , ( "2", PDIE_Link "alarm2" )
+                    , ( "3", PDIE_Link "alarm3" )
+                    , ( "4", PDIE_Link "alarm4" )
+                    ]
+                )
+          )
+        , ( "alarm.case"
+          , PDI "SMS о вскрытии корпуса"
+                (PD_Enum
+                    [ ( "0", PDIE_Desc "Выключено" )
+                    , ( "1", PDIE_Link "alarm1" )
+                    , ( "2", PDIE_Link "alarm2" )
+                    , ( "3", PDIE_Link "alarm3" )
+                    , ( "4", PDIE_Link "alarm4" )
+                    ]
+                )
+          )
+        , ( "alarm.delay"
+          , PDI "SMS о включении дежурного режима"
+                (PD_Enum
+                    [ ( "0", PDIE_Desc "Выключено" )
+                    , ( "1", PDIE_Link "alarm1" )
+                    , ( "2", PDIE_Link "alarm2" )
+                    , ( "3", PDIE_Link "alarm3" )
+                    , ( "4", PDIE_Link "alarm4" )
+                    ]
+                )
+          )
+        , ( "alarm.error"
+          , PDI "SMS о невозможности определения координат"
+                (PD_Enum
+                    [ ( "0", PDIE_Desc "Выключено" )
+                    , ( "1", PDIE_Link "alarm1" )
+                    , ( "2", PDIE_Link "alarm2" )
+                    , ( "3", PDIE_Link "alarm3" )
+                    , ( "4", PDIE_Link "alarm4" )
+                    ]
+                )
+          )
+        , ( "alarm.gps"
+          , PDI "SMS об изменении координат"
+                (PD_Enum
+                    [ ( "0", PDIE_Desc "Выключено" )
+                    , ( "1", PDIE_Link "alarm1" )
+                    , ( "2", PDIE_Link "alarm2" )
+                    , ( "3", PDIE_Link "alarm3" )
+                    , ( "4", PDIE_Link "alarm4" )
+                    ]
+                )
+          )
         ]
 
 
 
+-- , ( "alarm.ign"
+--     , PDI "SMS о включении зажигания",
+--     primary: false,
+--     enum: [
+--         {value: "0", , PDI "Выключено"},
+--         {value: "1", , PDI "Alarm1"},
+--         {value: "2", , PDI "Alarm2"},
+--         {value: "3", , PDI "Alarm3"},
+--         {value: "4", , PDI "Alarm4"}
+--     ],
+--     "comment": " INT 1 1"
+-- },
+-- , ( "alarm.low"
+--     , PDI "SMS о низком уровне заряда батареи",
+--     primary: false,
+--     enum: [
+--         {value: "0", , PDI "Выключено"},
+--         {value: "1", , PDI "Alarm1"},
+--         {value: "2", , PDI "Alarm2"},
+--         {value: "3", , PDI "Alarm3"},
+--         {value: "4", , PDI "Alarm4"}
+--     ],
+--     "comment": " INT 1 1"
+-- },
+-- , ( "alarm.mode"
+--     , PDI "SMS о смене режима",
+--     primary: false,
+--     enum: [
+--         {value: "0", , PDI "Выключено"},
+--         {value: "1", , PDI "Alarm1"},
+--         {value: "2", , PDI "Alarm2"},
+--         {value: "3", , PDI "Alarm3"},
+--         {value: "4", , PDI "Alarm4"}
+--     ],
+--     "comment": " INT 1 1"
+-- },
+-- , ( "alarm.on"
+--     , PDI "SMS о включении трекера",
+--     primary: false,
+--     enum: [
+--         {value: "0", , PDI "Выключено"},
+--         {value: "1", , PDI "Alarm1"},
+--         {value: "2", , PDI "Alarm2"},
+--         {value: "3", , PDI "Alarm3"},
+--         {value: "4", , PDI "Alarm4"}
+--     ],
+--     "comment": " INT 1 1"
+-- },
+-- , ( "alarm.off"
+--     , PDI "SMS о выключении трекера",
+--     primary: false,
+--     enum: [
+--         {value: "0", , PDI "Выключено"},
+--         {value: "1", , PDI "Alarm1"},
+--         {value: "2", , PDI "Alarm2"},
+--         {value: "3", , PDI "Alarm3"},
+--         {value: "4", , PDI "Alarm4"}
+--     ],
+--     "comment": " INT 1 1"
+-- },
+-- , ( "alarm.power"
+--     , PDI "SMS о подаче или отключении внешнего питания",
+--     primary: false,
+--     enum: [
+--         {value: "0", , PDI "Выключено"},
+--         {value: "1", , PDI "Alarm1"},
+--         {value: "2", , PDI "Alarm2"},
+--         {value: "3", , PDI "Alarm3"},
+--         {value: "4", , PDI "Alarm4"}
+--     ],
+--     "comment": " INT 1 1"
+-- },
+-- , ( "alarm.shleyf"
+--     , PDI "SMS о повреждении или восстановлении шлейфа",
+--     primary: false,
+--     enum: [
+--         {value: "0", , PDI "Выключено"},
+--         {value: "1", , PDI "Alarm1"},
+--         {value: "2", , PDI "Alarm2"},
+--         {value: "3", , PDI "Alarm3"},
+--         {value: "4", , PDI "Alarm4"}
+--     ],
+--     "comment": " INT 1 1"
+-- },
+-- , ( "alarm.sos"
+--     , PDI "SMS о нажатии тревожной кнопки",
+--     primary: false,
+--     enum: [
+--         {value: "0", , PDI "Выключено"},
+--         {value: "1", , PDI "Alarm1"},
+--         {value: "2", , PDI "Alarm2"},
+--         {value: "3", , PDI "Alarm3"},
+--         {value: "4", , PDI "Alarm4"}
+--     ],
+--     "comment": " INT 1 1"
+-- },
+-- , ( "alarm.overflow"
+--     , PDI "SMS о превышении допустимого напряжения питания",
+--     primary: false,
+--     enum: [
+--         {value: "0", , PDI "Выключено"},
+--         {value: "1", , PDI "Alarm1"},
+--         {value: "2", , PDI "Alarm2"},
+--         {value: "3", , PDI "Alarm3"},
+--         {value: "4", , PDI "Alarm4"}
+--     ],
+--     "comment": " INT 1 1"
+-- },
+-- , ( "alarm.stealth"
+--     , PDI "SMS об активации режима Stealth",
+--     primary: false,
+--     enum: [
+--         {value: "0", , PDI "Выключено"},
+--         {value: "1", , PDI "Alarm1"},
+--         {value: "2", , PDI "Alarm2"},
+--         {value: "3", , PDI "Alarm3"},
+--         {value: "4", , PDI "Alarm4"}
+--     ],
+--     "comment": " INT 1 1"
+-- },
 -- , ( "gps.A1.0"
 --     , PDI "Минимальный регистрируемый угол поворота, градусы (1-10)",
 --     primary: false,
@@ -259,186 +440,6 @@ paramDesc =
 -- , ( "admin"
 --     , PDI "Номер телефона администратора",
 --     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.balance"
---     , PDI "SMS о критическом балансе",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.case"
---     , PDI "SMS о вскрытии корпуса",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.delay"
---     , PDI "SMS о включении дежурного режима",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.error"
---     , PDI "SMS о невозможности определения координат",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.gps"
---     , PDI "SMS об изменении координат",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.ign"
---     , PDI "SMS о включении зажигания",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.low"
---     , PDI "SMS о низком уровне заряда батареи",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.mode"
---     , PDI "SMS о смене режима",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.on"
---     , PDI "SMS о включении трекера",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.off"
---     , PDI "SMS о выключении трекера",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.power"
---     , PDI "SMS о подаче или отключении внешнего питания",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.shleyf"
---     , PDI "SMS о повреждении или восстановлении шлейфа",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.sos"
---     , PDI "SMS о нажатии тревожной кнопки",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.overflow"
---     , PDI "SMS о превышении допустимого напряжения питания",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.stealth"
---     , PDI "SMS об активации режима Stealth",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
 --     "comment": " INT 1 1"
 -- },
 -- , ( "alarm1"

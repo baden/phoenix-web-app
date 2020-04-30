@@ -21,9 +21,10 @@ init sysId =
       , newTitle = ""
       , showState = SS_Root
       , showMasterDialog = MasterPage1
-      , masterEcoValue = 1
+      , masterEcoValue = 2
       , masterTrackValue = 2
       , masterSecurValue = ( False, False )
+      , showChanges = False
       , showRemodeDialog = False
       , removeId = ""
       , adminPhone = ""
@@ -97,13 +98,17 @@ update msg model =
         -- OnShowState s ->
         --     ( { model | showState = s }, Cmd.none, Nothing )
         OnStartMaster s ->
-            ( { model | showState = SS_Master, showMasterDialog = MasterPage1 }, loadParams s, Nothing )
+            ( { model | showState = SS_Master, showMasterDialog = MasterPage1, showChanges = False }, loadParams s, Nothing )
 
         OnCancelMaster ->
             ( { model | showState = SS_Root }, Cmd.none, Nothing )
 
-        OnConfirmMaster ->
-            ( { model | showState = SS_Root }, Cmd.none, Nothing )
+        OnConfirmMaster sysId ->
+            -- paramsSetQueue : String -> Dict String String -> Cmd Msg
+            ( { model | showState = SS_Root }, paramsSetQueue sysId (Dict.fromList (changesList model)), Nothing )
+
+        OnShowChanges ->
+            ( { model | showChanges = not model.showChanges }, Cmd.none, Nothing )
 
         OnMasterCustom ->
             ( { model | showState = SS_Custom }, Cmd.none, Nothing )

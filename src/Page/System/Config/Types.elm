@@ -29,6 +29,7 @@ type alias Model =
     , masterEcoValue : Int
     , masterTrackValue : Int
     , masterSecurValue : ( Bool, Bool )
+    , showChanges : Bool
     , showRemodeDialog : Bool
     , removeId : String
     , adminPhone : String
@@ -59,7 +60,8 @@ type Msg
     | OnMasterNext
     | OnMasterPrev
     | OnMasterCustom
-    | OnConfirmMaster
+    | OnConfirmMaster String
+    | OnShowChanges
     | OnNoCmd
     | OnRemove String
     | OnCancelRemove

@@ -37,14 +37,14 @@ masterDialogView : Model -> String -> List (UI Msg)
 masterDialogView model sysId =
     case model.showMasterDialog of
         MasterPage1 ->
-            [ row [ UI.text "Режим" ]
+            [ row [ UI.text "Период выхода на связь" ]
             , row [ UI.text <| masterPage1Help model.masterEcoValue ]
             , row [ masterPage1View model.masterEcoValue ]
             ]
                 ++ masterFooterFirst
 
         MasterPage2 ->
-            [ row [ UI.text "Трекинг" ]
+            [ row [ UI.text "Время работы в режиме Поиск" ]
             , row [ UI.text <| masterPage2Help model.masterTrackValue ]
             , row [ masterPage2View model.masterTrackValue ]
             ]
@@ -55,7 +55,100 @@ masterDialogView model sysId =
             , row [ UI.text <| masterPage3Help model.masterSecurValue ]
             , row [ masterPage3View model.masterSecurValue model ]
             ]
-                ++ masterFooterLast
+                ++ showChanges model sysId
+                ++ masterFooterLast sysId
+
+
+ecoToValue : Int -> String
+ecoToValue v =
+    case v of
+        1 ->
+            -- Раз в сутки
+            "1440"
+
+        2 ->
+            -- Каждые 4 часа
+            "240"
+
+        _ ->
+            -- Каждый час
+            "60"
+
+
+trackToValue : Int -> String
+trackToValue v =
+    case v of
+        1 ->
+            -- 12 часов
+            "720"
+
+        2 ->
+            -- 4 часа
+            "240"
+
+        _ ->
+            -- 1 час
+            "60"
+
+
+changesList : Model -> List ( String, String )
+changesList model =
+    let
+        ( s1, s2 ) =
+            model.masterSecurValue
+
+        phone =
+            case s1 of
+                True ->
+                    model.adminPhone
+
+                False ->
+                    ""
+
+        code =
+            case s2 of
+                True ->
+                    model.adminCode
+
+                False ->
+                    ""
+    in
+        [ ( "sleep", (ecoToValue model.masterEcoValue) )
+        , ( "auto.sleep", (trackToValue model.masterTrackValue) )
+        , ( "admin", phone )
+        , ( "secur.code", code )
+        ]
+
+
+showChanges : Model -> String -> List (UI Msg)
+showChanges model sysId =
+    let
+        -- row ttl val =
+        --     [ Html.div [ HA.class "col s6 right-align" ] [ Html.text ttl ]
+        --     , Html.div [ HA.class "col s6 left-align" ] [ Html.text val ]
+        --     ]
+        row ( ttl, val ) =
+            Html.tr [] [ Html.td [ HA.class "right-align", HA.style "width" "50%" ] [ Html.text ttl ], Html.td [] [ Html.text val ] ]
+    in
+        case model.showChanges of
+            False ->
+                []
+
+            True ->
+                [ Html.div [ HA.class "row" ] <|
+                    [ Html.div [ HA.class "col s12 m10 offset-m1 l8 offset-l2 xl6 offset-xl3" ]
+                        [ Html.text "Следующие параметры будут изменены:"
+                        , Html.table []
+                            [ Html.tbody [] (changesList model |> List.map row)
+                            ]
+                        ]
+                    ]
+
+                -- ++ row "sleep" (ecoToValue model.masterEcoValue)
+                -- ++ row "auto.sleep" (trackToValue model.masterTrackValue)
+                -- ++ row "admin" model.adminPhone
+                -- ++ row "secur.code" model.adminPhone
+                ]
 
 
 masterFooterFirst : List (UI Msg)
@@ -74,11 +167,12 @@ masterFooterMiddle =
     ]
 
 
-masterFooterLast : List (UI Msg)
-masterFooterLast =
+masterFooterLast : String -> List (UI Msg)
+masterFooterLast sysId =
     [ UI.cmdTextIconButton "times-circle" "Отмена" (OnCancelMaster)
     , UI.cmdTextIconButton "arrow-left" "Назад" (OnMasterPrev)
-    , UI.cmdTextIconButton "confirm" "Применить" (OnConfirmMaster)
+    , UI.cmdTextIconButton "thumbs-up" "Применить" (OnConfirmMaster sysId)
+    , UI.cmdIconButton "question-circle" (OnShowChanges)
     ]
 
 
@@ -112,12 +206,12 @@ item1_ index label_ checked_ msg =
 masterPage1View : Int -> Html Msg
 masterPage1View selected =
     row <|
-        [ div [ class "col s12 m8 offset-m1 xl7 offset-xl1", HA.style "text-align" "left" ]
+        [ div [ class "col s12 m8 offset-m1 l7 offset-l3 xl7 offset-xl4", HA.style "text-align" "left" ]
             [ form
                 [ attribute "action" "#" ]
-                [ item_ 1 "Очень экономно" (selected == 1) OnMasterEco1
-                , item_ 2 "Средне экономно" (selected == 2) OnMasterEco1
-                , item_ 3 "Не экономно" (selected == 3) OnMasterEco1
+                [ item_ 1 "Редко" (selected == 1) OnMasterEco1
+                , item_ 2 "Оптимально" (selected == 2) OnMasterEco1
+                , item_ 3 "Часто" (selected == 3) OnMasterEco1
                 ]
             ]
         ]
@@ -127,19 +221,19 @@ masterPage1Help : Int -> String
 masterPage1Help index =
     case index of
         1 ->
-            "Объект будет выходить на связь раз в сутки. Ожидаемый срок службы - более 10ти лет."
+            "Объект будет выходить на связь один раз в сутки. Ожидаемый срок службы батареи - 15 лет."
 
         2 ->
-            "Объект будет выходить на связь четыре раза в сутки. Ожидаемый срок службы - около 4-х лет."
+            "Объект будет выходить на связь каждые 4 часа. Ожидаемый срок службы батареи - 6 лет."
 
         _ ->
-            "Объект будет выходить на связь каждый час. Ожидаемый срок службы - около 2-х лет."
+            "Объект будет выходить на связь каждый час. Ожидаемый срок службы батареи - 15 месяцев."
 
 
 masterPage2View : Int -> Html Msg
 masterPage2View selected =
     row <|
-        [ div [ class "col s12 m8 offset-m1 xl7 offset-xl1", HA.style "text-align" "left" ]
+        [ div [ class "col s12 m8 offset-m1 l7 offset-l3 xl7 offset-xl4", HA.style "text-align" "left" ]
             [ form
                 [ attribute "action" "#" ]
                 [ item_ 1 "Продолжительно" (selected == 1) OnMasterTrack1
@@ -154,19 +248,19 @@ masterPage2Help : Int -> String
 masterPage2Help index =
     case index of
         1 ->
-            "Объект будет сутки работать в режиме Трекинга, потом перейдет в режим Сон. Заряда хватит на 5 активаций режима Трекинг."
+            "Максимальное время работы в режиме Поиск - 12 часов. Ёмкости батареи хватит на 10 активаций режима Поиск."
 
         2 ->
-            "Объект будет 4 часа работать в режиме Трекинга, потом перейдет в режим Сон. Заряда хватит на 20 активаций режима Трекинг."
+            "Максимальное время работы в режиме Поиск - 4 часа. Ёмкости батареи хватит на 30 активаций режима Поиск."
 
         _ ->
-            "Объект будет 1 час работать в режиме Трекинга, потом перейдет в режим Сон. Заряда хватит на 50 активаций режима Трекинг."
+            "Максимальное время работы в режиме Поиск - 1 час. Ёмкости батареи хватит на 120 активаций режима Поиск."
 
 
 masterPage3View : ( Bool, Bool ) -> Model -> Html Msg
 masterPage3View ( s1, s2 ) model =
     row <|
-        [ div [ class "col s12", HA.style "text-align" "left" ]
+        [ div [ class "col s12 m11 offset-m1 l11 offset-l1 xl10 offset-xl2", HA.style "text-align" "left" ]
             [ form [ attribute "action" "#" ] <|
                 [ item1_ 1 "Привязать к телефону" s1 OnMasterSecur1 ]
                     ++ [ phoneInput s1 model.adminPhone OnAdminPhone ]
@@ -188,7 +282,7 @@ phoneInput en code_ cmd_ =
     case en of
         False ->
             row
-                [ Html.div [ class "col s12 m10 offset-m1 l6 offset-l3" ] [ Html.text "Управление будет возможно с любого телефона." ] ]
+                [ Html.div [ class "col s12 m11 offset-m1 l9 offset-l3" ] [ Html.text "Управление будет возможно с любого телефона." ] ]
 
         True ->
             row
@@ -205,7 +299,7 @@ phoneInput en code_ cmd_ =
                         ]
                         []
                     ]
-                , Html.div [ class "col s12 m10 offset-m1 l6 offset-l3" ] <|
+                , Html.div [ class "col s12 m11 offset-m1 l9 offset-l3" ] <|
                     case code_ of
                         "" ->
                             [ Html.text "Управление будет возможно с любого телефона." ]
