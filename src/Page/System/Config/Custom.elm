@@ -76,9 +76,6 @@ paramsWidget sysId params showQueue =
                     , Html.div [ HA.class "col s4 m3 right-align" ] valueField
                     ]
 
-        _ =
-            Debug.log "params" params
-
         data =
             case showQueue of
                 False ->

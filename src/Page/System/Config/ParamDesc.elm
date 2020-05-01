@@ -47,7 +47,7 @@ paramDesc =
         , ( "akkum.i.1", PDI "?Максимальный ток заряда батареи, х 20.408 mA (10-100)" (PD_Int 10 100) )
         , ( "akkum.i.charge", PDI "-- добавить описание ---" PD_String )
         , ( "akkum.u.0", PDI "?Минимальное напряжение для обновления прошивки, /310.29, V (1100-1300)" (PD_Int 1000 1300) )
-        , ( "sleep", PDI "Время сна в режимах Beacon и Tracker, мин" PD_String )
+        , ( "sleep", PDI "Время сна в режимe Ожидание, мин" PD_String )
         , ( "adc.vi.fix", PDI "Коррекция показаний резервного питания." PD_String )
         , ( "admin", PDI "Телефон администратора." PD_String )
         , ( "alarm.balance"
@@ -105,128 +105,142 @@ paramDesc =
                     ]
                 )
           )
+        , ( "alarm.mode"
+          , PDI "SMS о смене режима"
+                (PD_Enum
+                    [ ( "0", PDIE_Desc "Выключено" )
+                    , ( "1", PDIE_Link "alarm1" )
+                    , ( "2", PDIE_Link "alarm2" )
+                    , ( "3", PDIE_Link "alarm3" )
+                    , ( "4", PDIE_Link "alarm4" )
+                    ]
+                )
+          )
+        , ( "alarm.on"
+          , PDI "SMS о включении трекера"
+                (PD_Enum
+                    [ ( "0", PDIE_Desc "Выключено" )
+                    , ( "1", PDIE_Link "alarm1" )
+                    , ( "2", PDIE_Link "alarm2" )
+                    , ( "3", PDIE_Link "alarm3" )
+                    , ( "4", PDIE_Link "alarm4" )
+                    ]
+                )
+          )
+        , ( "alarm.off"
+          , PDI "SMS о выключении трекера"
+                (PD_Enum
+                    [ ( "0", PDIE_Desc "Выключено" )
+                    , ( "1", PDIE_Link "alarm1" )
+                    , ( "2", PDIE_Link "alarm2" )
+                    , ( "3", PDIE_Link "alarm3" )
+                    , ( "4", PDIE_Link "alarm4" )
+                    ]
+                )
+          )
+        , ( "alarm.stealth"
+          , PDI "SMS об активации режима Stealth"
+                (PD_Enum
+                    [ ( "0", PDIE_Desc "Выключено" )
+                    , ( "1", PDIE_Link "alarm1" )
+                    , ( "2", PDIE_Link "alarm2" )
+                    , ( "3", PDIE_Link "alarm3" )
+                    , ( "4", PDIE_Link "alarm4" )
+                    ]
+                )
+          )
+        , ( "admin", PDI "Номер телефона администратора" PD_String )
+        , ( "alarm1", PDI "Первый номер телефона для отправки SMS" PD_String )
+        , ( "alarm2", PDI "Второй номер телефона для отправки SMS" PD_String )
+        , ( "alarm3", PDI "Третий номер телефона для отправки SMS" PD_String )
+        , ( "alarm4", PDI "Четвертый номер телефона для отправки SMS" PD_String )
+        , ( "auto.sleep", PDI "Автоматическое включение режима Ожидание, мин" (PD_Int 60 1440) )
+        , ( "balance.skip", PDI "Пропуск цифр в отчёте оператора о балансе" (PD_Int 0 128) )
+        , ( "balance.ussd", PDI "USSD-запрос остатка средств на карточке" PD_String )
+        , ( "config.send", PDI "Период сеансов связи в рефиме Конфигуратор, мин" (PD_Int 1 60) )
+        , ( "delay", PDI "Задержка выключения GSM-модуля, в циклах связи" (PD_Int 0 60) )
+        , ( "distance", PDI "Максимально допустимое отклонение координат, м" (PD_Int 100 1000) )
+        , ( "gps.angle", PDI "Минимальный регистрируемый угол поворота, градусов" (PD_Int 5 90) )
+        , ( "gps.aoff", PDI "Автовыключение GPS для экономии батареи, мин" (PD_Int 1 600) )
+        , ( "gps.delta", PDI "Принудительная регистрация координат при перемещении, м" (PD_Int 100 10000) )
+        , ( "gps.fail", PDI "Задержка перезапуска GPS-модуля при пропадании спутников, мин" (PD_Int 1 60) )
+        , ( "gps.flush.move", PDI "Период отправки данных на сервер при движении, сек" (PD_Int 30 600) )
+        , ( "gps.flush.stop", PDI "Период отправки данных на сервер при стоянке, сек" (PD_Int 30 600) )
+        , ( "gps.tf.move", PDI "Принудительная регистрация координат при движении, сек" (PD_Int 30 120) )
+        , ( "gps.tf.stop", PDI "Период регистрации координат при остановке, сек" (PD_Int 30 120) )
+        , ( "gps.tf.stop.acc", PDI "Период регистрации координат при стоянке, сек" (PD_Int 30 120) )
+        , ( "gps.valid.delay", PDI "Данные от GPS берутся не первые после fix, а пропускается указанное кол-во" (PD_Int 0 120) )
+        , ( "gps.vignacc", PDI "Скорость принудительной регистрации движения (игнорируется акселерометр) × 0,01852 км/ч" (PD_Int 100 30000) )
+        , ( "gps.vstart", PDI "Скорость регистрации начала движения × 0,01852 км/ч" (PD_Int 100 30000) )
+        , ( "gps.vstop", PDI "Скорость регистрирации остановки объекта × 0,01852 км/ч" (PD_Int 100 30000) )
+        , ( "gps.data.1"
+          , PDI "Назначение дополнительного поля данных GPS"
+                (PD_Enum
+                    [ ( "2", PDIE_Desc "Погрешность GPS" )
+                    , ( "3", PDIE_Desc "Фотодатчик" )
+                    , ( "4", PDIE_Desc "Температура" )
+                    ]
+                )
+          )
+
+        --     "comment": "В Sleep-режимах, при периодических просыпаниях, " +
+        --             "если определить местоположение по сотовым вышкам " +
+        --             "не удалось, то в течении установленношо времени " +
+        --             "производится попытка определить положение по GPS"
+        -- },
+        , ( "gps.wait", PDI "Время ожидания обнаружения спутников, мин" (PD_Int 1 1440) )
+        , ( "gsm.apn", PDI "Программируеная точка входа в Интернет - APN" PD_String )
+        , ( "gsm.balance.period", PDI "Период контроля баланса, часов" (PD_Int 1 720) )
+
+        -- , ( "gsm.extra", PDI "Дополнительный идентификатор." PD_String )
+        -- TODO: Сделать выбор
+        , ( "gsm.flags", PDI "Работа в роуминге, в том числе, в национальном" (PD_Int 0 1) )
+        , ( "gsm.lagtime", PDI "Период проверки GSM-модуля на предмет зависания, мин" (PD_Int 10 120) )
+        , ( "gsm.predelay", PDI "Время проверки GSM-ретрансляторов и ожидания SMS, мин" (PD_Int 3 120) )
+        , ( "gsm.user", PDI "Имя пользователя для GPRS-доступа" PD_String )
+        , ( "gsm.pwd", PDI "Пароль для GPRS-доступа" PD_String )
+        , ( "limit", PDI "Минимально допустимый баланс SIM-карты" (PD_Int 10 30000) )
+        , ( "link.delay", PDI "Время удержания кнопки для привязки, сек" (PD_Int 3 10) )
+        , ( "mode"
+          , PDI "Режим работы"
+                (PD_Enum
+                    [ ( "3", PDIE_Desc "Поиск" )
+                    , ( "4", PDIE_Desc "Рыбалка (шутка)" )
+                    , ( "5", PDIE_Desc "Ожидание" )
+                    , ( "6", PDIE_Desc "Конфигуратор" )
+                    ]
+                )
+          )
+        , ( "photo"
+          , PDI "Фотодатчик"
+                (PD_Enum
+                    [ ( "0", PDIE_Desc "Выключен" )
+                    , ( "1", PDIE_Desc "Включен" )
+                    ]
+                )
+          )
+        , ( "secur.code", PDI "Код безопасности для SMS-команд" PD_String )
+
+        --     "comment": "Используется если СМС отправляется заблаговременно, пока "+
+        --                 "трекер находится в режиме сна (GSM выключен    )"
+        , ( "sms.confirm"
+          , PDI "Оповещение о выполнении команды смены режима."
+                (PD_Enum
+                    [ ( "0", PDIE_Desc "Выключено" )
+                    , ( "1", PDIE_Desc "Включено" )
+                    ]
+                )
+          )
+        , ( "timezone", PDI "Разница между текущим и мировым часовыми поясами, часов" (PD_Int 1 24) )
+        , ( "vin.low", PDI "Напряжение для сообщения о разряде батареи, V" (PD_Int 1 24) )
+        , ( "vin.off", PDI "Напряжение автоматического выключения трекера, V" (PD_Int 1 24) )
         ]
 
 
 
--- , ( "alarm.ign"
---     , PDI "SMS о включении зажигания",
+-- , ( ""
+--     , PDI "",
 --     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.low"
---     , PDI "SMS о низком уровне заряда батареи",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.mode"
---     , PDI "SMS о смене режима",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.on"
---     , PDI "SMS о включении трекера",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.off"
---     , PDI "SMS о выключении трекера",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.power"
---     , PDI "SMS о подаче или отключении внешнего питания",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.shleyf"
---     , PDI "SMS о повреждении или восстановлении шлейфа",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.sos"
---     , PDI "SMS о нажатии тревожной кнопки",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.overflow"
---     , PDI "SMS о превышении допустимого напряжения питания",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "alarm.stealth"
---     , PDI "SMS об активации режима Stealth",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Alarm1"},
---         {value: "2", , PDI "Alarm2"},
---         {value: "3", , PDI "Alarm3"},
---         {value: "4", , PDI "Alarm4"}
---     ],
 --     "comment": " INT 1 1"
 -- },
 -- , ( "gps.A1.0"
@@ -375,19 +389,6 @@ paramDesc =
 --     "max": 270,
 --     "comment": " INT 54 54"
 -- },
--- , ( "gps.flush.move"
---     , PDI "Период отправки данных на сервер при движении, сек, (30-600)",
---     primary: false,
---     "min": 10,
---     "max": 3600,
---     "comment": " INT 60 60 180"
--- },
--- , ( "gps.flush.stop"
---     , PDI "Период отправки данных на сервер при стоянке, сек, (30-600)",
---     "min": 10,
---     "max": 3600,
---     "comment": " INT 60 60"
--- },
 -- , ( "gps.maxsendfails"
 --     "comment": " - INT 3 3"
 -- },
@@ -437,41 +438,6 @@ paramDesc =
 --     primary: false,
 --     "comment": " INT 1 1"
 -- },
--- , ( "admin"
---     , PDI "Номер телефона администратора",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "alarm1"
---     , PDI "Первый номер телефона для отправки SMS",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "alarm2"
---     , PDI "Второй номер телефона для отправки SMS",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "alarm3"
---     , PDI "Третий номер телефона для отправки SMS",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "alarm4"
---     , PDI "Четвёртый номер телефона для отправки SMS",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "balance.skip"
---     , PDI "Пропуск цифр в отчёте оператора о балансе",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "balance.ussd"
---     , PDI "USSD-запрос остатка средств на карточке",
---     primary: false,
---     "comment": " INT 1 1"
--- },
 -- , ( "chagre.min.v"
 --     , PDI "Минимальное внешнее напряжение для разрешения заряда, V",
 --     primary: false,
@@ -509,16 +475,6 @@ paramDesc =
 --     primary: false,
 --     "comment": " INT 1 1"
 -- },
--- , ( "delay"
---     , PDI "Задержка выключения GSM-модуля, в циклах связи",
---     primary: true,
---     "comment": " INT 1 1"
--- },
--- , ( "distance"
---     , PDI "Максимально допустимое отклонение координат, метров",
---     primary: false,
---     "comment": " INT 1 1"
--- },
 -- , ( "fwupdate.path"
 --     , PDI "Может лучше скрыть, чтобы не портили?",
 --     primary: false,
@@ -537,11 +493,6 @@ paramDesc =
 --     hidden: true,
 --     "comment": " INT 1 1"
 -- },
--- , ( "gps.angle"
---     , PDI "Минимальный регистрируемый угол поворота, градусов",
---     primary: false,
---     "comment": " INT 1 1"
--- },
 -- , ( "gps.aoff.main"
 --     , PDI "Автовыключение GPS при питании от бортовой сети, мин",
 --     primary: true,
@@ -550,106 +501,6 @@ paramDesc =
 -- , ( "gps.aoff.res"
 --     , PDI "Автовыключение GPS при питании от встроенного аккумулятора, мин",
 --     primary: true,
---     "comment": " INT 1 1"
--- },
--- , ( "gps.data.1"
---     , PDI "Назначение дополнительного поля данных GPS",
---     primary: false,
---     hidden: false,
---     enum: [
---         {value: "1", , PDI "Датчик топлива"},
---         {value: "2", , PDI "Погрешность"},
---         {value: "3", , PDI "Фотодатчик"},
---         {value: "4", , PDI "Температура"}
---     ],
---     "comment": " INT 1 1"
--- },
--- , ( "gps.delta"
---     , PDI "Принудительная регистрация координат при перемещении, м",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "gps.fail"
---     , PDI "Задержка перезапуска GPS-модуля при пропадании спутников, мин",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "gps.tf.move"
---     , PDI "Принудительная регистрация координат при движении, сек (30-120)",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "gps.tf.stop"
---     , PDI "Период регистрации координат при остановке, сек (30-600)",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "gps.tf.stop.acc"
---     , PDI "Период регистрации координат при стоянке, сек (60-3600)",
---     primary: true,
---     "comment": " INT 1 1"
--- },
--- , ( "gps.vignacc"
---     , PDI "Скорость регистрации движения без акселерометра × 0,01852 км/ч",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "gps.vstart"
---     , PDI "Скорость регистрируется начало движения × 0,01852 км/ч",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "gps.vstop"
---     , PDI "Скорость регистрируется остановка объекта × 0,01852 км/ч",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "gps.wait"
---     , PDI "Время ожидания обнаружения спутников, минут",
---     primary: false,
---     "comment": "В Sleep-режимах, при периодических просыпаниях, " +
---             "если определить местоположение по сотовым вышкам " +
---             "не удалось, то в течении установленношо времени " +
---             "производится попытка определить положение по GPS"
--- },
--- , ( "gsm.apn"
---     , PDI "Программируеная точка входа в Интернет - APN",
---     primary: false,
---     "comment": "См также gsm.user и gsm.pwd"
--- },
--- , ( "gsm.balance.period"
---     , PDI "Период контроля баланса, часов",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "gsm.extra"
---     , PDI "Аналогичен secure.code, но может содержать любые символы",
---     primary: false,
---     hidden: true,
---     "comment": " INT 1 1"
--- },
--- , ( "gsm.flags"
---     , PDI "Работа в роуминге, в том числе, в национальном",
---     "primary": false,
---     "comment": " INT 1 1"
--- },
--- , ( "gsm.lagtime"
---     , PDI "Период проверки GSM-модуля на предмет зависания (минут)",
---     "primary": false,
--- },
--- , ( "gsm.predelay"
---     , PDI "Время проверки GSM-ретрансляторов и ожидания SMS, мин",
---     primary: true,
---     "comment": " INT 1 1"
--- },
--- , ( "gsm.user"
---     , PDI "Имя пользователя для GPRS-доступа",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "gsm.pwd"
---     , PDI "Пароль для GPRS-доступа",
---     primary: false,
 --     "comment": " INT 1 1"
 -- },
 -- , ( "gsm.track.time"
@@ -712,11 +563,6 @@ paramDesc =
 --     ],
 --     "comment": " INT 1 1"
 -- },
--- , ( "limit"
---     , PDI "Минимально допустимый баланс SIM-карты",
---     primary: false,
---     "comment": " INT 1 1"
--- },
 -- , ( "main.param.long.name.very.long.name.real.looooong.name.not.joke.real.fucking.long.name.2"
 --     , PDI "???",
 --     primary: false,
@@ -733,16 +579,6 @@ paramDesc =
 --     , PDI "???",
 --     primary: false,
 --     hidden: true,
---     "comment": " INT 1 1"
--- },
--- , ( "mode"
---     , PDI "Режим работы",
---     enum: [
---         {value: "1", , PDI "Beacon"},
---         {value: "3", , PDI "Tracker"},
---         {value: "4", , PDI "Wait"}
---     ],
---     primary: true,
 --     "comment": " INT 1 1"
 -- },
 -- , ( "out.1"
@@ -778,11 +614,6 @@ paramDesc =
 --     primary: false,
 --     "comment": " INT 1 1"
 -- },
--- , ( "secur.code"
---     , PDI "Код безопасности для SMS-команд",
---     primary: false,
---     "comment": " INT 1 1"
--- },
 -- , ( "service.lock"
 --     , PDI "Запретить режим проверки входов-выходов",
 --     "primary": false,
@@ -800,16 +631,6 @@ paramDesc =
 --     primary: true,
 --     "comment": " INT 1 1"
 -- },
--- , ( "sms.confirm"
---     , PDI "Оповещение о выполнении команды смены режима.",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключено"},
---         {value: "1", , PDI "Включено"}
---     ],
---     "comment": "Используется если СМС отправляется заблаговременно, пока "+
---                 "трекер находится в режиме сна (GSM выключен    )"
--- },
 -- , ( "stealth.dist"
 --     , PDI "Максимально допустимое отклонение координат, м",
 --     primary: true,
@@ -819,21 +640,6 @@ paramDesc =
 --     , PDI "Устаревший параметр?",
 --     primary: false,
 --     hidden: true,
---     "comment": " INT 1 1"
--- },
--- , ( "timezone"
---     , PDI "Разница между текущим и мировым часовыми поясами, часов",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "vin.low"
---     , PDI "Напряжение для сообщения о разряде аккумулятора, V",
---     primary: false,
---     "comment": " INT 1 1"
--- },
--- , ( "vin.off"
---     , PDI "Напряжение автоматического выключения трекера, V",
---     primary: false,
 --     "comment": " INT 1 1"
 -- },
 --
@@ -853,15 +659,6 @@ paramDesc =
 --     hidden: true
 -- },
 --
--- , ( "photo"
---     , PDI "Фотодатчик",
---     primary: false,
---     enum: [
---         {value: "0", , PDI "Выключен"},
---         {value: "1", , PDI "Включен"},
---     ],
---     "comment": " INT 1 1"
--- },
 --
 -- , ( "wake.off"
 --     , PDI "Автоактивация режима Tracker при отключении внешнего питания",
@@ -907,5 +704,10 @@ disabled name =
             , "fwupdate.port"
             , "fwupdate.server"
             , "gsm.server"
+            , "gsm.extra"
             , "sim900.init"
+            , "gps.data.1"
+            , "link.delay"
+            , "off.save"
+            , "off.state"
             ]
