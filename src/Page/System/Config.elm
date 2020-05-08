@@ -22,9 +22,11 @@ init sysId =
       , newTitle = ""
       , showState = SS_Root
       , showMasterDialog = MasterPage1
-      , masterEcoValue = 2
-      , masterTrackValue = 2
-      , masterSecurValue = ( False, False )
+      , masterData = initMasterData
+
+      -- , masterEcoValue = 2
+      -- , masterTrackValue = 2
+      -- , masterSecurValue = ( False, False )
       , showChanges = False
       , showRemodeDialog = False
       , removeId = ""
@@ -58,23 +60,15 @@ update msg model =
         OnTitleCancel ->
             ( { model | showTitleChangeDialog = False }, Cmd.none, Nothing )
 
+        -- TODO: Move all Master updates to .Master.Types or elsewhere
         OnMasterEco1 val _ ->
-            ( { model | masterEcoValue = val }, Cmd.none, Nothing )
+            ( { model | masterData = setMasterDataEco val model.masterData }, Cmd.none, Nothing )
 
         OnMasterTrack1 val _ ->
-            ( { model | masterTrackValue = val }, Cmd.none, Nothing )
+            ( { model | masterData = setMasterDataTrack val model.masterData }, Cmd.none, Nothing )
 
         OnMasterSecur1 val s ->
-            let
-                ( s1, s2 ) =
-                    model.masterSecurValue
-            in
-                case val of
-                    1 ->
-                        ( { model | masterSecurValue = ( s, s2 ) }, Cmd.none, Nothing )
-
-                    _ ->
-                        ( { model | masterSecurValue = ( s1, s ) }, Cmd.none, Nothing )
+            ( { model | masterData = setMasterDataSecur val s model.masterData }, Cmd.none, Nothing )
 
         OnMasterNext ->
             ( { model | showMasterDialog = (masterNextPage model.showMasterDialog) }, Cmd.none, Nothing )

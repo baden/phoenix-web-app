@@ -22,64 +22,32 @@ masterDialogView model sysId mparams =
             case model.showMasterDialog of
                 MasterPage1 ->
                     [ row [ UI.text "Период выхода на связь" ]
-                    , row [ UI.text <| masterPage1Help model.masterEcoValue ]
-                    , row [ masterPage1View model.masterEcoValue ]
+                    , row [ UI.text <| masterPage1Help model.masterData.masterEcoValue ]
+                    , row [ masterPage1View model.masterData.masterEcoValue ]
                     ]
                         ++ masterFooterFirst
 
                 MasterPage2 ->
                     [ row [ UI.text "Время работы в режиме Поиск" ]
-                    , row [ UI.text <| masterPage2Help model.masterTrackValue ]
-                    , row [ masterPage2View model.masterTrackValue ]
+                    , row [ UI.text <| masterPage2Help model.masterData.masterTrackValue ]
+                    , row [ masterPage2View model.masterData.masterTrackValue ]
                     ]
                         ++ masterFooterMiddle
 
                 MasterPage3 ->
                     [ row [ UI.text "Безопасность" ]
-                    , row [ UI.text <| masterPage3Help model.masterSecurValue ]
-                    , row [ masterPage3View model.masterSecurValue model ]
+                    , row [ UI.text <| masterPage3Help model.masterData.masterSecurValue ]
+                    , row [ masterPage3View model.masterData.masterSecurValue model ]
                     ]
                         ++ showChanges model sysId
                         ++ masterFooterLast sysId params.queue (changesList model)
-
-
-ecoToValue : Int -> String
-ecoToValue v =
-    case v of
-        1 ->
-            -- Раз в сутки
-            "1440"
-
-        2 ->
-            -- Каждые 4 часа
-            "240"
-
-        _ ->
-            -- Каждый час
-            "60"
-
-
-trackToValue : Int -> String
-trackToValue v =
-    case v of
-        1 ->
-            -- 12 часов
-            "720"
-
-        2 ->
-            -- 4 часа
-            "240"
-
-        _ ->
-            -- 1 час
-            "60"
 
 
 changesList : Model -> Dict String String
 changesList model =
     let
         ( s1, s2 ) =
-            model.masterSecurValue
+            model.masterData.masterSecurValue
 
         phone =
             case s1 of
@@ -98,8 +66,8 @@ changesList model =
                     ""
     in
         Dict.fromList
-            [ ( "sleep", (ecoToValue model.masterEcoValue) )
-            , ( "auto.sleep", (trackToValue model.masterTrackValue) )
+            [ ( "sleep", (ecoToValue model.masterData.masterEcoValue) )
+            , ( "auto.sleep", (trackToValue model.masterData.masterTrackValue) )
             , ( "admin", phone )
             , ( "secur.code", code )
             ]
@@ -141,7 +109,7 @@ showChanges model sysId =
 -- masterPage : String -> String
 
 
-item_ : Int -> String -> Bool -> (Int -> Bool -> Msg) -> UI Msg
+item_ : mt -> String -> Bool -> (mt -> Bool -> Msg) -> UI Msg
 item_ index label_ checked_ msg =
     p []
         [ label []
@@ -151,7 +119,11 @@ item_ index label_ checked_ msg =
         ]
 
 
-item1_ : Int -> String -> Bool -> (Int -> Bool -> Msg) -> UI Msg
+
+-- TODO: Fix 'a' type
+
+
+item1_ : mt -> String -> Bool -> (mt -> Bool -> Msg) -> UI Msg
 item1_ index label_ checked_ msg =
     row
         [ Html.div [ class "col s12 m10 offset-m1 l6 offset-l2" ]
@@ -163,78 +135,75 @@ item1_ index label_ checked_ msg =
         ]
 
 
-masterPage1View : Int -> Html Msg
-masterPage1View selected =
+masterPageForm : List (Html Msg) -> Html Msg
+masterPageForm c =
     row <|
-        [ div [ class "col s12 m8 offset-m1 l7 offset-l3 xl7 offset-xl4", HA.style "text-align" "left" ]
+        -- [ div [ class "col s12 m8 offset-m1 l7 offset-l3 xl7 offset-xl4", HA.style "text-align" "left" ]
+        [ div [ class "col s12 m11 offset-m1 l11 offset-l1 xl10 offset-xl2", HA.style "text-align" "left" ]
             [ form
                 [ attribute "action" "#" ]
-                [ item_ 1 "Редко" (selected == 1) OnMasterEco1
-                , item_ 2 "Оптимально" (selected == 2) OnMasterEco1
-                , item_ 3 "Часто" (selected == 3) OnMasterEco1
-                ]
+                c
             ]
         ]
 
 
-masterPage1Help : Int -> String
+masterPage1View : MasterDataEco -> Html Msg
+masterPage1View selected =
+    masterPageForm
+        [ item_ M_ECO_MAX "Редко" (selected == M_ECO_MAX) OnMasterEco1
+        , item_ M_ECO_MID "Оптимально" (selected == M_ECO_MID) OnMasterEco1
+        , item_ M_ECO_MIN "Часто" (selected == M_ECO_MIN) OnMasterEco1
+        ]
+
+
+masterPage1Help : MasterDataEco -> String
 masterPage1Help index =
     case index of
-        1 ->
+        M_ECO_MAX ->
             "Объект будет выходить на связь один раз в сутки. Ожидаемый срок службы батареи - 15 лет."
 
-        2 ->
+        M_ECO_MID ->
             "Объект будет выходить на связь каждые 4 часа. Ожидаемый срок службы батареи - 6 лет."
 
-        _ ->
+        M_ECO_MIN ->
             "Объект будет выходить на связь каждый час. Ожидаемый срок службы батареи - 15 месяцев."
 
 
-masterPage2View : Int -> Html Msg
+masterPage2View : MasterDataTrack -> Html Msg
 masterPage2View selected =
-    row <|
-        [ div [ class "col s12 m8 offset-m1 l7 offset-l3 xl7 offset-xl4", HA.style "text-align" "left" ]
-            [ form
-                [ attribute "action" "#" ]
-                [ item_ 1 "Продолжительно" (selected == 1) OnMasterTrack1
-                , item_ 2 "Оптимально" (selected == 2) OnMasterTrack1
-                , item_ 3 "Минимально" (selected == 3) OnMasterTrack1
-                ]
-            ]
+    masterPageForm
+        [ item_ M_TRACK_MIN "Продолжительно" (selected == M_TRACK_MIN) OnMasterTrack1
+        , item_ M_TRACK_MID "Оптимально" (selected == M_TRACK_MID) OnMasterTrack1
+        , item_ M_TRACK_MAX "Минимально" (selected == M_TRACK_MAX) OnMasterTrack1
         ]
 
 
-masterPage2Help : Int -> String
+masterPage2Help : MasterDataTrack -> String
 masterPage2Help index =
     case index of
-        1 ->
+        M_TRACK_MIN ->
             "Максимальное время работы в режиме Поиск - 12 часов. Ёмкости батареи хватит на 10 активаций режима Поиск."
 
-        2 ->
+        M_TRACK_MID ->
             "Максимальное время работы в режиме Поиск - 4 часа. Ёмкости батареи хватит на 30 активаций режима Поиск."
 
-        _ ->
+        M_TRACK_MAX ->
             "Максимальное время работы в режиме Поиск - 1 час. Ёмкости батареи хватит на 120 активаций режима Поиск."
 
 
 masterPage3View : ( Bool, Bool ) -> Model -> Html Msg
 masterPage3View ( s1, s2 ) model =
-    row <|
-        [ div [ class "col s12 m11 offset-m1 l11 offset-l1 xl10 offset-xl2", HA.style "text-align" "left" ]
-            [ form [ attribute "action" "#" ] <|
-                [ item1_ 1 "Привязать к телефону" s1 OnMasterSecur1 ]
-                    ++ [ phoneInput s1 model.adminPhone OnAdminPhone ]
-                    ++ [ item1_ 2 "Установить пароль доступа" s2 OnMasterSecur1 ]
-                    ++ [ codeInput s2 model.adminCode OnAdminCode ]
-            ]
+    masterPageForm
+        [ item1_ 1 "Привязать к телефону" s1 OnMasterSecur1
+        , phoneInput s1 model.adminPhone OnAdminPhone
+        , item1_ 2 "Установить пароль доступа" s2 OnMasterSecur1
+        , codeInput s2 model.adminCode OnAdminCode
         ]
 
 
 masterPage3Help : ( Bool, Bool ) -> String
-masterPage3Help ( s1, s2 ) =
-    case s1 of
-        _ ->
-            "Чтобы никто посторонний не смог получить управление вашим устройством, установите дополнительную защиту"
+masterPage3Help _ =
+    "Чтобы никто посторонний не смог получить управление вашим устройством, установите дополнительную защиту"
 
 
 phoneInput : Bool -> String -> (String -> cmd) -> Html cmd

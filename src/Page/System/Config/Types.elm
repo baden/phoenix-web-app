@@ -21,9 +21,11 @@ type alias Model =
     , newTitle : String
     , showState : ShowState
     , showMasterDialog : MasterPage
-    , masterEcoValue : Int
-    , masterTrackValue : Int
-    , masterSecurValue : ( Bool, Bool )
+
+    -- , masterEcoValue : Int
+    -- , masterTrackValue : Int
+    -- , masterSecurValue : ( Bool, Bool )
+    , masterData : MasterData
     , showChanges : Bool
     , showRemodeDialog : Bool
     , removeId : String
@@ -50,8 +52,8 @@ type Msg
     | OnTitleCancel
     | OnStartMaster String
     | OnCancelMaster
-    | OnMasterEco1 Int Bool
-    | OnMasterTrack1 Int Bool
+    | OnMasterEco1 MasterDataEco Bool
+    | OnMasterTrack1 MasterDataTrack Bool
     | OnMasterSecur1 Int Bool
     | OnMasterNext
     | OnMasterPrev
