@@ -76,11 +76,11 @@ img {
 
 
 input.sms_code {
-    text-align: center;
+    text-align: left;
 }
 input.sms_code::-webkit-input-placeholder { /* Chrome/Opera/Safari */
     color: pink;
-    text-align: center;
+    text-align: left;
 }
 input.sms_code::-moz-placeholder { /* Firefox 19+ */
     color: pink;

@@ -29,6 +29,8 @@ type alias Model =
     , showChanges : Bool
     , showRemodeDialog : Bool
     , removeId : String
+    , smsPhone1 : String
+    , ussdPhone : String
     , adminPhone : String
     , adminCode : String
     , systemId : Maybe String
@@ -55,6 +57,7 @@ type Msg
     | OnMasterEco1 MasterDataEco Bool
     | OnMasterTrack1 MasterDataTrack Bool
     | OnMasterSecur1 Int Bool
+    | OnMasterSMSEvent (Bool -> MasterDataSMS -> MasterDataSMS) Bool
     | OnMasterNext
     | OnMasterPrev
     | OnMasterCustom
@@ -64,6 +67,8 @@ type Msg
     | OnRemove String
     | OnCancelRemove
     | OnConfirmRemove
+    | OnSMSPhone1 String
+    | OnUSSDPhone String
     | OnAdminPhone String
     | OnAdminCode String
     | OnStartEditParam String String String String

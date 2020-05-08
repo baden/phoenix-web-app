@@ -5,12 +5,15 @@ type MasterPage
     = MasterPage1
     | MasterPage2
     | MasterPage3
+    | MasterPage4
+    | MasterPage5
 
 
 type alias MasterData =
     { masterEcoValue : MasterDataEco
     , masterTrackValue : MasterDataTrack
     , masterSecurValue : ( Bool, Bool )
+    , smsPhones : MasterDataSMS
     }
 
 
@@ -26,11 +29,45 @@ type MasterDataTrack
     | M_TRACK_MAX
 
 
+
+-- alarm.case Вскрытие корпуса
+-- alarm.low Низкий уровень заряда
+-- alarm.mode Изменение режима (Поиск, Ожидание, Включение, Выключение)
+-- alarm.delay? alarm.stealth? Включение и выключение GSM-модуля
+-- alarm.gps Начало движения (в режиме Поиск)
+-- type MasterDataPhoneIndex
+--     = MD_Phone_None
+--     | MD_Phone_1
+--     | MD_Phone_2
+
+
+type alias MasterDataSMS =
+    { balance : Bool
+    , lowPower : Bool
+    , changeMode : Bool
+    , moved : Bool
+    , caseOpen : Bool
+    , onOff : Bool
+
+    -- , gsm : Bool
+    }
+
+
 initMasterData : MasterData
 initMasterData =
     { masterEcoValue = M_ECO_MID
     , masterTrackValue = M_TRACK_MID
     , masterSecurValue = ( False, False )
+    , smsPhones =
+        { balance = False
+        , lowPower = False
+        , changeMode = False
+        , moved = False
+        , caseOpen = False
+        , onOff = False
+
+        -- , gsm = False
+        }
     }
 
 
@@ -56,6 +93,10 @@ setMasterDataSecur val s m =
 
             _ ->
                 { m | masterSecurValue = ( s1, s ) }
+
+
+setMasterDataSmsEvent updater s m =
+    { m | smsPhones = updater s m.smsPhones }
 
 
 ecoToValue : MasterDataEco -> String
@@ -100,12 +141,24 @@ masterNextPage showMasterDialog =
             MasterPage3
 
         MasterPage3 ->
+            MasterPage4
+
+        MasterPage4 ->
+            MasterPage5
+
+        MasterPage5 ->
             MasterPage1
 
 
 masterPrevPage : MasterPage -> MasterPage
 masterPrevPage showMasterDialog =
     case showMasterDialog of
+        MasterPage5 ->
+            MasterPage4
+
+        MasterPage4 ->
+            MasterPage3
+
         MasterPage3 ->
             MasterPage2
 

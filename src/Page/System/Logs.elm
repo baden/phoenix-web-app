@@ -9,6 +9,7 @@ import Msg as GMsg
 import API
 import Types.Dt as DT
 import Components.DateTime exposing (dateTimeFormat)
+import Json.Encode as Encode
 
 
 type alias Model =
@@ -76,5 +77,7 @@ viewLogs appState mlogs =
                                 (itm.dt |> DT.toPosix |> dateTimeFormat appState.timeZone)
                         in
                             Html.tr [] [ Html.td [] [ text dt ], Html.td [] [ text itm.text ] ]
+
+                -- Html.tr [] [ Html.td [] [ text dt ], Html.td [ HA.property "innerHTML" (Encode.string itm.text) ] [] ]
             in
                 [ Html.table [] (logs |> List.map i) ]

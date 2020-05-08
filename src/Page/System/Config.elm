@@ -30,6 +30,8 @@ init sysId =
       , showChanges = False
       , showRemodeDialog = False
       , removeId = ""
+      , smsPhone1 = ""
+      , ussdPhone = "*111#"
       , adminPhone = ""
       , adminCode = ""
       , systemId = sysId
@@ -70,6 +72,9 @@ update msg model =
         OnMasterSecur1 val s ->
             ( { model | masterData = setMasterDataSecur val s model.masterData }, Cmd.none, Nothing )
 
+        OnMasterSMSEvent updater s ->
+            ( { model | masterData = setMasterDataSmsEvent updater s model.masterData }, Cmd.none, Nothing )
+
         OnMasterNext ->
             ( { model | showMasterDialog = (masterNextPage model.showMasterDialog) }, Cmd.none, Nothing )
 
@@ -84,6 +89,12 @@ update msg model =
 
         OnConfirmRemove ->
             ( { model | showRemodeDialog = False }, Cmd.none, Just (GMsg.RemoveSystemFromList model.removeId) )
+
+        OnSMSPhone1 s ->
+            ( { model | smsPhone1 = s }, Cmd.none, Nothing )
+
+        OnUSSDPhone s ->
+            ( { model | ussdPhone = s }, Cmd.none, Nothing )
 
         OnAdminPhone s ->
             ( { model | adminPhone = s }, Cmd.none, Nothing )
