@@ -1,5 +1,7 @@
 module Page.System.Config.Master exposing (..)
 
+import Page.System.Config.Master.Types exposing (..)
+import Page.System.Config.Master.Widget exposing (..)
 import Page.System.Config.Types exposing (..)
 import Components.UI as UI exposing (..)
 import Html exposing (Html, div, text, a, form, p, label, input, span)
@@ -9,35 +11,9 @@ import Dict exposing (Dict)
 import API.System exposing (SystemDocumentParams)
 
 
-masterNextPage : MasterPage -> MasterPage
-masterNextPage showMasterDialog =
-    case showMasterDialog of
-        MasterPage1 ->
-            MasterPage2
-
-        MasterPage2 ->
-            MasterPage3
-
-        MasterPage3 ->
-            MasterPage1
-
-
-masterPrevPage : MasterPage -> MasterPage
-masterPrevPage showMasterDialog =
-    case showMasterDialog of
-        MasterPage3 ->
-            MasterPage2
-
-        MasterPage2 ->
-            MasterPage1
-
-        MasterPage1 ->
-            MasterPage1
-
-
 masterDialogView : Model -> String -> Maybe SystemDocumentParams -> List (UI Msg)
 masterDialogView model sysId mparams =
-    -- Тут наверное не очень красиво проброшена очерель параметров
+    -- Тут наверное не очень красиво проброшена очередь параметров
     case mparams of
         Nothing ->
             [ row [ UI.text "Ошибка загрузки или данные от трекера еще не получены." ] ]
@@ -158,35 +134,6 @@ showChanges model sysId =
                 -- ++ row "admin" model.adminPhone
                 -- ++ row "secur.code" model.adminPhone
                 ]
-
-
-masterFooterFirst : List (UI Msg)
-masterFooterFirst =
-    [ UI.cmdTextIconButton "times-circle" "Отмена" (OnCancelMaster)
-    , UI.cmdTextIconButton "cogs" "Ручное" (OnMasterCustom)
-    , UI.cmdTextIconButton "arrow-right" "Далее" (OnMasterNext)
-    ]
-
-
-masterFooterMiddle : List (UI Msg)
-masterFooterMiddle =
-    [ UI.cmdTextIconButton "times-circle" "Отмена" (OnCancelMaster)
-    , UI.cmdTextIconButton "arrow-left" "Назад" (OnMasterPrev)
-    , UI.cmdTextIconButton "arrow-right" "Далее" (OnMasterNext)
-    ]
-
-
-masterFooterLast : String -> Dict String String -> Dict String String -> List (UI Msg)
-masterFooterLast sysId customQueue masterQueue =
-    let
-        mixedQueue =
-            Dict.union masterQueue customQueue
-    in
-        [ UI.cmdTextIconButton "times-circle" "Отмена" (OnCancelMaster)
-        , UI.cmdTextIconButton "arrow-left" "Назад" (OnMasterPrev)
-        , UI.cmdTextIconButton "thumbs-up" "Применить" (OnConfirmMaster sysId mixedQueue)
-        , UI.cmdIconButton "question-circle" (OnShowChanges)
-        ]
 
 
 

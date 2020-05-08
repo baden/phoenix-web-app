@@ -327,10 +327,10 @@ span.params_waited {
   /* width: 180px; */
   /* justify-content: space-around ; */
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   left: 50%;
-  margin-left: -75px;
+  margin-left: -35px;
 }
 
 /* @media only screen and (min-height: 500px) {

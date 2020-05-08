@@ -195,7 +195,7 @@ sysState_of appState maybe_dynamic =
 
                 Just Off ->
                     [ UI.row_item [ text <| "Трекер выключен." ]
-                    , UI.row_item [ text <| "Для включения трекера, нажмите кнопку на плате прибора." ]
+                    , UI.row_item [ text <| "Для включения - откройте крышку трекера и нажмите кнопку ON/OFF." ]
                     ]
 
                 Just Point ->
@@ -341,7 +341,7 @@ cmdPanel appState sysId maybe_dynamic =
                     Just Point ->
                         [ row
                             [ preloader
-                            , text <| pre ++ "будет определено текущее местоположение системы"
+                            , text <| pre ++ "будет определено текущее местоположение"
                             , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
                             ]
                         ]
@@ -381,7 +381,7 @@ cmdPanel appState sysId maybe_dynamic =
                     Just wState ->
                         [ row
                             [ preloader
-                            , text <| pre ++ "система будет переведена в режим: " ++ (System.stateAsString wState)
+                            , text <| pre ++ "трекер будет переведён в режим: " ++ (System.stateAsString wState)
                             , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
                             ]
                         ]

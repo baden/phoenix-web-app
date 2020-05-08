@@ -3,6 +3,7 @@ module Page.System.Config exposing (init, update, view)
 import Page.System.Config.Types exposing (..)
 import Page.System.Config.Dialogs as Dialogs exposing (..)
 import Page.System.Config.Master exposing (..)
+import Page.System.Config.Master.Types exposing (..)
 import Page.System.Config.Custom exposing (..)
 import AppState
 import API.System as System exposing (SystemDocumentInfo, State, State(..), SystemDocumentParams)

@@ -76,9 +76,9 @@ batteryView1 appState battery used sleep =
         capacity =
             battery.init_capacity - used
     in
-        [ Html.p [] [ Html.text "Ожидаемое время работы:" ]
-        , Html.p [] [ Html.text <| "В режиме ожидания: ≈ " ++ (expect_at_sleep capacity sleep) ]
-        , Html.p [] [ Html.text <| "В режиме поиска: ≈ " ++ (expect_at_tracking capacity) ]
+        [ Html.p [] [ Html.text "Предполагаемое время работы:" ]
+        , Html.p [] [ Html.text <| "В режиме Ожидание: ≈ " ++ (expect_at_sleep capacity sleep) ]
+        , Html.p [] [ Html.text <| "В режиме Поиск: ≈ " ++ (expect_at_tracking capacity) ]
         ]
 
 

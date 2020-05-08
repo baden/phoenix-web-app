@@ -1,6 +1,7 @@
 module Page.System.Config.Types exposing (..)
 
 import Dict exposing (Dict)
+import Page.System.Config.Master.Types exposing (..)
 
 
 -- import API.System as System exposing (SystemDocumentParams)
@@ -10,12 +11,6 @@ type ShowState
     = SS_Root
     | SS_Master
     | SS_Custom
-
-
-type MasterPage
-    = MasterPage1
-    | MasterPage2
-    | MasterPage3
 
 
 type alias Model =
