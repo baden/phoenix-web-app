@@ -76,7 +76,9 @@ viewLogs appState mlogs =
                             dt =
                                 (itm.dt |> DT.toPosix |> dateTimeFormat appState.timeZone)
                         in
-                            Html.tr [] [ Html.td [] [ text dt ], Html.td [] [ text itm.text ] ]
+                            -- Html.tr [] [ Html.td [] [ text dt ], Html.td [] [ text itm.text ] ]
+                            -- Html.tr [] [ Html.td [] [ text dt ], Html.td [] [ Html.node "baden-log-line" [ HA.property "data-html" (Encode.string itm.text) ] [] ] ]
+                            Html.tr [] [ Html.td [] [ text dt ], Html.td [] [ Html.node "baden-log-line" [ HA.attribute "data-html" itm.text ] [] ] ]
 
                 -- Html.tr [] [ Html.td [] [ text dt ], Html.td [ HA.property "innerHTML" (Encode.string itm.text) ] [] ]
             in
