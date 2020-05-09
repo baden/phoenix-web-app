@@ -16,41 +16,41 @@ masterDialogView model sysId mparams =
     -- Тут наверное не очень красиво проброшена очередь параметров
     case mparams of
         Nothing ->
-            [ row [ UI.text "Ошибка загрузки или данные от трекера еще не получены." ] ]
+            [ hint_row "Ошибка загрузки или данные от трекера еще не получены." ]
 
         Just params ->
             case model.showMasterDialog of
                 MasterPage1 ->
-                    [ row [ UI.text "Период выхода на связь" ]
-                    , row [ UI.text <| masterPage1Help model.masterData.masterEcoValue ]
+                    [ text_row "Период выхода на связь"
+                    , text_row <| masterPage1Help model.masterData.masterEcoValue
                     , row [ masterPage1View model.masterData.masterEcoValue ]
                     ]
                         ++ masterFooterFirst
 
                 MasterPage2 ->
-                    [ row [ UI.text "Время работы в режиме Поиск" ]
-                    , row [ UI.text <| masterPage2Help model.masterData.masterTrackValue ]
+                    [ text_row "Время работы в режиме Поиск"
+                    , text_row <| masterPage2Help model.masterData.masterTrackValue
                     , row [ masterPage2View model.masterData.masterTrackValue ]
                     ]
                         ++ masterFooterMiddle
 
                 MasterPage3 ->
-                    [ row [ UI.text "Информирование" ]
-                    , row [ UI.text <| masterPage3Help model.masterData.smsPhones ]
+                    [ text_row "Информирование"
+                    , text_row <| masterPage3Help model.masterData.smsPhones
                     , row [ masterPage3View model.masterData.smsPhones model ]
                     ]
                         ++ masterFooterMiddle
 
                 MasterPage4 ->
-                    [ row [ UI.text "Контроль баланса SIM-карты" ]
-                    , row [ UI.text <| masterPage4Help model ]
+                    [ text_row "Контроль баланса SIM-карты"
+                    , text_row <| masterPage4Help model
                     , row [ masterPage4View model ]
                     ]
                         ++ masterFooterMiddle
 
                 MasterPage5 ->
-                    [ row [ UI.text "Безопасность" ]
-                    , row [ UI.text <| masterPage5Help model.masterData.masterSecurValue ]
+                    [ text_row "Безопасность"
+                    , text_row <| masterPage5Help model.masterData.masterSecurValue
                     , row [ masterPage5View model.masterData.masterSecurValue model ]
                     ]
                         ++ showChanges model sysId
@@ -122,84 +122,26 @@ changesList ({ masterData } as model) =
 
 showChanges : Model -> String -> List (UI Msg)
 showChanges model sysId =
-    let
-        -- row ttl val =
-        --     [ Html.div [ HA.class "col s6 right-align" ] [ Html.text ttl ]
-        --     , Html.div [ HA.class "col s6 left-align" ] [ Html.text val ]
-        --     ]
-        row ( ttl, val ) =
-            Html.tr [] [ Html.td [ HA.class "right-align", HA.style "width" "50%" ] [ Html.text ttl ], Html.td [] [ Html.text val ] ]
-    in
-        case model.showChanges of
-            False ->
-                []
+    case model.showChanges of
+        False ->
+            []
 
-            True ->
-                [ Html.div [ HA.class "row" ] <|
-                    [ Html.div [ HA.class "col s12 m10 offset-m1 l8 offset-l2 xl6 offset-xl3" ]
-                        [ Html.text "Следующие параметры будут изменены:"
-                        , Html.table []
-                            [ Html.tbody [] (changesList model |> Dict.toList |> List.map row)
-                            ]
-                        ]
-                    ]
-
-                -- ++ row "sleep" (ecoToValue model.masterEcoValue)
-                -- ++ row "auto.sleep" (trackToValue model.masterTrackValue)
-                -- ++ row "admin" model.adminPhone
-                -- ++ row "secur.code" model.adminPhone
-                ]
+        True ->
+            changes_table <| changesList model
 
 
 
 -- masterPage {Header} -> {Help foo} ->
 -- masterPage : String -> String
-
-
-item_ : mt -> String -> Bool -> (mt -> Bool -> Msg) -> UI Msg
-item_ index label_ checked_ msg =
-    p []
-        [ label []
-            [ input [ attribute "name" "group1", type_ "radio", checked checked_, HE.onCheck (msg index) ] []
-            , span [] [ Html.text label_ ]
-            ]
-        ]
-
-
-
 -- TODO: Fix 'a' type
-
-
-item1_ : mt -> String -> Bool -> (mt -> Bool -> Msg) -> UI Msg
-item1_ index label_ checked_ msg =
-    row
-        [ Html.div [ class "col s12 m10 offset-m1 l6 offset-l2" ]
-            [ label []
-                [ input [ attribute "name" "group1", type_ "checkbox", checked checked_, HE.onCheck (msg index) ] []
-                , span [] [ Html.text label_ ]
-                ]
-            ]
-        ]
-
-
-masterPageForm : List (Html Msg) -> Html Msg
-masterPageForm c =
-    row <|
-        -- [ div [ class "col s12 m8 offset-m1 l7 offset-l3 xl7 offset-xl4", HA.style "text-align" "left" ]
-        [ div [ class "col s12 m11 offset-m1 l11 offset-l1 xl10 offset-xl2", HA.style "text-align" "left" ]
-            [ form
-                [ attribute "action" "#" ]
-                c
-            ]
-        ]
 
 
 masterPage1View : MasterDataEco -> Html Msg
 masterPage1View selected =
     masterPageForm
-        [ item_ M_ECO_MAX "Редко" (selected == M_ECO_MAX) OnMasterEco1
-        , item_ M_ECO_MID "Оптимально" (selected == M_ECO_MID) OnMasterEco1
-        , item_ M_ECO_MIN "Часто" (selected == M_ECO_MIN) OnMasterEco1
+        [ radio M_ECO_MAX "Редко" (selected == M_ECO_MAX) OnMasterEco1
+        , radio M_ECO_MID "Оптимально" (selected == M_ECO_MID) OnMasterEco1
+        , radio M_ECO_MIN "Часто" (selected == M_ECO_MIN) OnMasterEco1
         ]
 
 
@@ -219,9 +161,9 @@ masterPage1Help index =
 masterPage2View : MasterDataTrack -> Html Msg
 masterPage2View selected =
     masterPageForm
-        [ item_ M_TRACK_MIN "Продолжительно" (selected == M_TRACK_MIN) OnMasterTrack1
-        , item_ M_TRACK_MID "Оптимально" (selected == M_TRACK_MID) OnMasterTrack1
-        , item_ M_TRACK_MAX "Минимально" (selected == M_TRACK_MAX) OnMasterTrack1
+        [ radio M_TRACK_MIN "Продолжительно" (selected == M_TRACK_MIN) OnMasterTrack1
+        , radio M_TRACK_MID "Оптимально" (selected == M_TRACK_MID) OnMasterTrack1
+        , radio M_TRACK_MAX "Минимально" (selected == M_TRACK_MAX) OnMasterTrack1
         ]
 
 
@@ -238,18 +180,6 @@ masterPage2Help index =
             "Максимальное время работы в режиме Поиск - 1 час. Ёмкости батареи хватит на 120 активаций режима Поиск."
 
 
-item2_ : String -> Bool -> (Bool -> MasterDataSMS -> MasterDataSMS) -> ((Bool -> MasterDataSMS -> MasterDataSMS) -> Bool -> Msg) -> UI Msg
-item2_ label_ checked_ updater msg =
-    row
-        [ Html.div [ class "col s12 m10 offset-m1 l6 offset-l2" ]
-            [ label []
-                [ input [ attribute "name" "group1", type_ "checkbox", checked checked_, HE.onCheck (msg updater) ] []
-                , span [] [ Html.text label_ ]
-                ]
-            ]
-        ]
-
-
 masterPage3View : MasterDataSMS -> Model -> Html Msg
 masterPage3View { balance, caseOpen, lowPower, changeMode, moved, onOff } model =
     masterPageForm <|
@@ -257,13 +187,13 @@ masterPage3View { balance, caseOpen, lowPower, changeMode, moved, onOff } model 
             ++ (if model.smsPhone1 == "" then
                     []
                 else
-                    [ row [ Html.div [ class "col" ] [ UI.text "На какие события реагировать:" ] ]
-                    , item2_ "Критический остаток средств" balance (\v m -> { m | balance = v }) OnMasterSMSEvent
-                    , item2_ "Низкий уровень заряда батареи" lowPower (\v m -> { m | lowPower = v }) OnMasterSMSEvent
-                    , item2_ "Изменение режима (Поиск <-> Ожидание)" changeMode (\v m -> { m | changeMode = v }) OnMasterSMSEvent
-                    , item2_ "Начало движения (в режиме Поиск)" moved (\v m -> { m | moved = v }) OnMasterSMSEvent
-                    , item2_ "Включение и выключение трекера кнопкой на плате или через WEB-сервис" onOff (\v m -> { m | onOff = v }) OnMasterSMSEvent
-                    , item2_ "Вскрытие корпуса" caseOpen (\v m -> { m | caseOpen = v }) OnMasterSMSEvent
+                    [ hint_row "На какие события реагировать:"
+                    , checkboxLazy "Критический остаток средств" balance (\v m -> { m | balance = v }) OnMasterSMSEvent
+                    , checkboxLazy "Низкий уровень заряда батареи" lowPower (\v m -> { m | lowPower = v }) OnMasterSMSEvent
+                    , checkboxLazy "Изменение режима (Поиск <-> Ожидание)" changeMode (\v m -> { m | changeMode = v }) OnMasterSMSEvent
+                    , checkboxLazy "Начало движения (в режиме Поиск)" moved (\v m -> { m | moved = v }) OnMasterSMSEvent
+                    , checkboxLazy "Включение и выключение трекера кнопкой на плате или через WEB-сервис" onOff (\v m -> { m | onOff = v }) OnMasterSMSEvent
+                    , checkboxLazy "Вскрытие корпуса" caseOpen (\v m -> { m | caseOpen = v }) OnMasterSMSEvent
 
                     -- , item2_ "Включение и выключение GSM-модуля" gsm (\v m -> { m | gsm = v }) OnMasterSMSEvent
                     ]
@@ -288,9 +218,9 @@ masterPage4View model =
                     []
                 else
                     [ row
-                        [ Html.div [ class "col s12" ] [ Html.text "Обычно ответ на запрос выглядит примерно так:" ]
-                        , Html.div [ class "col s10 offset-s1 m4 offset-m3 lime", HA.style "margin-top" "20px", HA.style "margin-bottom" "20px" ] [ Html.text "Na schetu 454.77 grn. Detalno o bonusah po nomeru *100#" ]
-                        , Html.div [ class "col s12" ] [ Html.text "Если цифра баланса идет не первой в сообщении, то необходимо настротить пропуск (в разработке)" ]
+                        [ hint "Обычно ответ на запрос выглядит примерно так:"
+                        , hint_c "Na schetu 454.77 grn. Detalno o bonusah po nomeru *100#"
+                        , hint "Если цифра баланса идет не первой в сообщении, то необходимо настротить пропуск (в разработке)"
                         ]
 
                     -- , item2_ "Включение и выключение GSM-модуля" gsm (\v m -> { m | gsm = v }) OnMasterSMSEvent
@@ -307,9 +237,9 @@ masterPage4Help _ =
 masterPage5View : ( Bool, Bool ) -> Model -> Html Msg
 masterPage5View ( s1, s2 ) model =
     masterPageForm
-        [ item1_ 1 "Привязать к телефону" s1 OnMasterSecur1
+        [ checkbox 1 "Привязать к телефону" s1 OnMasterSecur1
         , phoneInput s1 model.adminPhone OnAdminPhone
-        , item1_ 2 "Установить пароль доступа" s2 OnMasterSecur1
+        , checkbox 2 "Установить пароль доступа" s2 OnMasterSecur1
         , codeInput s2 model.adminCode OnAdminCode
         ]
 
@@ -317,113 +247,3 @@ masterPage5View ( s1, s2 ) model =
 masterPage5Help : ( Bool, Bool ) -> String
 masterPage5Help _ =
     "Чтобы никто посторонний не смог получить управление вашим устройством, установите дополнительную защиту."
-
-
-phoneInput : Bool -> String -> (String -> cmd) -> Html cmd
-phoneInput en code_ cmd_ =
-    case en of
-        False ->
-            row
-                [ Html.div [ class "col s12 m11 offset-m1 l9 offset-l3" ] [ Html.text "Управление будет возможно с любого телефона." ] ]
-
-        True ->
-            row
-                [ Html.div
-                    [ class "col s12 m10 offset-m1 l5 offset-l3" ]
-                    [ Html.input
-                        [ HA.class "sms_code"
-                        , HA.type_ "tel"
-                        , HA.placeholder "В формате +380..."
-                        , HA.value code_
-                        , HA.autofocus True
-                        , HE.onInput cmd_
-                        , HA.pattern "[0-9]{12}"
-                        ]
-                        []
-                    ]
-                , Html.div [ class "col s12 m11 offset-m1 l9 offset-l3" ] <|
-                    case code_ of
-                        "" ->
-                            [ Html.text "Управление будет возможно с любого телефона." ]
-
-                        _ ->
-                            [ Html.text "Управление будет возможно только с телефона:"
-                            , Html.span [ HA.style "font-weight" "bold" ] [ Html.text code_ ]
-                            ]
-                ]
-
-
-phoneInput1 : Int -> String -> (String -> cmd) -> Html cmd
-phoneInput1 index code_ cmd_ =
-    row
-        [ Html.div
-            [ class "col s12 m10 offset-m1 l6 offset-l2" ]
-            [ Html.text "Укажите номер телефона:"
-            , Html.div [ class "input-field inline" ]
-                [ Html.input
-                    [ HA.class "sms_code"
-                    , HA.type_ "tel"
-                    , HA.placeholder "В формате +380..."
-                    , HA.value code_
-                    , HA.autofocus True
-                    , HE.onInput cmd_
-                    , HA.pattern "[0-9]{12}"
-                    ]
-                    []
-                ]
-            ]
-        ]
-
-
-phoneInput2 : Int -> String -> (String -> cmd) -> Html cmd
-phoneInput2 index code_ cmd_ =
-    row
-        [ Html.div
-            [ class "col s12 m10 offset-m1 l6 offset-l2" ]
-            [ Html.text "Запрос для проверки баланса:"
-            , Html.div [ class "input-field inline" ]
-                [ Html.input
-                    [ HA.class "sms_code"
-                    , HA.type_ "tel"
-                    , HA.placeholder "В формате *XXX#"
-                    , HA.value code_
-                    , HA.autofocus True
-                    , HE.onInput cmd_
-                    , HA.pattern "[0-9*#]{12}"
-                    ]
-                    []
-                ]
-            ]
-        ]
-
-
-codeInput : Bool -> String -> (String -> cmd) -> Html cmd
-codeInput en code_ cmd_ =
-    case en of
-        False ->
-            row
-                [ Html.div [ class "col s12 m10 offset-m1 l6 offset-l3" ]
-                    [ Html.text "SMS-команды управления имеют вид: "
-                    , Html.span [ HA.style "font-weight" "bold" ] [ Html.text "link" ]
-                    ]
-                ]
-
-        True ->
-            row
-                [ Html.div
-                    [ class "col s12 m10 offset-m1 l5 offset-l3" ]
-                    [ Html.input
-                        [ HA.class "sms_code"
-                        , HA.placeholder "Только латинские символы или цифры"
-                        , HA.value code_
-                        , HA.autofocus True
-                        , HE.onInput cmd_
-                        , HA.pattern "[A-Za-z0-9]{6}"
-                        ]
-                        []
-                    ]
-                , Html.div [ class "col s12 m10 offset-m1 l6 offset-l3" ]
-                    [ Html.text <| "SMS-команды управления имеют вид: "
-                    , Html.span [ HA.style "font-weight" "bold" ] [ Html.text <| code_ ++ " link" ]
-                    ]
-                ]
