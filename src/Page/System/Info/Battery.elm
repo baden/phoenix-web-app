@@ -200,7 +200,7 @@ drain_cpu s =
 drain_gps : Int -> Float
 drain_gps s =
     -- Ток потребления GPS взят с потолка - 34мА
-    (toFloat s) * 34.0 / 3600
+    (toFloat s) * 27.0 / 3600
 
 
 drain_accel : Int -> Float
@@ -212,12 +212,12 @@ drain_accel s =
 drain_gsm_on : Int -> Float
 drain_gsm_on s =
     -- Ток потребления GSM взят с потолка (как сеанс связи с сервером) - 0,3667mAh.
-    (toFloat s) * 0.3667 * 1.7 / 3
+    (toFloat s) * 0.3667 * 2.0 / 3
 
 
 drain_session : Int -> Float
 drain_session s =
-    (toFloat s) * 0.3667 * 1.2 / 3
+    (toFloat s) * 0.3667 * 1.0 / 3
 
 
 calculation : Battery.Counters -> Int -> Float

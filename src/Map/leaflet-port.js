@@ -233,7 +233,7 @@ class LeafletMap extends HTMLElement {
         var lat = this._center[0];
         var lng = this._center[1];
         this._map.flyTo(L.latLng(lat, lng), 15);
-        this._center_marker.setLatLng(L.latLng(lat, lng));
+        if(this._center_marker) this._center_marker.setLatLng(L.latLng(lat, lng));
     }
 
     _stageElChange(mutations) {

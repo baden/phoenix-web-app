@@ -11,16 +11,20 @@ import Components.UI as UI
 import Components.DateTime exposing (dateTimeFormat)
 import Types.Dt as DT
 import Msg as GMsg
+import API.Geo as Geo exposing (Address)
+import Http
 
 
 type alias Model =
     { center : ( Float, Float )
+    , address : Maybe String
     }
 
 
 init : ( Model, Cmd Msg )
 init =
     ( { center = ( 48.5013798, 34.6234255 )
+      , address = Nothing
       }
     , Cmd.none
     )
@@ -28,6 +32,8 @@ init =
 
 type Msg
     = SetCenter Float Float
+    | GetAddress Float Float
+    | ResponseAddress (Result Http.Error Address)
 
 
 setCenter : ( Float, Float ) -> Model -> Model
@@ -40,6 +46,19 @@ update msg model =
     case msg of
         SetCenter x y ->
             ( { model | center = ( x, y ) }, Cmd.none, Nothing )
+
+        GetAddress lat lon ->
+            ( model, Geo.getAddress ( lat, lon ) ResponseAddress, Nothing )
+
+        ResponseAddress (Ok address) ->
+            let
+                _ =
+                    Debug.log "Address: " address
+            in
+                ( { model | address = Just <| Geo.addressToString address }, Cmd.none, Nothing )
+
+        ResponseAddress (Err _) ->
+            ( model, Cmd.none, Nothing )
 
 
 view : Html a
@@ -95,7 +114,7 @@ viewSystem appState model system =
                   --     [ Html.text "Домой" ]
                   div []
                     [ Html.text system.title
-                    , div [] (sysPosition appState system.id system.dynamic)
+                    , div [] (sysPosition appState system.id system.dynamic model.address)
                     ]
                 , UI.linkIconTextButton "gamepad" "Управление" ("/system/" ++ system.id)
                 , UI.linkIconTextButton "clone" "Выбрать объект" "/"
@@ -103,8 +122,8 @@ viewSystem appState model system =
             ]
 
 
-sysPosition : AppState.AppState -> String -> Maybe System.Dynamic -> List (Html Msg)
-sysPosition appState sid maybe_dynamic =
+sysPosition : AppState.AppState -> String -> Maybe System.Dynamic -> Maybe String -> List (Html Msg)
+sysPosition appState sid maybe_dynamic maddress =
     case maybe_dynamic of
         Nothing ->
             []
@@ -116,7 +135,14 @@ sysPosition appState sid maybe_dynamic =
                         [ Html.text <| "Последнее положение определено " ++ (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ++ " "
 
                         -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter latitude longitude) ] [ Html.text "Центровать" ]
+                        , Html.button [ class "waves-effect waves-light btn", onClick (GetAddress latitude longitude) ] [ Html.text "?" ]
                         ]
+                    , case maddress of
+                        Nothing ->
+                            Html.text ""
+
+                        Just address ->
+                            UI.row_item [ Html.text address ]
                     ]
 
                 ( _, _, _ ) ->
