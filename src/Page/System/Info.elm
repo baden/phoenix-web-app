@@ -94,7 +94,7 @@ update msg model =
                         BC_Capacity _ ->
                             Cmd.batch [ API.websocketOut <| System.setBatteryCapacity sysId capacity ]
             in
-                ( { model | newBatteryCapacity = BC_None }, cmd, Nothing )
+                ( { model | newBatteryCapacity = BC_None, batteryExtendView = BVP1 }, cmd, Nothing )
 
         OnBatteryCapacityCancel ->
             ( { model | newBatteryCapacity = BC_None }, Cmd.none, Nothing )
@@ -191,15 +191,15 @@ sysState_of appState maybe_dynamic =
         Just dynamic ->
             case dynamic.state of
                 Nothing ->
-                    [ UI.row_item [ text <| "Текущий режим: -" ] ]
+                    [ curState "Текущий режим: идет определение.." ]
 
                 Just Off ->
-                    [ UI.row_item [ text <| "Трекер выключен." ]
+                    [ curState "Трекер выключен."
                     , UI.row_item [ text <| "Для включения - откройте крышку трекера и нажмите кнопку ON/OFF." ]
                     ]
 
                 Just Point ->
-                    [ UI.row_item [ text <| "Идет определение местоположения..." ]
+                    [ curState "Идет определение местоположения..."
                     , UI.row_item [ text <| "Это может занять до 15 минут." ]
                     ]
 
@@ -226,13 +226,25 @@ sysState_of appState maybe_dynamic =
                                 _ ->
                                     []
                     in
-                        [ UI.row_item [ text <| "Текущий режим: Поиск" ]
-                        ]
+                        [ curState "Текущий режим: Поиск" ]
                             ++ (Dates.expectSleepIn appState dynamic prolongCmd)
 
                 -- ++ prolongCmd
                 Just state ->
-                    [ UI.row_item [ text <| "Текущий режим: " ++ (System.stateAsString state) ] ]
+                    -- [ UI.row_item [ text <| "Текущий режим: " ++ (System.stateAsString state) ] ]
+                    [ curState <| "Текущий режим: " ++ (System.stateAsString state) ]
+
+
+curState : String -> Html Msg
+curState t =
+    UI.row_item
+        [ Html.span
+            [ class "blue-text text-darken-2"
+            , HA.style "font-size" "1.2em"
+            , HA.style "font-weight" "bold"
+            ]
+            [ text t ]
+        ]
 
 
 viewNextSession : Maybe System.Dynamic -> Html Msg
@@ -347,12 +359,27 @@ cmdPanel appState sysId maybe_dynamic =
                         ]
 
                     Just (ProlongSleep duration) ->
-                        [ row
-                            [ preloader
-                            , text <| pre ++ "будет продлена работа прибора в режиме Поиск на " ++ (String.fromInt duration) ++ "ч."
-                            , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+                        let
+                            durationText h =
+                                case h of
+                                    2 ->
+                                        "2 часа"
+
+                                    12 ->
+                                        "12 часов"
+
+                                    24 ->
+                                        "сутки"
+
+                                    _ ->
+                                        String.fromInt h ++ " ч"
+                        in
+                            [ row
+                                [ preloader
+                                , text <| pre ++ "будет продлена работа трекера в режиме Поиск на " ++ durationText duration
+                                , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+                                ]
                             ]
-                        ]
 
                     Just Lock ->
                         [ row
@@ -381,7 +408,7 @@ cmdPanel appState sysId maybe_dynamic =
                     Just wState ->
                         [ row
                             [ preloader
-                            , text <| pre ++ "трекер будет переведён в режим: " ++ (System.stateAsString wState)
+                            , text <| pre ++ "трекер будет переведён в режим " ++ (System.stateAsString wState)
                             , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
                             ]
                         ]

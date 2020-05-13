@@ -70,36 +70,48 @@ chartView appState model system =
                         ]
 
 
+
+-- grad =
+--     HA.style "background" "linear-gradient(0deg, rgba(244,244,244,1) 0%, rgba(255,255,255,1) 100%)"
+
+
 batteryView1 : AppState.AppState -> Battery -> Float -> Int -> List (Html Msg)
 batteryView1 appState battery used sleep =
     let
         capacity =
             battery.init_capacity - used
     in
-        [ Html.p [] [ Html.text "Предполагаемое время работы:" ]
-        , Html.p [] [ Html.text <| "В режиме Ожидание: ≈ " ++ (expect_at_sleep capacity sleep) ]
-        , Html.p [] [ Html.text <| "В режиме Поиск: ≈ " ++ (expect_at_tracking capacity) ]
+        -- [ Html.p [] [ Html.text "Предполагаемое время работы:" ]
+        [ Html.p [] [ Html.text "Предполагаемое время работы" ]
+        , Html.p [] [ Html.text <| "В режиме Ожидание: " ++ (expect_at_sleep capacity sleep) ]
+        , Html.p [] [ Html.text <| "В режиме Поиск: " ++ (expect_at_tracking capacity) ]
         ]
 
 
 batteryView2 : AppState.AppState -> Battery -> Float -> Int -> List (Html Msg)
 batteryView2 appState battery used lifetime =
-    [ Html.p [] [ Html.text "Статистика работы:" ]
+    [ Html.hr [] []
+    , Html.p [] [ Html.text "Статистика работы:" ]
     , Html.p [] [ Html.text <| "Начальная емкость батареи: " ++ (String.fromFloat battery.init_capacity) ++ "мАч" ]
     , Html.p [] [ Html.text <| "Начало эксплуатации: " ++ (battery.init_dt |> DT.toPosix |> dateFormatFull appState.timeZone) ]
     , duration "Общее время эксплуатации: " lifetime
-    , duration "Работа GSM-модуля: " battery.counters.gsm
-    , duration "Работа GPS-модуля: " battery.counters.gps
-    , duration "Работа акселерометра: " battery.counters.accel
 
-    -- , Html.p [ HA.title <| String.fromInt battery.counters.gsm ++ " сек" ] [ Html.text <| "Работа GSM-модуля: " ++ (duration battery.counters.gsm) ]
-    -- , Html.p [] [ Html.text <| "Работа GPS-модуля: " ++ (duration battery.counters.gps) ]
-    -- , Html.p [] [ Html.text <| "Работа акселерометра: " ++ (duration battery.counters.accel) ]
-    , Html.p [] [ Html.text <| "Включений GSM-модуля: " ++ (String.fromInt battery.counters.gsm_on) ++ " раз" ]
-    , Html.p [] [ Html.text <| "Сеансов связи с сервером: " ++ (String.fromInt battery.counters.sessions) ++ " раз" ]
+    -- Не убирать пока закоментированные блоки, вдруг нужна отладка
+    --
+    -- , duration "Работа GSM-модуля: " battery.counters.gsm
+    -- , duration "Работа GPS-модуля: " battery.counters.gps
+    -- , duration "Работа акселерометра: " battery.counters.accel
+    --
+    -- -- , Html.p [ HA.title <| String.fromInt battery.counters.gsm ++ " сек" ] [ Html.text <| "Работа GSM-модуля: " ++ (duration battery.counters.gsm) ]
+    -- -- , Html.p [] [ Html.text <| "Работа GPS-модуля: " ++ (duration battery.counters.gps) ]
+    -- -- , Html.p [] [ Html.text <| "Работа акселерометра: " ++ (duration battery.counters.accel) ]
+    -- , Html.p [] [ Html.text <| "Включений GSM-модуля: " ++ (String.fromInt battery.counters.gsm_on) ++ " раз" ]
+    -- , Html.p [] [ Html.text <| "Сеансов связи с сервером: " ++ (String.fromInt battery.counters.sessions) ++ " раз" ]
     , Html.p [] [ Html.text <| "Израсходовано энергии батареи: " ++ (Round.round 1 used) ++ " мАч" ]
-    , Html.p [] [ Html.text <| "Остаточная емкость батареи: " ++ (battery.init_capacity - used |> Round.round 1) ++ " мАч" ]
+
+    -- , Html.p [] [ Html.text <| "Остаточная емкость батареи: " ++ (battery.init_capacity - used |> Round.round 1) ++ " мАч" ]
     , Html.p [] [ UI.cmdTextIconButton "tools" "Обслуживание батареи" OnBatteryMaintance ]
+    , Html.hr [] []
     ]
 
 
@@ -260,13 +272,23 @@ expect_at_sleep capacity sleep =
 
         d =
             drainD - y * 365
+
+        m =
+            d // 30
+
+        ss =
+            if y > 10 then
+                String.fromInt y ++ year_suffix y
+            else if y > 0 then
+                String.fromInt y ++ year_suffix y ++ " " ++ month_full (String.fromInt <| d // 30)
+            else if d > 29 then
+                month_full (String.fromInt m) ++ " " ++ days_full (d - m * 30)
+            else
+                -- (String.fromInt <| d) ++ "сут"
+                days_full d
     in
-        if y > 0 then
-            (String.fromInt y) ++ (year_suffix y) ++ " " ++ (String.fromInt <| d // 30) ++ " мес"
-        else if d > 60 then
-            (String.fromInt <| d // 30) ++ " мес"
-        else
-            (String.fromInt <| d) ++ " дней"
+        -- ss ++ " (" ++ String.fromInt drainD ++ "д)"
+        ss
 
 
 expect_at_tracking : Float -> String
@@ -293,11 +315,21 @@ expect_at_tracking capacity =
 
         h =
             drainH - d * 24
+
+        m =
+            d // 30
     in
-        if d > 0 then
-            String.fromInt d ++ " д " ++ String.fromInt h ++ " ч"
+        if m > 0 then
+            month_full (String.fromInt m) ++ " " ++ days_full (d - m * 30)
+        else if d > 0 then
+            days_full d ++ " " ++ hours_full h
+            -- String.fromInt d ++ "сут " ++ String.fromInt h ++ "ч"
         else
-            String.fromInt h ++ " ч"
+            hours_full h
+
+
+
+-- String.fromInt h ++ "ч"
 
 
 year_suffix : Int -> String
@@ -319,5 +351,75 @@ year_suffix y =
             " лет"
 
 
+month_full : String -> String
+month_full m =
+    case m of
+        "0" ->
+            ""
 
+        "1" ->
+            m ++ " месяц"
+
+        "2" ->
+            m ++ " месяца"
+
+        "3" ->
+            m ++ " месяца"
+
+        "4" ->
+            m ++ " месяца"
+
+        _ ->
+            m ++ " месяцев"
+
+
+days_full : Int -> String
+days_full d =
+    let
+        sd =
+            String.fromInt d
+    in
+        if d == 0 then
+            ""
+        else if d == 1 then
+            (sd ++ " день")
+        else if d == 2 || d == 3 || d == 4 then
+            (sd ++ " дня")
+        else if d > 30 then
+            ("3" ++ days_full (d - 30))
+        else if d > 20 then
+            ("2" ++ days_full (d - 20))
+        else
+            (sd ++ " дней")
+
+
+hours_full : Int -> String
+hours_full h =
+    let
+        sh =
+            String.fromInt h
+    in
+        if h == 0 then
+            ""
+        else if h == 1 then
+            (sh ++ " час")
+        else if h == 2 || h == 3 || h == 4 then
+            (sh ++ " часа")
+        else if h > 20 then
+            ("2" ++ hours_full (h - 20))
+        else
+            (sh ++ " часов")
+
+
+
+-- 1 - день
+-- 2 - дня
+-- 3 - дня
+-- 4 - дня
+-- 5 - дней
+-- 6 - дней
+-- 7 - дней
+-- ..
+-- 20 - дней
+-- 21
 -- (last_session |> DT.toPosix |> dateTimeFormat tz)

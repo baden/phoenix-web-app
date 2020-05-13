@@ -13,7 +13,10 @@ apiURL =
 
 
 -- Образец запроса
+-- https://nominatim.openstreetmap.org/reverse?format=json&lat=48.42236333333334&lon=35.02598833333333
 -- https://gis.navi.cc/nominatim/reverse.php?format=json&lat=48.42236333333334&lon=35.02598833333333
+-- https://nominatim.openstreetmap.org/reverse.php?format=json&lat=48.408213333333336&lon=35.04905
+-- https://gis.navi.cc/nominatim/reverse.php?format=json&lat=48.408213333333336&lon=35.04905
 --
 -- Образец ответа
 -- {
@@ -76,54 +79,65 @@ addressDecoder =
         |> optionalAt [ "address", "country" ] (maybe string) Nothing
 
 
+optnl =
+    Maybe.withDefault ""
+
+
+woptnl : a -> Maybe a -> a
+woptnl d v =
+    v |> Maybe.withDefault d
+
+
+orUse : Maybe a -> Maybe a -> Maybe a
+orUse other def =
+    case def of
+        Just v ->
+            Just v
+
+        Nothing ->
+            other
+
+
 addressToString : Address -> String
 addressToString a =
     let
         compose =
-            [ a.road |> Maybe.withDefault ""
-            , a.house_number |> Maybe.withDefault ""
-            , case a.building of
-                Just b ->
-                    b
-
-                Nothing ->
-                    case a.supermarket of
-                        Just spm ->
-                            spm
-
-                        Nothing ->
-                            case a.neighbourhood of
-                                Just ngh ->
-                                    ngh
-
-                                Nothing ->
-                                    a.suburb |> Maybe.withDefault ""
-            , case a.city of
-                Just city ->
-                    city
-
-                Nothing ->
-                    a.town |> Maybe.withDefault ""
-            , a.state |> Maybe.withDefault ""
-            , a.country |> Maybe.withDefault "0"
-            ]
-
-        _ =
-            Debug.log "compose" compose
-    in
-        compose
-            |> List.foldl
-                (\i l ->
-                    if i == "" then
-                        l
-                    else
-                        (if l == "" then
-                            i
-                         else
-                            l ++ ", " ++ i
-                        )
-                )
+            [ optnl a.road
+            , optnl a.house_number
+            , if a.building == a.house_number then
                 ""
+              else
+                (a.building
+                    |> orUse a.supermarket
+                    |> orUse a.neighbourhood
+                    |> orUse a.suburb
+                    |> optnl
+                )
+            , a.city
+                |> orUse a.town
+                |> optnl
+            , optnl a.state
+            , optnl a.country
+            ]
+    in
+        -- String.join ", " compose
+        join compose
+
+
+join : List String -> String
+join =
+    List.foldl
+        (\i l ->
+            if i == "" then
+                l
+            else
+                (if l == "" then
+                    i
+                 else
+                    l ++ ", " ++ i
+                )
+        )
+        ""
 
 
 

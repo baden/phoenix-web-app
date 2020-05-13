@@ -1,6 +1,7 @@
 module Page.Home exposing (..)
 
 import Html exposing (Html)
+import Html.Attributes as HA
 import API
 import API.Account exposing (AccountDocumentInfo)
 import API.System as System exposing (SystemDocumentInfo)
@@ -127,7 +128,9 @@ systemItem systems timeZone index sysId =
 
                 Just system ->
                     [ UI.info_2_10 "Название:" system.title
-                    , UI.info_2_10 "Текущий режим:" (sysState_of system.dynamic timeZone)
+
+                    -- , UI.info_2_10 "Текущий режим:" (sysState_of system.dynamic timeZone)
+                    , curState (sysState_of system.dynamic timeZone)
                     ]
 
         footer =
@@ -142,6 +145,18 @@ systemItem systems timeZone index sysId =
     in
         -- UI.card (title ++ body ++ footer)
         UI.card (body ++ footer)
+
+
+curState : String -> Html Msg
+curState t =
+    UI.row_item
+        [ Html.span
+            [ HA.class "blue-text text-darken-2"
+            , HA.style "font-size" "1.2em"
+            , HA.style "font-weight" "bold"
+            ]
+            [ Html.text t ]
+        ]
 
 
 ifPosition : Maybe SystemDocumentInfo -> List (Html Msg)

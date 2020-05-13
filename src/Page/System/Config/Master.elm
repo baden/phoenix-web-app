@@ -187,12 +187,12 @@ masterPage3View { balance, caseOpen, lowPower, changeMode, moved, onOff } model 
             ++ (if model.smsPhone1 == "" then
                     []
                 else
-                    [ hint_row "На какие события реагировать:"
+                    [ hint_row "События:"
                     , checkboxLazy "Критический остаток средств" balance (\v m -> { m | balance = v }) OnMasterSMSEvent
                     , checkboxLazy "Низкий уровень заряда батареи" lowPower (\v m -> { m | lowPower = v }) OnMasterSMSEvent
                     , checkboxLazy "Изменение режима (Поиск <-> Ожидание)" changeMode (\v m -> { m | changeMode = v }) OnMasterSMSEvent
                     , checkboxLazy "Начало движения (в режиме Поиск)" moved (\v m -> { m | moved = v }) OnMasterSMSEvent
-                    , checkboxLazy "Включение и выключение трекера кнопкой на плате или через WEB-сервис" onOff (\v m -> { m | onOff = v }) OnMasterSMSEvent
+                    , checkboxLazy "Включение и выключение трекера" onOff (\v m -> { m | onOff = v }) OnMasterSMSEvent
                     , checkboxLazy "Вскрытие корпуса" caseOpen (\v m -> { m | caseOpen = v }) OnMasterSMSEvent
 
                     -- , item2_ "Включение и выключение GSM-модуля" gsm (\v m -> { m | gsm = v }) OnMasterSMSEvent

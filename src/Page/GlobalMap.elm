@@ -51,11 +51,7 @@ update msg model =
             ( model, Geo.getAddress ( lat, lon ) ResponseAddress, Nothing )
 
         ResponseAddress (Ok address) ->
-            let
-                _ =
-                    Debug.log "Address: " address
-            in
-                ( { model | address = Just <| Geo.addressToString address }, Cmd.none, Nothing )
+            ( { model | address = Just <| Geo.addressToString address }, Cmd.none, Nothing )
 
         ResponseAddress (Err _) ->
             ( model, Cmd.none, Nothing )
