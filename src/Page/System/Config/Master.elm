@@ -16,7 +16,7 @@ masterDialogView model sysId mparams =
     -- Тут наверное не очень красиво проброшена очередь параметров
     case mparams of
         Nothing ->
-            [ hint_row "Ошибка загрузки или данные от трекера еще не получены." ]
+            [ hint_row "Ошибка загрузки или данные от Феникса еще не получены." ]
 
         Just params ->
             case model.showMasterDialog of
@@ -192,7 +192,7 @@ masterPage3View { balance, caseOpen, lowPower, changeMode, moved, onOff } model 
                     , checkboxLazy "Низкий уровень заряда батареи" lowPower (\v m -> { m | lowPower = v }) OnMasterSMSEvent
                     , checkboxLazy "Изменение режима (Поиск <-> Ожидание)" changeMode (\v m -> { m | changeMode = v }) OnMasterSMSEvent
                     , checkboxLazy "Начало движения (в режиме Поиск)" moved (\v m -> { m | moved = v }) OnMasterSMSEvent
-                    , checkboxLazy "Включение и выключение трекера" onOff (\v m -> { m | onOff = v }) OnMasterSMSEvent
+                    , checkboxLazy "Включение и выключение Феникса" onOff (\v m -> { m | onOff = v }) OnMasterSMSEvent
                     , checkboxLazy "Вскрытие корпуса" caseOpen (\v m -> { m | caseOpen = v }) OnMasterSMSEvent
 
                     -- , item2_ "Включение и выключение GSM-модуля" gsm (\v m -> { m | gsm = v }) OnMasterSMSEvent
@@ -207,7 +207,7 @@ masterPage3View { balance, caseOpen, lowPower, changeMode, moved, onOff } model 
 
 masterPage3Help : MasterDataSMS -> String
 masterPage3Help _ =
-    "Когда происходят определенные события, трекер может отправлять SMS-уведомление на заданный телефонный номер."
+    "Когда происходят определенные события, Феникс может отправлять SMS-уведомление на заданный телефонный номер."
 
 
 masterPage4View : Model -> Html Msg
@@ -230,7 +230,7 @@ masterPage4View model =
 
 masterPage4Help : Model -> String
 masterPage4Help _ =
-    "Чтобы трекер мог контроллировать баланс SIM-карты, необходимо настроить процедуру проверки."
+    "Чтобы Феникс мог контроллировать баланс SIM-карты, необходимо настроить процедуру проверки."
         ++ " Если вы используете SIM-карту оператора Киевстар, то вам не понадобится менять настройки, просто нажмите кнопку Далее."
 
 

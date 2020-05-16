@@ -23,10 +23,25 @@
 
 body {
   font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
+  /* font-family: 'Roboto', sans-serif; */
+  /* font-family: 'Balsamiq Sans', cursive; */
+  /* font-family: 'Pacifico', cursive; */
+
+  /* font-family: 'Caveat', cursive; */
+  /* font-size: 1.6rem; */
+  /* line-height: 0.7em; */
+
+  /* -webkit-font-smoothing: antialiased; */
   padding: 0;
   margin: 0;
   text-align: center;
   /* color: #293c4b; */
+}
+
+button, a {
+    /* font-family: 'Pacifico', cursive !important; */
+    /* font-family: 'Caveat', cursive !important; */
+    /* font-size: 1.0em !important; */
 }
 
 html, body {

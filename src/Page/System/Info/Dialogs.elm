@@ -30,8 +30,8 @@ viewModalDialogs model =
         [ UI.modal
             "Внимание!"
             [ UI.ModalText "Это действие необратимо."
-            , UI.ModalText "Для включения потребуется доступ к трекеру."
-            , UI.ModalText "Вы действительно хотите выключить трекер?"
+            , UI.ModalText "Для включения потребуется доступ к Фениксу."
+            , UI.ModalText "Вы действительно хотите выключить Феникс?"
             ]
             [ UI.cmdButton "Да" (OnConfirmOff)
             , UI.cmdButton "Нет" (OnCancelOff)

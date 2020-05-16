@@ -123,7 +123,7 @@ view model =
                     [ page_5 model ]
     in
         div [ class "container" ] <|
-            [ UI.title_item "Мастер добавления трекеров"
+            [ UI.title_item "Мастер добавления Феникса"
             ]
                 ++ [ UI.master masterPage ]
                 ++ [ UI.row_item [ UI.linkIconTextButton "clone" "Вернуться к списку объектов" "/" ] ]
@@ -145,10 +145,10 @@ page_1 model =
 
 page_2 : Model -> UI.MasterItem Msg
 page_2 model =
-    UI.MasterItem "Установка подготовленной SIM-карты в трекер"
+    UI.MasterItem "Установка подготовленной SIM-карты в Феникс"
         [ MasterElementText "1. Выкрутите 4 винта и снимите крышку корпуса."
-        , MasterElementText "2. Убедитесь в том, что трекер выключен – светодиодный индикатор не горит и не мигает."
-        , MasterElementText "3. Установите подготовленную SIM-карту в трекер."
+        , MasterElementText "2. Убедитесь в том, что Феникс выключен – светодиодный индикатор не горит и не мигает."
+        , MasterElementText "3. Установите подготовленную SIM-карту в Феникс."
         , MasterElementText "4. В случае необходимости произведите привязку экзекуторов."
         , MasterElementPrev OnPrev
         , MasterElementCmdButton "L" OnLedHelp
@@ -162,12 +162,12 @@ page_2 model =
 
 page_3 : Model -> UI.MasterItem Msg
 page_3 model =
-    UI.MasterItem "Привязка экзекуторов и активация трекера-закладки"
-        [ MasterElementText "1. Исходное состояние: трекер – выключен."
+    UI.MasterItem "Привязка экзекуторов и активация Феникса"
+        [ MasterElementText "1. Исходное состояние: Феникс – выключен."
         , MasterElementText "2. Обесточьте все привязываемые экзекуторы и подготовьте их к подаче питания."
-        , MasterElementText "3. Нажмите и удерживайте 3 секунды кнопку ON-OFF трекера – загорится светодиод."
+        , MasterElementText "3. Нажмите и удерживайте 3 секунды кнопку ON-OFF Фениска – загорится светодиод."
         , MasterElementText "4. Как только светодиод загорится – подайте питание на все привязываемые экзекуторы – светодиод отработает серию частых вспышек и начнёт отрабатывать редкие одиночные вспышки."
-        , MasterElementText "5. Закройте крышку корпуса трекера и закрутите 4 винта."
+        , MasterElementText "5. Закройте крышку корпуса Фениска и закрутите 4 винта."
         , MasterElementPrev OnPrev
         , MasterElementCmdButton "L" OnLedHelp
         , MasterElementCmdButton "Далее" (OnPage 5)
@@ -176,9 +176,9 @@ page_3 model =
 
 page_4 : Model -> UI.MasterItem Msg
 page_4 model =
-    UI.MasterItem "Активация трекера-закладки"
-        [ MasterElementText "1. Нажмите кнопку ON-OFF трекера – светодиодный индикатор подтвердит включение."
-        , MasterElementText "2. Закройте крышку корпуса трекера и закрутите 4 винта."
+    UI.MasterItem "Активация Феникса"
+        [ MasterElementText "1. Нажмите кнопку ON-OFF Феникса – светодиодный индикатор подтвердит включение."
+        , MasterElementText "2. Закройте крышку корпуса Феникса и закрутите 4 винта."
         , MasterElementCmdButton "Назад" (OnPage 2)
         , MasterElementCmdButton "L" OnLedHelp
         , MasterElementNext OnNext
@@ -187,8 +187,8 @@ page_4 model =
 
 page_5 : Model -> UI.MasterItem Msg
 page_5 model =
-    UI.MasterItem "Добавление трекера-закладки в наблюдение"
-        [ MasterElementText "1. Отправьте на телефонный номер SIM-карты трекера SMS: link."
+    UI.MasterItem "Добавление Феникса в список наблюдения"
+        [ MasterElementText "1. Отправьте на телефонный номер SIM-карты Феникса SMS: link."
         , MasterElementText "В ответ придёт уникальный код – введите его в поле ниже:"
         , MasterElementSMSLink
         , MasterElementTextField model.code OnCode StartLink
@@ -211,11 +211,11 @@ ledHelpDialogView s =
     if s then
         [ UI.modal
             "Светодиодный индикатор"
-            [ UI.ModalIconText "images/gifs/LedOff.png" "Не горит и не мигает – трекер выключен"
-            , UI.ModalIconText "images/gifs/led_fast_flash.gif" "Серия частых вспышек – включение трекера"
-            , UI.ModalIconText "images/gifs/led_slow_flash.gif" "Редкие одиночные вспышки – режим трекера"
+            [ UI.ModalIconText "images/gifs/LedOff.png" "Не горит и не мигает – Феникс выключен"
+            , UI.ModalIconText "images/gifs/led_fast_flash.gif" "Серия частых вспышек – включение Феникса"
+            , UI.ModalIconText "images/gifs/led_slow_flash.gif" "Редкие одиночные вспышки – режим Поиск"
             , UI.ModalIconText "images/gifs/led_slow2_flash.gif" "Редкие двойные вспышки – зарегистрированы спутники"
-            , UI.ModalIconText "images/gifs/led_long_flash.gif" "Серия нечастых вспышек – выключение трекера"
+            , UI.ModalIconText "images/gifs/led_long_flash.gif" "Серия нечастых вспышек – выключение Феникса"
             , UI.ModalIconText "images/gifs/led_5sec_flash.gif" "Загорается на 5 секунд – привязка экзекуторов"
             ]
             [ UI.cmdButton "Закрыть" (OnLedHelpCancel)

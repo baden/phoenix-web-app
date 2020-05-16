@@ -195,7 +195,7 @@ sysState_of appState maybe_dynamic =
 
                 Just Off ->
                     [ curState "Трекер выключен."
-                    , UI.row_item [ text <| "Для включения - откройте крышку трекера и нажмите кнопку ON/OFF." ]
+                    , UI.row_item [ text <| "Для включения - откройте крышку Феникса и нажмите кнопку ON/OFF." ]
                     ]
 
                 Just Point ->
@@ -376,7 +376,7 @@ cmdPanel appState sysId maybe_dynamic =
                         in
                             [ row
                                 [ preloader
-                                , text <| pre ++ "будет продлена работа трекера в режиме Поиск на " ++ durationText duration
+                                , text <| pre ++ "будет продлена работа Феникса в режиме Поиск на " ++ durationText duration
                                 , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
                                 ]
                             ]
@@ -400,7 +400,7 @@ cmdPanel appState sysId maybe_dynamic =
                     Just Off ->
                         [ row
                             [ preloader
-                            , text <| pre ++ "трекер будет выключен"
+                            , text <| pre ++ "Феникс будет выключен"
                             , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
                             ]
                         ]
@@ -408,7 +408,7 @@ cmdPanel appState sysId maybe_dynamic =
                     Just wState ->
                         [ row
                             [ preloader
-                            , text <| pre ++ "трекер будет переведён в режим " ++ (System.stateAsString wState)
+                            , text <| pre ++ "Феникс будет переведён в режим " ++ (System.stateAsString wState)
                             , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
                             ]
                         ]
