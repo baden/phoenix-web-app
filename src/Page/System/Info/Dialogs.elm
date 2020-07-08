@@ -10,8 +10,8 @@ prolongSleepDialogView : Model -> String -> List (Html Msg)
 prolongSleepDialogView model sysId =
     if model.showSleepProlongDialog then
         [ UI.modal
-            "Не спать!"
-            [ UI.ModalText "Продлить работу в режиме Трекер"
+            ""
+            [ UI.ModalText "Продлить работу в режиме Поиск"
             , UI.ModalHtml <| UI.cmdButton "На 2 часа" (OnProlongSleep sysId 2)
             , UI.ModalHtml <| UI.cmdButton "На 12 часов" (OnProlongSleep sysId 12)
             , UI.ModalHtml <| UI.cmdButton "На сутки" (OnProlongSleep sysId 24)

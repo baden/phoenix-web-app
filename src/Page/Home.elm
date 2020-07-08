@@ -92,13 +92,13 @@ auth_info macc systems timeZone =
                 if List.length acc.systems == 0 then
                     [ UI.row_item [ text <| "Добро пожаловать!" ]
                     , UI.row_item [ text <| "Добавьте объект в список наблюдения" ]
-                    , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить объект" "/linksys" ]
+                    , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
                     ]
                 else
                     [ -- UI.row_item [ text <| "Вы авторизованы как " ++ acc.realname ]
                       -- UI.row_item [ text <| "В списке наблюдения систем: " ++ (String.fromInt <| List.length acc.systems) ]
                       systemList acc.systems systems timeZone
-                    , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить объект" "/linksys" ]
+                    , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
                     ]
 
 

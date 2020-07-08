@@ -126,7 +126,7 @@ view model =
             [ UI.title_item "Мастер добавления Феникса"
             ]
                 ++ [ UI.master masterPage ]
-                ++ [ UI.row_item [ UI.linkIconTextButton "clone" "Вернуться к списку объектов" "/" ] ]
+                ++ [ UI.row_item [ UI.linkIconTextButton "clone" "Вернуться к списку Фениксов" "/" ] ]
                 ++ (ledHelpDialogView model.showLedHelpDialog)
 
 
@@ -138,7 +138,7 @@ page_1 model =
         , MasterElementText "3. Убедитесь в том, что PIN-код при включении телефона выключен."
         , MasterElementText "4. В случае необходимости зарегистрируйте SIM-карту на сайте GSM-оператора."
         , MasterElementText "5. Выключите мобильный телефон и извлеките из него подготовленную SIM-карту."
-        , MasterElementCmdButton "L" OnLedHelp
+        , MasterElementCmdButton "LED" OnLedHelp
         , MasterElementNext OnNext
         ]
 
@@ -151,7 +151,7 @@ page_2 model =
         , MasterElementText "3. Установите подготовленную SIM-карту в Феникс."
         , MasterElementText "4. В случае необходимости произведите привязку экзекуторов."
         , MasterElementPrev OnPrev
-        , MasterElementCmdButton "L" OnLedHelp
+        , MasterElementCmdButton "LED" OnLedHelp
         , MasterElementCmdButton "Привязать экзекуторы" (OnPage 3)
         , MasterElementCmdButton "Далее" (OnPage 4)
 
@@ -169,7 +169,7 @@ page_3 model =
         , MasterElementText "4. Как только светодиод загорится – подайте питание на все привязываемые экзекуторы – светодиод отработает серию частых вспышек и начнёт отрабатывать редкие одиночные вспышки."
         , MasterElementText "5. Закройте крышку корпуса Фениска и закрутите 4 винта."
         , MasterElementPrev OnPrev
-        , MasterElementCmdButton "L" OnLedHelp
+        , MasterElementCmdButton "LED" OnLedHelp
         , MasterElementCmdButton "Далее" (OnPage 5)
         ]
 
@@ -180,15 +180,15 @@ page_4 model =
         [ MasterElementText "1. Нажмите кнопку ON-OFF Феникса – светодиодный индикатор подтвердит включение."
         , MasterElementText "2. Закройте крышку корпуса Феникса и закрутите 4 винта."
         , MasterElementCmdButton "Назад" (OnPage 2)
-        , MasterElementCmdButton "L" OnLedHelp
+        , MasterElementCmdButton "LED" OnLedHelp
         , MasterElementNext OnNext
         ]
 
 
 page_5 : Model -> UI.MasterItem Msg
 page_5 model =
-    UI.MasterItem "Добавление Феникса в список наблюдения"
-        [ MasterElementText "1. Отправьте на телефонный номер SIM-карты Феникса SMS: link."
+    UI.MasterItem "Добавление Феникса в наблюдение"
+        [ MasterElementText "Отправьте на телефонный номер SIM-карты Феникса SMS: link"
         , MasterElementText "В ответ придёт уникальный код – введите его в поле ниже:"
         , MasterElementSMSLink
         , MasterElementTextField model.code OnCode StartLink
@@ -211,7 +211,7 @@ ledHelpDialogView s =
     if s then
         [ UI.modal
             "Светодиодный индикатор"
-            [ UI.ModalIconText "images/gifs/LedOff.png" "Не горит и не мигает – Феникс выключен"
+            [ UI.ModalIconText "images/gifs/LedOff.gif" "Не горит и не мигает – Феникс выключен"
             , UI.ModalIconText "images/gifs/led_fast_flash.gif" "Серия частых вспышек – включение Феникса"
             , UI.ModalIconText "images/gifs/led_slow_flash.gif" "Редкие одиночные вспышки – режим Поиск"
             , UI.ModalIconText "images/gifs/led_slow2_flash.gif" "Редкие двойные вспышки – зарегистрированы спутники"

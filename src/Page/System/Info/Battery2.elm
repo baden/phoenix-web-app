@@ -1,4 +1,4 @@
-module Page.System.Info.Battery exposing (..)
+module Page.System.Info.Battery2 exposing (..)
 
 import Page.System.Info.Types exposing (..)
 import Html exposing (Html, div, a)
@@ -57,7 +57,7 @@ chartView appState model system =
                             (appState.now |> Time.posixToMillis) // 1000 - (battery.init_dt |> DT.toInt)
                     in
                         [ Html.div [ HA.class "col s12 m5 l4 right-align", HE.onClick OnBatteryClick ] [ ChartSvg.chartSvg percentage p_as_text colour ]
-                        , Html.div [ HA.class "col s12 m7 l8 left-align batView" ] <|
+                        , Html.div [ HA.class "col s12 m7 l8 left-align" ] <|
                             case model.batteryExtendView of
                                 BVP1 ->
                                     batteryView1 appState battery used sleep

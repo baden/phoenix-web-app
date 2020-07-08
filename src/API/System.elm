@@ -12,6 +12,7 @@ module API.System
           -- , SysId
         , stateAsString
         , stateAsCmdString
+        , iconForCmdString
         , setSystemTitle
         , setSystemState
         , setBatteryCapacity
@@ -299,40 +300,80 @@ stateAsCmdString : State -> String
 stateAsCmdString state =
     case state of
         Tracking ->
-            "→ПОИСК"
+            "ПОИСК"
 
         Sleep ->
-            "Усыпить"
+            "УСЫПИТЬ"
 
         Locked ->
-            "Заблокировать"
+            "ЗАБЛОКИРОВАТЬ"
 
         Beacon ->
-            "Усыпить"
+            "УСЫПИТЬ"
 
         Hidden ->
-            "→ОЖИДАНИЕ"
+            "ОЖИДАНИЕ"
 
         Off ->
-            "Выключить"
+            "ВЫКЛЮЧИТЬ"
 
         Config ->
-            "Конфигурация"
+            "КОНФИГУРАЦИЯ"
 
         Point ->
-            "?Положение"
+            "ПОЛОЖЕНИЕ"
 
         Lock ->
-            "Заблокировать"
+            "ЗАБЛОКИРОВАТЬ"
 
         Unlock ->
-            "Разблокировать"
+            "РАЗБЛОКИРОВАТЬ"
 
         ProlongSleep hours ->
             ("Отложить засыпание на " ++ (String.fromInt hours) ++ " ч")
 
         Unknown s ->
             ("В разработке..." ++ s)
+
+
+iconForCmdString : State -> String
+iconForCmdString state =
+    case state of
+        Tracking ->
+            "search"
+
+        Sleep ->
+            "bed"
+
+        Locked ->
+            "lock"
+
+        Beacon ->
+            "bed"
+
+        Hidden ->
+            "bed"
+
+        Off ->
+            "power-off"
+
+        Config ->
+            "cog"
+
+        Point ->
+            "map-marker-alt"
+
+        Lock ->
+            "lock"
+
+        Unlock ->
+            "lock-open"
+
+        ProlongSleep hours ->
+            "clock"
+
+        Unknown s ->
+            "cog"
 
 
 type alias SystemDocumentLog =

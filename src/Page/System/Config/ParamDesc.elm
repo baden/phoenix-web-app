@@ -83,6 +83,17 @@ paramDesc =
                     ]
                 )
           )
+        , ( "alarm.low"
+          , PDI "SMS о низком уровне ёмкости батареи"
+                (PD_Enum
+                    [ ( "0", PDIE_Desc "Выключено" )
+                    , ( "1", PDIE_Link "alarm1" )
+                    , ( "2", PDIE_Link "alarm2" )
+                    , ( "3", PDIE_Link "alarm3" )
+                    , ( "4", PDIE_Link "alarm4" )
+                    ]
+                )
+          )
         , ( "alarm.error"
           , PDI "SMS о невозможности определения координат"
                 (PD_Enum
@@ -157,7 +168,7 @@ paramDesc =
         , ( "auto.sleep", PDI "Автоматическое включение режима Ожидание, мин" (PD_Int 60 1440) )
         , ( "balance.skip", PDI "Пропуск цифр в отчёте оператора о балансе" (PD_Int 0 128) )
         , ( "balance.ussd", PDI "USSD-запрос остатка средств на карточке" PD_String )
-        , ( "config.send", PDI "Период сеансов связи в рефиме Конфигуратор, мин" (PD_Int 1 60) )
+        , ( "config.send", PDI "Период сеансов связи в режиме Конфигуратор, мин" (PD_Int 1 60) )
         , ( "delay", PDI "Задержка выключения GSM-модуля, в циклах связи" (PD_Int 0 60) )
         , ( "distance", PDI "Максимально допустимое отклонение координат, м" (PD_Int 100 1000) )
         , ( "gps.angle", PDI "Минимальный регистрируемый угол поворота, градусов" (PD_Int 5 90) )
@@ -166,8 +177,10 @@ paramDesc =
         , ( "gps.fail", PDI "Задержка перезапуска GPS-модуля при пропадании спутников, мин" (PD_Int 1 60) )
         , ( "gps.flush.move", PDI "Период отправки данных на сервер при движении, сек" (PD_Int 30 600) )
         , ( "gps.flush.stop", PDI "Период отправки данных на сервер при стоянке, сек" (PD_Int 30 600) )
+        , ( "gps.flush", PDI "Период отправки данных на сервер, сек" (PD_Int 30 600) )
         , ( "gps.tf.move", PDI "Принудительная регистрация координат при движении, сек" (PD_Int 30 120) )
         , ( "gps.tf.stop", PDI "Период регистрации координат при остановке, сек" (PD_Int 30 120) )
+        , ( "gps.tf", PDI "Период регистрации координат, сек" (PD_Int 30 120) )
         , ( "gps.tf.stop.acc", PDI "Период регистрации координат при стоянке, сек" (PD_Int 30 120) )
         , ( "gps.valid.delay", PDI "Данные от GPS берутся не первые после fix, а пропускается указанное кол-во" (PD_Int 0 120) )
         , ( "gps.vignacc", PDI "Скорость принудительной регистрации движения (игнорируется акселерометр) × 0,01852 км/ч" (PD_Int 100 30000) )
@@ -710,4 +723,15 @@ disabled name =
             , "link.delay"
             , "off.save"
             , "off.state"
+            , "alarm.delay"
+            , "alarm.stealth"
+            , "gsm.predelay"
+            , "sms.confirm"
+            , "accel.count"
+            , "accel.time"
+            , "gsm.predelay"
+            , "gps.vignacc"
+            , "gps.vstart"
+            , "gps.vstop"
+            , "photo.delay"
             ]

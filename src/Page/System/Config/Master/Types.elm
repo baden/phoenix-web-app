@@ -112,7 +112,7 @@ ecoToValue v =
 
         M_ECO_MIN ->
             -- Каждый час
-            "60"
+            "120"
 
 
 trackToValue : MasterDataTrack -> String

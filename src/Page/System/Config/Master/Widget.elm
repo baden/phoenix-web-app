@@ -152,7 +152,7 @@ phoneInput2 index code_ cmd_ =
     row
         [ Html.div
             [ class "col s12 m10 offset-m1 l6 offset-l2" ]
-            [ Html.text "Запрос для проверки баланса:"
+            [ Html.text "USSD-запрос баланса SIM-карты:"
             , Html.div [ class "input-field inline" ]
                 [ Html.input
                     [ HA.class "sms_code"
