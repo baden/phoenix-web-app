@@ -21,6 +21,14 @@
     }
 }
 
+@media only screen and (max-width: 992px) {
+    .modal {
+        top: 5% !important;
+        width: 99% !important;
+        max-height: 90% !important;
+    }
+}
+
 body {
   font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
   /* font-family: 'Roboto', sans-serif; */

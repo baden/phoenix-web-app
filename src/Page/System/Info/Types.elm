@@ -7,9 +7,11 @@ type alias Model =
     { extendInfo : Bool
     , showConfirmOffDialog : Bool
     , showSleepProlongDialog : Bool
+    , showCommandConfirmDialog : Maybe State
     , offId : String
     , batteryExtendView : BatteryViewPage
     , newBatteryCapacity : BatteryChange
+    , smartBlock : Bool
     }
 
 
@@ -27,12 +29,15 @@ type BatteryChange
 
 type Msg
     = OnSysCmd String System.State
+    | OnSysCmdPre String System.State
     | OnSysCmdCancel String
+    | OnSmartBlockCheck Bool
     | OnExtendInfo
     | OnConfirmOff
     | OnCancelOff
     | OnShowProlongSleepDialog
     | OnHideProlongSleepDialog
+    | OnHideCmdConfirmDialog
     | OnProlongSleep String Int
     | OnBatteryClick
     | OnBatteryMaintance

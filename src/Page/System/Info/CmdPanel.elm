@@ -2,8 +2,9 @@ module Page.System.Info.CmdPanel exposing (..)
 
 import AppState
 import API.System as System exposing (SystemDocumentInfo, State, State(..))
-import Html exposing (Html, div, a)
+import Html exposing (Html, div, a, label, input, span)
 import Html.Attributes as HA exposing (class, href)
+import Html.Events as HE
 import Page.System.Info.Types exposing (..)
 import Types.Dt as DT
 import Components.Dates as Dates
@@ -11,12 +12,47 @@ import Components.UI as UI exposing (..)
 
 
 -- Состояние панели управления
+-- type CmdPanelState
+--     = CPS_Commands
+--     | CPS_WaitStateExpanded
+--     | CPS_WaitStateCompact
 
 
-type CmdPanelState
-    = CPS_Commands
-    | CPS_WaitStateExpanded
-    | CPS_WaitStateCompact
+waitStateLabel : State -> String
+waitStateLabel state =
+    case state of
+        Point ->
+            "будет определено текущее местоположение"
+
+        ProlongSleep duration ->
+            let
+                durationText h =
+                    case h of
+                        2 ->
+                            "2 часа"
+
+                        12 ->
+                            "12 часов"
+
+                        24 ->
+                            "сутки"
+
+                        _ ->
+                            String.fromInt h ++ " ч"
+            in
+                ("будет продлена работа Феникса в режиме Поиск на " ++ durationText duration)
+
+        Lock ->
+            "двигатель будет заблокирован"
+
+        Unlock ->
+            "двигатель будет разблокирован"
+
+        Off ->
+            "Феникс будет выключен"
+
+        wState ->
+            "Феникс будет переведён в режим " ++ (System.stateAsString wState)
 
 
 cmdPanel : AppState.AppState -> String -> Maybe System.Dynamic -> List (Html Msg)
@@ -66,7 +102,7 @@ cmdPanel appState sysId maybe_dynamic =
                                             -- Html.div [ HA.class "col s12 m6 l3 xl3" ]
                                             Html.div [ HA.class "cmdButton" ]
                                                 -- [ UI.cmdButton (System.stateAsCmdString i) (OnSysCmd sysId i) ]
-                                                [ UI.cmdTextIconButton (System.iconForCmdString i) (System.stateAsCmdString i) (OnSysCmd sysId i) ]
+                                                [ UI.cmdTextIconButton (System.iconForCmdString i) (System.stateAsCmdString i) (OnSysCmdPre sysId i) ]
                                 in
                                     [ cmdWidget
                                         (dynamic.available
@@ -149,4 +185,63 @@ preloader : Html Msg
 preloader =
     Html.div [ HA.class "progress" ]
         [ Html.div [ HA.class "indeterminate" ] []
+        ]
+
+
+confirmDialog : Model -> String -> List (Html Msg)
+confirmDialog model sysId =
+    let
+        ( help1, help2 ) =
+            case model.smartBlock of
+                True ->
+                    ( "Феникс даст возможность автомобилю беспрепятственно покинуть место отстоя, определит его координаты и при первой же остановке автомобиля – заблокирует двигатель."
+                    , "Рекомендуется в случаях, если автомобиль может находиться в подземном гараже или в специальном «отстойнике», где определение координат может быть невозможным. В случае блокировки двигателя автомобиль не сможет покинуть место отстоя своим ходом, что насторожит угонщиков и приведёт к устранению «неисправности» и обнаружению Феникса."
+                    )
+
+                False ->
+                    ( "Если автомобиль находится в движении – Феникс заблокирует двигатель при его остановке, если автомобиль неподвижен – Феникс заблокирует двигатель немедленно."
+                    , "Рекомендуется в случаях, если автомобиль точно не успел доехать до «отстойника» или если автомобиль находится в прямой видимости."
+                    )
+
+        pre =
+            "При следующем сеансе связи "
+    in
+        case model.showCommandConfirmDialog of
+            Nothing ->
+                []
+
+            Just state ->
+                let
+                    pmain =
+                        case state of
+                            Lock ->
+                                [ UI.ModalText <| pre ++ "будет запущена отложенная блокировка двигателя."
+                                , UI.ModalHtml <| checkbox "Умная блокировка" model.smartBlock OnSmartBlockCheck
+                                , UI.ModalText help1
+                                , UI.ModalText help2
+                                ]
+
+                            _ ->
+                                [ UI.ModalText <| pre ++ waitStateLabel state
+                                ]
+                in
+                    [ UI.modal
+                        ""
+                        pmain
+                        [ UI.cmdButton "Отменить" (OnHideCmdConfirmDialog)
+                        , UI.cmdButton "Применить" (OnSysCmd sysId state)
+                        ]
+                    , UI.modal_overlay OnHideCmdConfirmDialog
+                    ]
+
+
+checkbox : String -> Bool -> (Bool -> Msg) -> UI Msg
+checkbox label_ checked_ msg =
+    row
+        [ Html.div [ class "col s12 m10 offset-m1 l6 offset-l1" ]
+            [ label []
+                [ input [ HA.attribute "name" "group1", HA.type_ "checkbox", HA.checked checked_, HE.onCheck (msg) ] []
+                , span [] [ Html.text label_ ]
+                ]
+            ]
         ]

@@ -27,9 +27,11 @@ init =
     ( { extendInfo = False
       , showConfirmOffDialog = False
       , showSleepProlongDialog = False
+      , showCommandConfirmDialog = Nothing
       , offId = ""
       , batteryExtendView = BVP1
       , newBatteryCapacity = BC_None
+      , smartBlock = True
       }
     , Cmd.none
     )
@@ -41,11 +43,17 @@ update msg model =
         OnSysCmd sysId Off ->
             ( { model | offId = sysId, showConfirmOffDialog = True }, Cmd.none, Nothing )
 
+        OnSysCmdPre sysId state ->
+            ( { model | showCommandConfirmDialog = Just state }, Cmd.none, Nothing )
+
         OnSysCmd sysId state ->
-            ( model, Cmd.batch [ API.websocketOut <| System.setSystemState sysId state ], Nothing )
+            ( { model | showCommandConfirmDialog = Nothing }, Cmd.batch [ API.websocketOut <| System.setSystemState sysId state ], Nothing )
 
         OnSysCmdCancel sysId ->
             ( model, Cmd.batch [ API.websocketOut <| System.cancelSystemState sysId ], Nothing )
+
+        OnSmartBlockCheck b ->
+            ( { model | smartBlock = b }, Cmd.none, Nothing )
 
         OnExtendInfo ->
             ( { model | extendInfo = not model.extendInfo }, Cmd.none, Nothing )
@@ -61,6 +69,9 @@ update msg model =
 
         OnHideProlongSleepDialog ->
             ( { model | showSleepProlongDialog = False }, Cmd.none, Nothing )
+
+        OnHideCmdConfirmDialog ->
+            ( { model | showCommandConfirmDialog = Nothing }, Cmd.none, Nothing )
 
         OnProlongSleep sysId hours ->
             ( { model | showSleepProlongDialog = False }, Cmd.batch [ API.websocketOut <| System.prolongSleep sysId hours ], Nothing )
@@ -129,6 +140,7 @@ view appState model system =
         ]
             ++ (cmdPanel appState system.id system.dynamic)
             ++ (viewModalDialogs model)
+            ++ (confirmDialog model system.id)
 
 
 
