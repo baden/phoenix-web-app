@@ -11,7 +11,8 @@ type alias Model =
     , offId : String
     , batteryExtendView : BatteryViewPage
     , newBatteryCapacity : BatteryChange
-    , smartBlock : Bool
+
+    -- , smartBlock : Bool
     }
 
 
@@ -31,7 +32,7 @@ type Msg
     = OnSysCmd String System.State
     | OnSysCmdPre String System.State
     | OnSysCmdCancel String
-    | OnSmartBlockCheck Bool
+      -- | OnSmartBlockCheck Bool
     | OnExtendInfo
     | OnConfirmOff
     | OnCancelOff

@@ -31,7 +31,8 @@ init =
       , offId = ""
       , batteryExtendView = BVP1
       , newBatteryCapacity = BC_None
-      , smartBlock = True
+
+      -- , smartBlock = True
       }
     , Cmd.none
     )
@@ -52,9 +53,8 @@ update msg model =
         OnSysCmdCancel sysId ->
             ( model, Cmd.batch [ API.websocketOut <| System.cancelSystemState sysId ], Nothing )
 
-        OnSmartBlockCheck b ->
-            ( { model | smartBlock = b }, Cmd.none, Nothing )
-
+        -- OnSmartBlockCheck b ->
+        --     ( { model | smartBlock = b }, Cmd.none, Nothing )
         OnExtendInfo ->
             ( { model | extendInfo = not model.extendInfo }, Cmd.none, Nothing )
 

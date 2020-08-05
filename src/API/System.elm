@@ -179,7 +179,9 @@ type State
     | Config
       -- Дальше не совсем состояния, это скорее команды
     | Point
+    | SLock
     | Lock
+    | CLock
     | Unlock
     | ProlongSleep Int
       -- Неподдерживаемые приложением команды и состояния
@@ -216,11 +218,17 @@ stateDecoder =
                     "point" ->
                         JD.succeed Point
 
+                    "slock" ->
+                        JD.succeed SLock
+
                     "lock" ->
                         JD.succeed Lock
 
                     "unlock" ->
                         JD.succeed Unlock
+
+                    "clock" ->
+                        JD.succeed CLock
 
                     "prolong_2" ->
                         JD.succeed <| ProlongSleep 2
@@ -283,8 +291,14 @@ stateAsString state =
         Point ->
             "Точка"
 
+        SLock ->
+            "Умная блокировка"
+
         Lock ->
             "Блокировка"
+
+        CLock ->
+            "Отмена блокировки"
 
         Unlock ->
             "Разблокировка"
@@ -323,8 +337,14 @@ stateAsCmdString state =
         Point ->
             "ПОЛОЖЕНИЕ"
 
+        SLock ->
+            "ЗАБЛОКИРОВАТЬ"
+
         Lock ->
             "ЗАБЛОКИРОВАТЬ"
+
+        CLock ->
+            "ОТМ_БЛОКИРОВКИ"
 
         Unlock ->
             "РАЗБЛОКИРОВАТЬ"
@@ -363,8 +383,14 @@ iconForCmdString state =
         Point ->
             "map-marker-alt"
 
+        SLock ->
+            "slock"
+
         Lock ->
             "lock"
+
+        CLock ->
+            "clock"
 
         Unlock ->
             "lock-open"
@@ -532,8 +558,14 @@ setSystemState sysId newState =
                     Point ->
                         "point"
 
+                    SLock ->
+                        "slock"
+
                     Lock ->
                         "lock"
+
+                    CLock ->
+                        "clock"
 
                     Unlock ->
                         "unlock"
