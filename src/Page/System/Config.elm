@@ -209,8 +209,8 @@ viewContainer appState model system mparams =
         SS_Root ->
             [ --  row [ cmdTextIconButton "edit" "Изменить название" (OnTitleChangeStart system.title) ]
               row [ cmdTextIconButton "cogs" "Конфигурация" (OnStartMaster system.id) ]
-            , row [ linkIconTextButton "clone" "Выбрать другой объект" "/" ]
-            , row [ linkIconTextButton "plus-square" "Добавить объект" "/linksys" ]
+            , row [ linkIconTextButton "clone" "Выбрать другой Феникс" "/" ]
+            , row [ linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
             , row [ cmdTextIconButton "trash" "Удалить" (OnRemove system.id) ]
             ]
 

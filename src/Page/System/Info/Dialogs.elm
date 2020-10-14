@@ -12,9 +12,9 @@ prolongSleepDialogView model sysId =
         [ UI.modal
             ""
             [ UI.ModalText "Продлить работу в режиме Поиск"
-            , UI.ModalHtml <| UI.cmdButton "На 2 часа" (OnProlongSleep sysId 2)
-            , UI.ModalHtml <| UI.cmdButton "На 12 часов" (OnProlongSleep sysId 12)
+            , UI.ModalHtml <| UI.cmdButton "На 4 часа" (OnProlongSleep sysId 4)
             , UI.ModalHtml <| UI.cmdButton "На сутки" (OnProlongSleep sysId 24)
+            , UI.ModalHtml <| UI.cmdButton "Навсегда" (OnProlongSleep sysId 100)
             ]
             [ UI.cmdButton "Отменить" (OnHideProlongSleepDialog)
             ]

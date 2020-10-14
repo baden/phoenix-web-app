@@ -51,6 +51,9 @@ waitStateLabel state =
         Off ->
             "Феникс будет выключен"
 
+        CLock ->
+            "будет отменена процедура блокировки двигателя"
+
         wState ->
             "Феникс будет переведён в режим " ++ (System.stateAsString wState)
 
@@ -133,21 +136,21 @@ cmdPanel appState sysId maybe_dynamic =
                         let
                             durationText h =
                                 case h of
-                                    2 ->
-                                        "2 часа"
-
-                                    12 ->
-                                        "12 часов"
+                                    4 ->
+                                        "на 4 часа"
 
                                     24 ->
-                                        "сутки"
+                                        "на сутки"
+
+                                    100 ->
+                                        "навсегда"
 
                                     _ ->
-                                        String.fromInt h ++ " ч"
+                                        "на " ++ (String.fromInt h) ++ " ч"
                         in
                             [ cmdWidget
                                 [ preloader
-                                , tlabel <| pre ++ "будет продлена работа Феникса в режиме Поиск на " ++ durationText duration
+                                , tlabel <| pre ++ "будет продлена работа Феникса в режиме Поиск " ++ durationText duration
                                 , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
                                 ]
                             ]
@@ -155,7 +158,15 @@ cmdPanel appState sysId maybe_dynamic =
                     Just Lock ->
                         [ cmdWidget
                             [ preloader
-                            , tlabel <| pre ++ "двигатель будет заблокирован"
+                            , tlabel <| pre ++ "будет запущена отложенная блокировка двигателя"
+                            , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+                            ]
+                        ]
+
+                    Just SLock ->
+                        [ cmdWidget
+                            [ preloader
+                            , tlabel <| pre ++ "будет запущена интеллектуальная блокировка двигателя"
                             , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
                             ]
                         ]
@@ -172,6 +183,14 @@ cmdPanel appState sysId maybe_dynamic =
                         [ cmdWidget
                             [ preloader
                             , tlabel <| pre ++ "Феникс будет выключен"
+                            , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
+                            ]
+                        ]
+
+                    Just CLock ->
+                        [ cmdWidget
+                            [ preloader
+                            , tlabel <| pre ++ "блокировка будет сброшена"
                             , UI.cmdButton "Отменить" (OnSysCmdCancel sysId)
                             ]
                         ]
@@ -213,15 +232,15 @@ confirmDialog model sysId =
                     pmain =
                         case state of
                             SLock ->
-                                [ UI.ModalText <| pre ++ "будет запущена отложенная блокировка двигателя."
-                                , UI.ModalHtml <| checkbox "Умная блокировка" True (always <| OnSysCmdPre sysId Lock)
+                                [ UI.ModalText <| pre ++ "будет запущена интеллектуальная блокировка двигателя."
+                                , UI.ModalHtml <| checkbox "Интеллектуальная блокировка" True (always <| OnSysCmdPre sysId Lock)
                                 , UI.ModalText "Феникс даст возможность автомобилю беспрепятственно покинуть место отстоя, определит его координаты и при первой же остановке автомобиля – заблокирует двигатель."
                                 , UI.ModalText "Рекомендуется в случаях, если автомобиль может находиться в подземном гараже или в специальном «отстойнике», где определение координат может быть невозможным. В случае блокировки двигателя автомобиль не сможет покинуть место отстоя своим ходом, что насторожит угонщиков и приведёт к устранению «неисправности» и обнаружению Феникса."
                                 ]
 
                             Lock ->
                                 [ UI.ModalText <| pre ++ "будет запущена отложенная блокировка двигателя."
-                                , UI.ModalHtml <| checkbox "Умная блокировка" False (always <| OnSysCmdPre sysId SLock)
+                                , UI.ModalHtml <| checkbox "Интеллектуальная блокировка" False (always <| OnSysCmdPre sysId SLock)
                                 , UI.ModalText "Если автомобиль находится в движении – Феникс заблокирует двигатель при его остановке, если автомобиль неподвижен – Феникс заблокирует двигатель немедленно."
                                 , UI.ModalText "Рекомендуется в случаях, если автомобиль точно не успел доехать до «отстойника» или если автомобиль находится в прямой видимости."
                                 ]
@@ -233,7 +252,7 @@ confirmDialog model sysId =
                     [ UI.modal
                         ""
                         pmain
-                        [ UI.cmdButton "Отменить" (OnHideCmdConfirmDialog)
+                        [ UI.cmdButton "Назад" (OnHideCmdConfirmDialog)
                         , UI.cmdButton "Применить" (OnSysCmd sysId state)
                         ]
                     , UI.modal_overlay OnHideCmdConfirmDialog

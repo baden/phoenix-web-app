@@ -75,9 +75,15 @@ expectSleepIn appState dynamic prolongCmd =
                 Nothing ->
                     "-"
 
+                -- Just (DT.fromMinutes 6000) ->
+                --     -- offset
+                --     "никогда"
                 Just offset ->
                     -- offset
-                    DT.addSecs last_session offset |> DT.toPosix |> dateTimeFormat tz
+                    if offset == DT.fromMinutes 6000 then
+                        "никогда"
+                    else
+                        (DT.addSecs last_session offset |> DT.toPosix |> dateTimeFormat tz)
 
         tz =
             appState.timeZone

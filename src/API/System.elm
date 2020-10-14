@@ -230,14 +230,14 @@ stateDecoder =
                     "clock" ->
                         JD.succeed CLock
 
-                    "prolong_2" ->
-                        JD.succeed <| ProlongSleep 2
-
-                    "prolong_12" ->
-                        JD.succeed <| ProlongSleep 12
+                    "prolong_4" ->
+                        JD.succeed <| ProlongSleep 4
 
                     "prolong_24" ->
                         JD.succeed <| ProlongSleep 24
+
+                    "prolong_100" ->
+                        JD.succeed <| ProlongSleep 100
 
                     other ->
                         JD.succeed (Unknown other)
@@ -292,7 +292,7 @@ stateAsString state =
             "Точка"
 
         SLock ->
-            "Умная блокировка"
+            "Интеллектуальная блокировка"
 
         Lock ->
             "Блокировка"
