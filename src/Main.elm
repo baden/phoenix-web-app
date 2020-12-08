@@ -2,7 +2,8 @@ port module Main exposing (..)
 
 import Browser
 import Browser.Navigation as Nav
-import Types exposing (Model, ConnectionState(..), PageRec, Msg(..), Flags, PageMsg(..), PageType(..), PageUpdateType(..))
+import Types exposing (Model, ConnectionState(..), Msg(..), Flags, PageMsg(..))
+import Types.Page exposing (PageRec, PageType(..), PageUpdateType(..), updateOverRec, upmessageUpdate)
 import Url
 import Url.Parser as Parser
 import Page
@@ -100,44 +101,22 @@ init flags url key =
         )
 
 
-upmessageUpdate : Maybe MsgT.UpMsg -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
-upmessageUpdate msg ( model, cmd ) =
-    case msg of
-        Nothing ->
-            ( model, cmd )
-
-        Just (MsgT.RemoveSystemFromList sid) ->
-            case model.account of
-                Nothing ->
-                    ( model, cmd )
-
-                Just account ->
-                    let
-                        newSysList =
-                            account.systems |> ListExtra.remove sid
-
-                        -- newSysList =
-                        --     account.systems |> ListExtra.removeAt index
-                    in
-                        ( model, Cmd.batch [ cmd, API.websocketOut <| fixSysListRequest newSysList ] )
-
-
 
 -- ( model, Cmd.none )
 -- updatePage :
 
 
-systemInfoRec : PageRec SystemInfoTypes.Model SystemInfoTypes.Msg
+systemInfoRec : PageRec SystemInfoTypes.Model SystemInfoTypes.Msg Model Msg
 systemInfoRec =
     { get = .info
     , set = \newModel model -> { model | info = newModel }
     , update = PUT_Public SystemInfo.update
     , view = PT_System SystemInfo.view
-    , msg = SystemInfoMsg
+    , msg = SystemInfoMsg >> OnPageMsg
     }
 
 
-systemConfigRec : PageRec SystemConfigTypes.Model SystemConfigTypes.Msg
+systemConfigRec : PageRec SystemConfigTypes.Model SystemConfigTypes.Msg Model Msg
 systemConfigRec =
     { get = .systemConfig
     , set = \newModel model -> { model | systemConfig = newModel }
@@ -145,41 +124,54 @@ systemConfigRec =
     , view = PT_SystemParams SystemConfig.view
 
     -- , view = PT_System SystemConfig.view
-    , msg = SystemConfigMsg
+    , msg = SystemConfigMsg >> OnPageMsg
     }
 
 
-linkSysRec : PageRec LinkSys.Model LinkSys.Msg
+
+-- systemLogsRec : PageRec SystemLogs.Model SystemLogs.Msg Model Msg
+-- systemLogsRec =
+--     { get = .systemLogs
+--     , set = \newModel model -> { model | systemLogs = newModel }
+--     , update = PUT_Public SystemLogs.update
+--     , view = PT_SystemParams SystemLogs.view
+--
+--     -- , view = PT_System SystemConfig.view
+--     , msg = SystemLogsMsg >> OnPageMsg
+--     }
+
+
+linkSysRec : PageRec LinkSys.Model LinkSys.Msg Model Msg
 linkSysRec =
     { get = .linkSys
     , set = \newModel model -> { model | linkSys = newModel }
     , update = PUT_Private LinkSys.update
     , view = PT_Nodata LinkSys.view
-    , msg = LinkSysMsg
+    , msg = LinkSysMsg >> OnPageMsg
     }
 
 
-homeRec : PageRec Home.Model Home.Msg
+homeRec : PageRec Home.Model Home.Msg Model Msg
 homeRec =
     { get = .home
     , set = \newModel model -> { model | home = newModel }
     , update = PUT_Public Home.update
     , view = PT_Full Home.view
-    , msg = HomeMsg
+    , msg = HomeMsg >> OnPageMsg
     }
 
 
-loginRec : PageRec Login.Model Login.Msg
+loginRec : PageRec Login.Model Login.Msg Model Msg
 loginRec =
     { get = .login
     , set = \newModel model -> { model | login = newModel }
     , update = PUT_Private Login.update
     , view = PT_Nodata Login.loginView
-    , msg = LoginMsg
+    , msg = LoginMsg >> OnPageMsg
     }
 
 
-authRec : PageRec Login.Model Login.Msg
+authRec : PageRec Login.Model Login.Msg Model Msg
 authRec =
     { loginRec | view = PT_Nodata Login.authView }
 
@@ -201,13 +193,13 @@ authRec =
 --     }
 
 
-systemOnMapRec : PageRec GlobalMap.Model GlobalMap.Msg
+systemOnMapRec : PageRec GlobalMap.Model GlobalMap.Msg Model Msg
 systemOnMapRec =
     { get = .globalMap
     , set = \newModel model -> { model | globalMap = newModel }
     , update = PUT_Public GlobalMap.update
     , view = PT_System GlobalMap.viewSystem
-    , msg = GlobalMapMsg
+    , msg = GlobalMapMsg >> OnPageMsg
     }
 
 
@@ -217,31 +209,13 @@ updatePage pageMsg model =
         HomeMsg homeMsg ->
             updateOverRec homeMsg homeRec model
 
-        -- let
-        --     ( updatedHomeModel, upstream, upmessage ) =
-        --         Home.update homeMsg model.home
-        -- in
-        --     -- TODO: Move to UP
-        --     ( { model | home = updatedHomeModel }, Cmd.map (HomeMsg >> OnPageMsg) upstream )
-        --         |> upmessageUpdate upmessage
         LoginMsg loginMsg ->
             -- TODO: Тут на самом деле и loginRec и authRec
             updateOverRec loginMsg loginRec model
 
-        -- let
-        --     ( updatedLoginModel, upstream ) =
-        --         Login.update loginMsg model.login
-        -- in
-        --     ( { model | login = updatedLoginModel }, Cmd.map (LoginMsg >> OnPageMsg) upstream )
         LinkSysMsg smsg ->
             updateOverRec smsg linkSysRec model
 
-        -- LinkSysMsg linkSysMsg ->
-        --     let
-        --         ( updatedLinkSysModel, upstream ) =
-        --             LinkSys.update linkSysMsg model.linkSys
-        --     in
-        --         ( { model | linkSys = updatedLinkSysModel }, Cmd.map (LinkSysMsg >> OnPageMsg) upstream )
         GlobalMapMsg globalMapMsg ->
             updateOverRec globalMapMsg systemOnMapRec model
 
@@ -261,25 +235,23 @@ updatePage pageMsg model =
 
 
 
---     updateOverRec msg systemLogsRec model
-
-
-updateOverRec msg rec model =
-    case rec.update of
-        PUT_Private u ->
-            let
-                ( updatedModel, upstream ) =
-                    u msg (rec.get model)
-            in
-                ( (rec.set updatedModel model), Cmd.map (rec.msg >> OnPageMsg) upstream )
-
-        PUT_Public u ->
-            let
-                ( updatedModel, upstream, upmessage ) =
-                    u msg (rec.get model)
-            in
-                ( (rec.set updatedModel model), Cmd.map (rec.msg >> OnPageMsg) upstream )
-                    |> upmessageUpdate upmessage
+-- upmessageUpdate : Maybe UpMsg -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+-- upmessageUpdate msg ( model, cmd ) =
+--     case msg of
+--         Nothing ->
+--             ( model, cmd )
+--
+--         Just (MsgT.RemoveSystemFromList sid) ->
+--             case model.account of
+--                 Nothing ->
+--                     ( model, cmd )
+--
+--                 Just account ->
+--                     let
+--                         newSysList =
+--                             account.systems |> ListExtra.remove sid
+--                     in
+--                         ( model, Cmd.batch [ cmd, API.websocketOut <| fixSysListRequest newSysList ] )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -579,26 +551,26 @@ viewPage model =
             NotFound.view
 
 
-view4SystemRec : String -> Model -> PageRec smodel smsg -> Html Msg
+view4SystemRec : String -> Model -> PageRec smodel smsg Model Msg -> Html Msg
 view4SystemRec sysId model ir =
     case ir.view of
         PT_System v ->
-            view4System sysId model (v model.appState (ir.get model) >> Html.map (ir.msg >> OnPageMsg))
+            view4System sysId model (v model.appState (ir.get model) >> Html.map ir.msg)
 
         PT_SystemParams v ->
             case Dict.get sysId model.systems of
                 Nothing ->
-                    (Html.div [] [ Html.text "Error" ]) |> Html.map (ir.msg >> OnPageMsg)
+                    (Html.div [] [ Html.text "Error" ]) |> Html.map ir.msg
 
                 Just system ->
-                    (v model.appState (ir.get model) system (model.params |> Dict.get sysId)) |> Html.map (ir.msg >> OnPageMsg)
+                    (v model.appState (ir.get model) system (model.params |> Dict.get sysId)) |> Html.map ir.msg
 
         -- view4SystemParams sysId model (v model.appState (ir.get model) >> Html.map (ir.msg >> OnPageMsg))
         PT_Nodata v ->
-            v (ir.get model) |> Html.map (ir.msg >> OnPageMsg)
+            v (ir.get model) |> Html.map ir.msg
 
         PT_Full v ->
-            v model.appState (ir.get model) model.account model.systems |> Html.map (ir.msg >> OnPageMsg)
+            v model.appState (ir.get model) model.account model.systems |> Html.map ir.msg
 
 
 view4System : String -> Model -> (SystemDocumentInfo -> Html Msg) -> Html Msg
