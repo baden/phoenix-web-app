@@ -1,16 +1,16 @@
 module Page.Home exposing (..)
 
-import Html exposing (Html)
-import Html.Attributes as HA
 import API
 import API.Account exposing (AccountDocumentInfo)
 import API.System as System exposing (SystemDocumentInfo)
-import Dict exposing (Dict)
-import Time
-import Components.UI as UI exposing (text)
-import Components.DateTime as DT
-import Msg as GMsg
 import AppState
+import Components.DateTime as DT
+import Components.UI as UI exposing (text)
+import Dict exposing (Dict)
+import Html exposing (Html)
+import Html.Attributes as HA
+import Msg as GMsg
+import Time
 import Types.Dt as DT
 
 
@@ -51,13 +51,14 @@ update msg model =
 view : AppState.AppState -> Model -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Html Msg
 view appState model acc systems =
     -- UI.column12 <|
-    UI.container <|
+    -- TODO: Remove one level - transfer function to List (Html Msg)
+    Html.div [ HA.class "content-wr" ] <|
         [ auth_info acc systems appState.timeZone
 
         -- , UI.button "/login" "Авторизация"
         -- , UI.button "/map" "Карта"
         ]
-            ++ (viewRemoveWidget model)
+            ++ viewRemoveWidget model
 
 
 viewRemoveWidget : Model -> List (Html Msg)
@@ -68,11 +69,12 @@ viewRemoveWidget model =
             [ UI.ModalText "Вы уверены что хотите удалить систему из списка наблюдения?"
             , UI.ModalText "Напоминаю, что вы не можете просто добавить систему в список наблюдения, необходимо проделать определенную процедуру."
             ]
-            [ UI.cmdButton "Да" (OnConfirmRemove)
-            , UI.cmdButton "Нет" (OnCancelRemove)
+            [ UI.cmdButton "Да" OnConfirmRemove
+            , UI.cmdButton "Нет" OnCancelRemove
             ]
         , UI.modal_overlay OnCancelRemove
         ]
+
     else
         []
 
@@ -83,28 +85,37 @@ auth_info macc systems timeZone =
         -- UI.card_panel <|
         case macc of
             Nothing ->
-                [ text "Чтобы пользоваться сервисом, вы должны "
-                , UI.linkButton "авторизоваться" "/login"
-                , text " в системе."
+                --[ UI.smallForm
+                [ UI.formHeader "Добро пожаловать"
+                , UI.formSubtitle "Чтобы пользоваться сервисом, вы должны "
+                , UI.greenLink "/login" "авторизоваться"
+                , text " "
+                , UI.greenLink "/auth" "или зарегистрироваться"
+
+                -- , UI.linkButton "авторизоваться" "/login"
+                , UI.formSubtitle " в системе."
                 ]
 
+            --]
             Just acc ->
                 if List.length acc.systems == 0 then
                     [ UI.row_item [ text <| "Добро пожаловать!" ]
                     , UI.row_item [ text <| "Добавьте объект в список наблюдения" ]
                     , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
                     ]
+
                 else
                     [ -- UI.row_item [ text <| "Вы авторизованы как " ++ acc.realname ]
                       -- UI.row_item [ text <| "В списке наблюдения систем: " ++ (String.fromInt <| List.length acc.systems) ]
-                      systemList acc.systems systems timeZone
+                      UI.systemListTitle "Список фениксов"
+                    , systemList acc.systems systems timeZone
                     , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
                     ]
 
 
 systemList : List String -> Dict String SystemDocumentInfo -> Time.Zone -> Html Msg
 systemList sysIds systems timeZone =
-    UI.row
+    UI.systemList
         (sysIds
             |> List.indexedMap (systemItem systems timeZone)
         )
@@ -120,6 +131,14 @@ systemItem systems timeZone index sysId =
         maybe_system =
             Dict.get sysId systems
 
+        header =
+            case maybe_system of
+                Nothing ->
+                    []
+
+                Just system ->
+                    [ UI.cardHeader (sysState_of system.dynamic timeZone) ("/system/" ++ sysId ++ "/config") ]
+
         body =
             case maybe_system of
                 Nothing ->
@@ -127,24 +146,28 @@ systemItem systems timeZone index sysId =
                     ]
 
                 Just system ->
-                    [ UI.info_2_10 "Название:" system.title
+                    [ UI.cardBody
+                        [ UI.cardTitle system.title
+                        , UI.cardPwrPanel
 
-                    -- , UI.info_2_10 "Текущий режим:" (sysState_of system.dynamic timeZone)
-                    , curState (sysState_of system.dynamic timeZone)
+                        -- , UI.info_2_10 "Текущий режим:" (sysState_of system.dynamic timeZone)
+                        -- , curState (sysState_of system.dynamic timeZone)
+                        ]
                     ]
 
         footer =
-            [ UI.row_item <|
-                [ UI.linkIconTextButton "gamepad" "Управление" ("/system/" ++ sysId)
-                , UI.linkIconTextButton "cog" "Настройка" ("/system/" ++ sysId ++ "/config")
-                ]
-                    ++ (ifPosition maybe_system)
-
-            -- ++ [ UI.cmdTextIconButton "trash" "Удалить" (OnRemove index)]
-            ]
+            -- [ UI.row_item <|
+            --     [ UI.linkIconTextButton "gamepad" "Управление" ("/system/" ++ sysId)
+            --     , UI.linkIconTextButton "cog" "Настройка" ("/system/" ++ sysId ++ "/config")
+            --     ]
+            --         ++ ifPosition maybe_system
+            --
+            -- -- ++ [ UI.cmdTextIconButton "trash" "Удалить" (OnRemove index)]
+            -- ]
+            [ UI.cardFooter ("/system/" ++ sysId) (ifPosition maybe_system) ]
     in
-        -- UI.card (title ++ body ++ footer)
-        UI.card (body ++ footer)
+    -- UI.card (title ++ body ++ footer)
+    UI.card <| header ++ body ++ footer
 
 
 curState : String -> Html Msg
@@ -159,24 +182,24 @@ curState t =
         ]
 
 
-ifPosition : Maybe SystemDocumentInfo -> List (Html Msg)
+ifPosition : Maybe SystemDocumentInfo -> Maybe String
 ifPosition maybe_system =
     case maybe_system of
         Nothing ->
-            []
+            Nothing
 
         Just system ->
             case system.dynamic of
                 Nothing ->
-                    []
+                    Nothing
 
                 Just dynamic ->
                     case ( dynamic.latitude, dynamic.longitude ) of
-                        ( Just latitude, Just longitude ) ->
-                            [ UI.linkIconTextButton "map" "На карте" ("/map/" ++ system.id) ]
+                        ( Just _, Just _ ) ->
+                            Just ("/map/" ++ system.id)
 
                         _ ->
-                            []
+                            Nothing
 
 
 sysState_of : Maybe System.Dynamic -> Time.Zone -> String
@@ -191,7 +214,7 @@ sysState_of dynamic timeZone =
                     "-"
 
                 Just state ->
-                    (System.stateAsString state)
+                    System.stateAsString state
 
 
 position_of : Maybe System.Dynamic -> Time.Zone -> String
@@ -213,9 +236,9 @@ maybeLatLong mlatitude mlongitude =
         -- ( _, Nothing ) ->
         --     "данные не получены"
         ( Just latitude, Just longitude ) ->
-            ((String.fromFloat latitude)
+            (String.fromFloat latitude
                 ++ ", "
-                ++ (String.fromFloat longitude)
+                ++ String.fromFloat longitude
              -- ++ "@"
              -- ++ (dtFormat lastPosition.dt timeZone)
             )
@@ -226,4 +249,4 @@ maybeLatLong mlatitude mlongitude =
 
 dtFormat : DT.Dt -> Time.Zone -> String
 dtFormat v timeZone =
-    (DT.toInt v) * 1000 |> Time.millisToPosix |> DT.dateTimeFormat timeZone
+    DT.toInt v * 1000 |> Time.millisToPosix |> DT.dateTimeFormat timeZone

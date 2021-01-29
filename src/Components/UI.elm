@@ -1,52 +1,56 @@
-module Components.UI
-    exposing
-        ( UI
-        , button
-        , iconButton
-        , cmdButton
-        , cmdIconButton
-        , cmdIconButtonR
-        , cmdTextIconButton
-        , cmdTextIconButtonR
-        , formHeader
-        , formInput
-        , formInputInline
-        , formPassword
-        , formButton
-        , column12
-        , smallForm
-        , master
-        , MasterItem
-        , MasterElement(..)
-        , row
-        , row_item
-        , info_2_10
-        , linkButton
-        , linkIconTextButton
-        , linkIconButton
-        , linkIconTextButtonR
-        , text
-        , qr_code
-        , app_title
-        , card_panel
-        , card
-        , modal
-        , modal_overlay
-        , ModalElement(..)
-        , title_item
-        , smsLink
-        , smsCodeInput
-        , connectionWidwet
-        , header
-        , container
-        , widget
-        , stitle
-        , header_expander
-        )
+module Components.UI exposing (..)
 
-import Html exposing (Html, h1, h5, div, a, text, i, input)
-import Html.Attributes as HA exposing (class, href, placeholder, value, type_, src)
-import Html.Events exposing (onInput, onClick)
+-- module Components.UI exposing
+--     ( MasterElement(..)
+--     , MasterItem
+--     , ModalElement(..)
+--     , UI
+--     , app_title
+--     , button
+--     , card
+--     , card_panel
+--     , cmdButton
+--     , cmdIconButton
+--     , cmdIconButtonR
+--     , cmdTextIconButton
+--     , cmdTextIconButtonR
+--     , column12
+--     , connectionWidwet
+--     , container
+--     , formButton
+--     , formHeader
+--     , formInput
+--     , formInputInline
+--     , formPassword
+--     , formSubtitle
+--     , header
+--     , header_expander
+--     , iconButton
+--     , info_2_10
+--     , linkButton
+--     , linkIconButton
+--     , linkIconTextButton
+--     , linkIconTextButtonR
+--     , master
+--     , modal
+--     , modal_overlay
+--     , qr_code
+--     , row
+--     , row_item
+--     , smallForm
+--     , smsCodeInput
+--     , smsLink
+--     , stitle
+--     , text
+--     , title_item
+--     , widget
+--     )
+
+import Html exposing (Html, a, div, form, h1, h5, i, img, input, span, text)
+import Html.Attributes as HA exposing (alt, class, href, placeholder, src, type_, value)
+import Html.Events exposing (onClick, onInput)
+import Svg exposing (path, svg, text_)
+import Svg.Attributes exposing (d, preserveAspectRatio, strokeDasharray, viewBox, x, y)
 
 
 type alias UI msg =
@@ -95,19 +99,36 @@ iconButton label url =
         [ Html.i [ HA.class ("fas fa-" ++ label) ] [] ]
 
 
+
+-- TODO: Rename to formTitle
+
+
 formHeader : String -> Html m
 formHeader text_title =
-    h5 [] [ text text_title ]
+    -- h5 [] [ text text_title ]
+    div [ class "login-title" ] [ text text_title ]
+
+
+formSubtitle : String -> Html m
+formSubtitle text_subtitle =
+    div [ class "login-subtitle" ] [ text text_subtitle ]
 
 
 formInput : String -> String -> (String -> msg) -> Html msg
 formInput text_title value_ update =
-    input
-        [ onInput update
-        , placeholder text_title
-        , value value_
+    div [ class "input-st" ]
+        [ input
+            [ onInput update
+            , placeholder text_title
+            , value value_
+            ]
+            []
         ]
-        []
+
+
+formLogin : List (Html msg) -> Html msg
+formLogin =
+    form [ class "login-inputs" ]
 
 
 formInputInline : String -> String -> (String -> msg) -> Html msg
@@ -123,13 +144,18 @@ formInputInline text_title value_ update =
 
 formPassword : String -> String -> (String -> msg) -> Html msg
 formPassword text_title value_ update =
-    input
-        [ type_ "password"
-        , onInput update
-        , value value_
-        , placeholder text_title
+    div [ class "input-st password" ]
+        [ input
+            [ type_ "password"
+            , onInput update
+            , value value_
+            , placeholder text_title
+            ]
+            []
+        , span [ class "password-icon" ]
+            [ img [ src "static/images/eye.svg", alt "Logo" ] []
+            ]
         ]
-        []
 
 
 formButton : String -> Maybe String -> Maybe msg -> Html msg
@@ -145,12 +171,27 @@ formButton text_title enabled update =
                         Just command ->
                             [ onClick command ]
             in
-                a
-                    ([ class "waves-effect waves-light btn", href "" ] ++ cmd)
-                    [ text text_title ]
+            Html.button
+                ([ class "btn blue-btn" ] ++ cmd)
+                [ text text_title ]
 
         Just text_ ->
             text text_
+
+
+loginSecondary : String -> Html a
+loginSecondary txt_ =
+    a [ href "#", class "accaunt-link-gr accaunt-link" ] [ text txt_ ]
+
+
+greenLink : String -> String -> Html a
+greenLink url_ txt_ =
+    a [ href url_, class "accaunt-link-green accaunt-link" ] [ text txt_ ]
+
+
+greenLink2 : String -> String -> Html a
+greenLink2 url_ txt_ =
+    a [ href url_, class "accaunt-link-green accaunt-link mt-20" ] [ text txt_ ]
 
 
 column12 : List (Html a) -> Html a
@@ -158,10 +199,25 @@ column12 childrens =
     div [ class "col s12" ] childrens
 
 
+appHeader : Html a
+appHeader =
+    div [ class "header" ]
+        [ div [ class "language" ]
+            [ span [ class "language-menu" ]
+                [ img [ src "static/images/ellipsis.svg", alt "Logo" ] []
+                ]
+            ]
+        , div [ class "logo" ]
+            [ img [ src "static/images/logo.svg", alt "Logo" ] []
+            ]
+        ]
+
+
 smallForm : List (Html a) -> Html a
 smallForm childrens =
-    div [ class "row" ]
-        [ div [ class "col s8 offset-s2" ] childrens
+    div [ class "container container-logo" ]
+        [ appHeader
+        , div [ class "login-content" ] childrens
         ]
 
 
@@ -220,13 +276,13 @@ master_element { title, content } =
                 MasterElementPrev mOnPrev ->
                     cmdTextIconButton "arrow-left" "Назад" mOnPrev
     in
-        div []
-            [ Html.h5 [] [ text title ]
-            , div [ class "left-align" ]
-                (content
-                    |> List.map melem
-                )
-            ]
+    div []
+        [ Html.h5 [] [ text title ]
+        , div [ class "left-align" ]
+            (content
+                |> List.map melem
+            )
+        ]
 
 
 row : List (Html a) -> Html a
@@ -321,6 +377,7 @@ header showQrCode msg1 msg2 =
     ]
         ++ (if showQrCode then
                 [ qr_code msg2 ]
+
             else
                 []
            )
@@ -335,8 +392,76 @@ card_panel childs =
 
 card : List (Html a) -> Html a
 card child =
-    Html.div [ class "col s12 m6 l4 xl3" ]
-        [ Html.div [ class "z-depth-2 shadow-demo scard" ] child ]
+    Html.div [ class "fenix fenix-bg fenix-taxi" ] child
+
+
+cardHeader : String -> String -> Html a
+cardHeader state_text config_link =
+    div [ class "fenix-header" ]
+        [ div [ class "status" ]
+            [ Html.button [ class "btn-wait orange-btn" ] [ Html.text state_text ]
+            , img [ src "static/images/green-car.svg", alt "car-green" ] []
+            ]
+        , Html.a [ class "fenix-set-btn", href config_link ] []
+        ]
+
+
+cardBody : List (Html a) -> Html a
+cardBody =
+    div [ class "fenix-body" ]
+
+
+cardTitle : String -> Html a
+cardTitle ttle =
+    div [ class "fenix-title" ] [ text ttle ]
+
+
+cardPwrPanel : Html a
+cardPwrPanel =
+    div [ class "fenix-power-wr" ]
+        [ span [ class "power" ]
+            [ span [ class "power-top" ] []
+            , span [ class "power-wr" ]
+                [ -- changing height for this block and add class low for change  power
+                  span [ class "power-bg full", HA.style "height" "80%" ]
+                    [ svg [ viewBox "0 0 500 500", preserveAspectRatio "xMinYMin meet" ]
+                        [ path [ d "M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z", Svg.Attributes.style "stroke:none; fill: #323343;" ] []
+                        ]
+                    ]
+                ]
+            ]
+        , span [ class "text" ]
+            [ text "В режиме Ожидания:"
+            , Html.br [] []
+            , text "8 месяцев 17 дней"
+            ]
+        ]
+
+
+cardFooter : String -> Maybe String -> Html a
+cardFooter control_link m_map_link =
+    let
+        map_key =
+            case m_map_link of
+                Nothing ->
+                    Html.a [ class "btn btn-sm dark-btn disabled" ] [ text "На карте" ]
+
+                Just map_link ->
+                    Html.a [ class "btn btn-sm blue-btn", href map_link ] [ f_icon "map", text " ", text "На карте" ]
+    in
+    div [ class "fenix-footer" ]
+        [ map_key
+        , Html.a [ class "btn btn-sm blue-btn", href control_link ] [ f_icon "gamepad", text " ", text "Управление" ]
+        ]
+
+
+f_icon : String -> Html a
+f_icon icon =
+    Html.i [ HA.class ("left fas fa-" ++ icon) ] []
+
+
+
+-- [ Html.div [ class "z-depth-2 shadow-demo scard" ] child ]
 
 
 type ModalElement m
@@ -349,7 +474,7 @@ modal : String -> List (ModalElement m) -> List (Html m) -> Html m
 modal text_title content buttons =
     let
         element =
-            (\row_value ->
+            \row_value ->
                 case row_value of
                     ModalText text_value ->
                         Html.p [] [ Html.text text_value ]
@@ -361,24 +486,23 @@ modal text_title content buttons =
                     --     Html.p [] [ Html.div [ HA.class "led_flash led_fast_flash" ] [], Html.text text_value ]
                     ModalHtml html ->
                         html
-            )
     in
-        Html.div
-            [ class "modal open left-align"
-            , HA.tabindex 0
-            , HA.style "z-index" "1003"
-            , HA.style "display" "block"
-            , HA.style "opacity" "1"
-            , HA.style "top" "10%"
-            , HA.style "transform" "scaleX(1) scaleY(1)"
+    Html.div
+        [ class "modal open left-align"
+        , HA.tabindex 0
+        , HA.style "z-index" "1003"
+        , HA.style "display" "block"
+        , HA.style "opacity" "1"
+        , HA.style "top" "10%"
+        , HA.style "transform" "scaleX(1) scaleY(1)"
+        ]
+        [ Html.div [ class "modal-content" ] <|
+            [ Html.h4 []
+                [ Html.text text_title ]
             ]
-            [ Html.div [ class "modal-content" ] <|
-                [ Html.h4 []
-                    [ Html.text text_title ]
-                ]
-                    ++ (content |> List.map element)
-            , Html.div [ class "modal-footer" ] buttons
-            ]
+                ++ (content |> List.map element)
+        , Html.div [ class "modal-footer" ] buttons
+        ]
 
 
 modal_overlay : m -> Html m
@@ -419,6 +543,7 @@ smsCodeInput code_ cmd_ start_ =
              ]
                 ++ (if code_ /= "" then
                         [ cmdButton "Добавить" start_ ]
+
                     else
                         []
                    )
@@ -443,7 +568,7 @@ connectionWidwet =
 
 container : List (Html a) -> Html a
 container =
-    div [ class "container" ]
+    div [ class "container container-logo" ]
 
 
 widget : List (Html a) -> Html a
@@ -460,3 +585,13 @@ stitle t =
 header_expander : UI a
 header_expander =
     Html.div [ class "header_expander" ] []
+
+
+systemList : List (Html a) -> Html a
+systemList =
+    div [ class "fenix-list" ]
+
+
+systemListTitle : String -> Html a
+systemListTitle ttl_ =
+    div [ class "title-st fs-30" ] [ text ttl_ ]

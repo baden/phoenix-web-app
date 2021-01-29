@@ -1,9 +1,12 @@
 import './main.css';
+import './css/base.css';
 import { Elm } from './Main.elm';
 import Map from './Map/leaflet-port.js';
 import './Page/System/Logs/port.js';
 import registerServiceWorker from './registerServiceWorker';
-import "../node_modules/materialize-css/dist/css/materialize.css";
+
+// TODO: Remove materialize.css
+// import "../node_modules/materialize-css/dist/css/materialize.css";
 // import fontawesome from '@fortawesome/fontawesome-free';
 // import '@fortawesome/fontawesome-free';
 
