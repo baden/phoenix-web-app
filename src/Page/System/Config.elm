@@ -1,16 +1,16 @@
 module Page.System.Config exposing (init, update, view)
 
-import Page.System.Config.Types exposing (..)
+import API
+import API.System as System exposing (State(..), SystemDocumentInfo, SystemDocumentParams)
+import AppState
+import Components.UI as UI exposing (..)
+import Dict exposing (Dict)
+import Msg as GMsg
+import Page.System.Config.Custom exposing (..)
 import Page.System.Config.Dialogs as Dialogs exposing (..)
 import Page.System.Config.Master exposing (..)
 import Page.System.Config.Master.Types exposing (..)
-import Page.System.Config.Custom exposing (..)
-import AppState
-import API.System as System exposing (SystemDocumentInfo, State, State(..), SystemDocumentParams)
-import Components.UI as UI exposing (..)
-import API
-import Msg as GMsg
-import Dict exposing (Dict)
+import Page.System.Config.Types exposing (..)
 
 
 init : Maybe String -> ( Model, Cmd Msg )
@@ -57,7 +57,7 @@ update msg model =
                     API.websocketOut <|
                         System.setSystemTitle sysId newTitle
             in
-                ( { model | showTitleChangeDialog = False }, Cmd.batch [ cmd ], Nothing )
+            ( { model | showTitleChangeDialog = False }, Cmd.batch [ cmd ], Nothing )
 
         OnTitleCancel ->
             ( { model | showTitleChangeDialog = False }, Cmd.none, Nothing )
@@ -76,10 +76,10 @@ update msg model =
             ( { model | masterData = setMasterDataSmsEvent updater s model.masterData }, Cmd.none, Nothing )
 
         OnMasterNext ->
-            ( { model | showMasterDialog = (masterNextPage model.showMasterDialog) }, Cmd.none, Nothing )
+            ( { model | showMasterDialog = masterNextPage model.showMasterDialog }, Cmd.none, Nothing )
 
         OnMasterPrev ->
-            ( { model | showMasterDialog = (masterPrevPage model.showMasterDialog) }, Cmd.none, Nothing )
+            ( { model | showMasterDialog = masterPrevPage model.showMasterDialog }, Cmd.none, Nothing )
 
         OnRemove sid ->
             ( { model | showRemodeDialog = True, removeId = sid }, Cmd.none, Nothing )
@@ -130,7 +130,7 @@ update msg model =
                     , description = description
                     }
             in
-                ( { model | showParamChangeDialog = Just showParamChangeDialog }, Cmd.none, Nothing )
+            ( { model | showParamChangeDialog = Just showParamChangeDialog }, Cmd.none, Nothing )
 
         OnRestoreParam sysId queue name ->
             let
@@ -138,7 +138,7 @@ update msg model =
                 newQueue =
                     Dict.remove name queue
             in
-                ( model, paramsSetQueue sysId newQueue, Nothing )
+            ( model, paramsSetQueue sysId newQueue, Nothing )
 
         OnChangeParamValue value ->
             case model.showParamChangeDialog of
@@ -150,14 +150,14 @@ update msg model =
                         newShowParamChangeDialog =
                             { showParamChangeDialog | value = value }
                     in
-                        ( { model | showParamChangeDialog = Just newShowParamChangeDialog }, Cmd.none, Nothing )
+                    ( { model | showParamChangeDialog = Just newShowParamChangeDialog }, Cmd.none, Nothing )
 
         OnConfirmParam sysId oldQueue name value ->
             let
                 newQueue =
                     Dict.insert name value oldQueue
             in
-                ( { model | showParamChangeDialog = Nothing }, paramsSetQueue sysId newQueue, Nothing )
+            ( { model | showParamChangeDialog = Nothing }, paramsSetQueue sysId newQueue, Nothing )
 
         OnClearQueue sysId ->
             ( { model | showParamChangeDialog = Nothing, showQueue = False }, paramsSetQueue sysId Dict.empty, Nothing )
@@ -188,7 +188,7 @@ paramsSetQueue sysId newQueue =
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> UI Msg
 view appState model system mparams =
-    container <|
+    UI.div_ <|
         [ header_expander
         , row
             [ iconButton "arrow-left" ("/system/" ++ system.id)
@@ -196,11 +196,11 @@ view appState model system mparams =
             , UI.cmdIconButton "edit" (OnTitleChangeStart system.title)
             ]
         ]
-            ++ (viewContainer appState model system mparams)
+            ++ viewContainer appState model system mparams
             -- ++ (viewContainer appState model system Nothing)
-            ++ (titleChangeDialogView model system.id)
-            ++ (viewRemoveWidget model)
-            ++ (Dialogs.paramChangeDialogView model mparams)
+            ++ titleChangeDialogView model system.id
+            ++ viewRemoveWidget model
+            ++ Dialogs.paramChangeDialogView model mparams
 
 
 viewContainer : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> List (UI Msg)

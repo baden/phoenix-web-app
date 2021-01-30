@@ -1,15 +1,13 @@
 module Page.System.Config.Master.Widget exposing (..)
 
-import Page.System.Config.Types exposing (..)
-import Components.UI as UI exposing (..)
-import Dict exposing (Dict)
-
-
 -- Deprecated
 
-import Html exposing (Html, div, text, a, form, p, label, input, span)
-import Html.Attributes as HA exposing (class, href, attribute, type_, checked)
+import Components.UI as UI exposing (..)
+import Dict exposing (Dict)
+import Html exposing (Html, a, div, form, input, label, p, span, text)
+import Html.Attributes as HA exposing (attribute, checked, class, href, type_)
 import Html.Events as HE
+import Page.System.Config.Types exposing (..)
 
 
 masterPageForm : List (Html Msg) -> Html Msg
@@ -26,17 +24,17 @@ masterPageForm c =
 
 masterFooterFirst : List (UI Msg)
 masterFooterFirst =
-    [ UI.cmdTextIconButton "times-circle" "Отмена" (OnCancelMaster)
-    , UI.cmdTextIconButton "cogs" "Подробно" (OnMasterCustom)
-    , UI.cmdTextIconButton "arrow-right" "Далее" (OnMasterNext)
+    [ UI.cmdTextIconButton "times-circle" "Отмена" OnCancelMaster
+    , UI.cmdTextIconButton "cogs" "Подробно" OnMasterCustom
+    , UI.cmdTextIconButton "arrow-right" "Далее" OnMasterNext
     ]
 
 
 masterFooterMiddle : List (UI Msg)
 masterFooterMiddle =
-    [ UI.cmdTextIconButton "times-circle" "Отмена" (OnCancelMaster)
-    , UI.cmdTextIconButton "arrow-left" "Назад" (OnMasterPrev)
-    , UI.cmdTextIconButton "arrow-right" "Далее" (OnMasterNext)
+    [ UI.cmdTextIconButton "times-circle" "Отмена" OnCancelMaster
+    , UI.cmdTextIconButton "arrow-left" "Назад" OnMasterPrev
+    , UI.cmdTextIconButton "arrow-right" "Далее" OnMasterNext
     ]
 
 
@@ -46,11 +44,11 @@ masterFooterLast sysId customQueue masterQueue =
         mixedQueue =
             Dict.union masterQueue customQueue
     in
-        [ UI.cmdTextIconButton "times-circle" "Отмена" (OnCancelMaster)
-        , UI.cmdTextIconButton "arrow-left" "Назад" (OnMasterPrev)
-        , UI.cmdTextIconButton "thumbs-up" "Применить" (OnConfirmMaster sysId mixedQueue)
-        , UI.cmdIconButton "question-circle" (OnShowChanges)
-        ]
+    [ UI.cmdTextIconButton "times-circle" "Отмена" OnCancelMaster
+    , UI.cmdTextIconButton "arrow-left" "Назад" OnMasterPrev
+    , UI.cmdTextIconButton "thumbs-up" "Применить" (OnConfirmMaster sysId mixedQueue)
+    , UI.cmdIconButton "question-circle" OnShowChanges
+    ]
 
 
 radio : mt -> String -> Bool -> (mt -> Bool -> Msg) -> UI Msg
@@ -101,7 +99,7 @@ phoneInput en code_ cmd_ =
         True ->
             row
                 [ Html.div
-                    [ class "col s12 m10 offset-m1 l5 offset-l3" ]
+                    [ class "col s12 m10 offset-m1 l5 offset-l3 input-st" ]
                     [ Html.input
                         [ HA.class "sms_code"
                         , HA.type_ "tel"
@@ -131,7 +129,7 @@ phoneInput1 index code_ cmd_ =
         [ Html.div
             [ class "col s12 m10 offset-m1 l6 offset-l2" ]
             [ Html.text "Укажите номер телефона:"
-            , Html.div [ class "input-field inline" ]
+            , Html.div [ class "input-field inline input-st" ]
                 [ Html.input
                     [ HA.class "sms_code"
                     , HA.type_ "tel"
@@ -183,7 +181,7 @@ codeInput en code_ cmd_ =
         True ->
             row
                 [ Html.div
-                    [ class "col s12 m10 offset-m1 l5 offset-l3" ]
+                    [ class "col s12 m10 offset-m1 l5 offset-l3 input-st" ]
                     [ Html.input
                         [ HA.class "sms_code"
                         , HA.placeholder "Только латинские символы или цифры"
@@ -227,17 +225,17 @@ changes_table dict =
         row ( ttl, val ) =
             Html.tr [] [ Html.td [ HA.class "right-align", HA.style "width" "50%" ] [ Html.text ttl ], Html.td [] [ Html.text val ] ]
     in
-        [ Html.div [ HA.class "row" ] <|
-            [ Html.div [ HA.class "col s12 m10 offset-m1 l8 offset-l2 xl6 offset-xl3" ]
-                [ Html.text "Следующие параметры будут изменены:"
-                , Html.table []
-                    [ Html.tbody [] (dict |> Dict.toList |> List.map row)
-                    ]
+    [ Html.div [ HA.class "row" ] <|
+        [ Html.div [ HA.class "col s12 m10 offset-m1 l8 offset-l2 xl6 offset-xl3" ]
+            [ Html.text "Следующие параметры будут изменены:"
+            , Html.table []
+                [ Html.tbody [] (dict |> Dict.toList |> List.map row)
                 ]
             ]
-
-        -- ++ row "sleep" (ecoToValue model.masterEcoValue)
-        -- ++ row "auto.sleep" (trackToValue model.masterTrackValue)
-        -- ++ row "admin" model.adminPhone
-        -- ++ row "secur.code" model.adminPhone
         ]
+
+    -- ++ row "sleep" (ecoToValue model.masterEcoValue)
+    -- ++ row "auto.sleep" (trackToValue model.masterTrackValue)
+    -- ++ row "admin" model.adminPhone
+    -- ++ row "secur.code" model.adminPhone
+    ]

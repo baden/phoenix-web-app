@@ -55,7 +55,9 @@ leaflet-map {
     left: 0;
     overflow: auto;
     z-index: 1001;
-    background-color: rgba(255,255,255,0.5);
+    /* background-color: rgba(255,255,255,0.5); */
+    /* background:#e5e5e5; */
+    background: url(/static/media/background.dc0fba31.png) no-repeat center/cover;
 }
 
 
@@ -236,12 +238,12 @@ span.params_waited {
 
 .param_row {
     /* background-color: #eeeeee; */
-    background-image: linear-gradient(white, #eeeeee);
+    /* background-image: linear-gradient(white, #eeeeee); */
 }
 
 .param_row:hover {
     /* background-color: #eeeeee; */
-    background-image: linear-gradient(white, #dddddd);
+    /* background-image: linear-gradient(white, #dddddd); */
     border: 1px solid #777777;
 }
 
@@ -257,7 +259,7 @@ span.params_waited {
 .param_row .name {
     position: absolute;
     top: -11px;
-    background-color: white;
+    background-color: black;
     padding-left: 4px;
     padding-right: 4px;
 }
@@ -437,7 +439,7 @@ span.params_waited {
     margin-top: 10px;
 }
 
-.viewWidget {
+.viewWidget_h {
     position: absolute;
     top: 0;
     left: 0;
@@ -446,6 +448,23 @@ span.params_waited {
     /* margin-bottom: 150px; */
     overflow: scroll;
     /* background-color: purple; */
+}
+
+.viewWidget {
+    line-height: 1.3em;
+    font-size: 0.9em;
+}
+
+.sessions {
+    display: block;
+}
+
+.sessions div {
+    font-size: 0.8em;
+    display: inline-block;
+}
+
+.sessions div:first-child {
 }
 
 .batView p {
@@ -496,4 +515,157 @@ a.btn {
 
 a.disabled {
     pointer-events: none;
+}
+
+.container {
+    color: #DFE0F3;
+    font-size: 18px;
+}
+
+span.error {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    color: #ff4f4f;
+}
+
+a.input-label {
+    color: gray;
+    text-decoration: underline;
+    /* text-align: center; */
+}
+
+/* 24dp elevation */
+.z-depth-5, .modal {
+  -webkit-box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14), 0 9px 46px 8px rgba(0, 0, 0, 0.12), 0 11px 15px -7px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14), 0 9px 46px 8px rgba(0, 0, 0, 0.12), 0 11px 15px -7px rgba(0, 0, 0, 0.2);
+}
+
+.modal {
+  /* display: none; */
+  position: fixed;
+  left: 0;
+  right: 0;
+  /* background-color: #fafafa; */
+  background: url(/static/media/background.dc0fba31.png) no-repeat center/cover;
+  padding: 0;
+  max-height: 70%;
+  width: 55%;
+  margin: auto;
+  overflow-y: auto;
+  border-radius: 2px;
+  will-change: top, opacity;
+  overflow: hidden;
+}
+
+.modal:focus {
+  outline: none;
+}
+
+@media only screen and (max-width: 992px) {
+  .modal {
+    width: 80% !important;
+  }
+}
+
+.modal h1, .modal h2, .modal h3, .modal h4 {
+  margin-top: 0;
+}
+
+.modal .modal-content {
+  padding: 24px;
+}
+
+.modal .modal-close {
+  cursor: pointer;
+}
+
+.modal .modal-footer {
+  border-radius: 0 0 2px 2px;
+  /* background-color: #fafafa; */
+  /* background: url(/static/media/background.dc0fba31.png) no-repeat center/cover; */
+  padding: 4px 6px;
+  height: 56px;
+  width: 100%;
+  text-align: right;
+}
+
+.modal .modal-footer .btn, .modal .modal-footer .btn-large, .modal .modal-footer .btn-small, .modal .modal-footer .btn-flat {
+  margin: 6px 0;
+}
+
+.modal-overlay {
+  position: fixed;
+  z-index: 999;
+  top: -25%;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  height: 125%;
+  width: 100%;
+  background: #000;
+  display: none;
+  will-change: opacity;
+}
+
+.modal.modal-fixed-footer {
+  padding: 0;
+  height: 70%;
+}
+
+.modal.modal-fixed-footer .modal-content {
+  position: absolute;
+  height: calc(100% - 56px);
+  max-height: 100%;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.modal.modal-fixed-footer .modal-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  position: absolute;
+  bottom: 0;
+}
+
+.modal.bottom-sheet {
+  top: auto;
+  bottom: -100%;
+  margin: 0;
+  width: 100%;
+  max-height: 45%;
+  border-radius: 0;
+  will-change: bottom, opacity;
+}
+
+/* @media only screen and (max-width: 992px) {
+    .modal {
+        top: 5% !important;
+        width: 99% !important;
+        max-height: 90% !important;
+    }
+} */
+
+.red-btn {
+    background-color: red;
+}
+
+input.sms_code {
+    margin: 10px;
+    padding: 10px;
+    /* background: none;
+    border-bottom: 1px solid gray; */
+}
+
+.btn {
+    padding: 10px;
+}
+
+tr.log-line td {
+    padding-top: 15px;
+}
+
+tr.log-line td:first-child {
+    margin-top: 15px;
+    /* width: 100%; */
+    width: 100px;
+    color: #8F90A3;
 }

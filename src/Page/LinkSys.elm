@@ -1,12 +1,12 @@
 module Page.LinkSys exposing (..)
 
+import API
 import Components.UI as UI exposing (..)
 import Html exposing (Html, div, text)
-import Html.Attributes as HA exposing (class, placeholder, value, pattern)
-import Html.Events exposing (onInput, onClick)
-import API
-import String
+import Html.Attributes as HA exposing (class, pattern, placeholder, value)
+import Html.Events exposing (onClick, onInput)
 import Regex
+import String
 
 
 type alias Model =
@@ -50,7 +50,8 @@ splitEvery pos str =
             ( head, tail ) =
                 splitAtCouple pos str
         in
-            head :: splitEvery pos tail
+        head :: splitEvery pos tail
+
     else
         [ str ]
 
@@ -73,7 +74,7 @@ update msg model =
                             (Maybe.withDefault Regex.never (Regex.fromString "[\\W\\s\\._\\-]+"))
                             (\i -> "")
             in
-                ( { model | code = putDashEvery 2 cd }, Cmd.none )
+            ( { model | code = putDashEvery 2 cd }, Cmd.none )
 
         StartLink ->
             ( model
@@ -122,22 +123,27 @@ view model =
                 _ ->
                     [ page_5 model ]
     in
-        div [ class "container" ] <|
+    -- TODO: Remove one level. Transfer to List?
+    div []
+        [ UI.appHeader ""
+        , div [ class "content-wr list-wr" ] <|
             [ UI.title_item "Мастер добавления Феникса"
             ]
                 ++ [ UI.master masterPage ]
-                ++ [ UI.row_item [ UI.linkIconTextButton "clone" "Вернуться к списку Фениксов" "/" ] ]
-                ++ (ledHelpDialogView model.showLedHelpDialog)
+                -- ++ [ UI.row_item [ UI.linkIconTextButton "clone" "Вернуться к списку Фениксов" "/" ] ]
+                ++ [ UI.grayLinkButton "Отменить добавление" "/" ]
+                ++ ledHelpDialogView model.showLedHelpDialog
+        ]
 
 
 page_1 : Model -> UI.MasterItem Msg
 page_1 model =
     UI.MasterItem "Подготовка SIM-карты"
-        [ MasterElementText "1. Установите SIM-карту в мобильный телефон."
-        , MasterElementText "2. Активируйте SIM-карту в соответствии с инструкциями GSM-оператора."
-        , MasterElementText "3. Убедитесь в том, что PIN-код при включении телефона выключен."
-        , MasterElementText "4. В случае необходимости зарегистрируйте SIM-карту на сайте GSM-оператора."
-        , MasterElementText "5. Выключите мобильный телефон и извлеките из него подготовленную SIM-карту."
+        [ MasterElementText "Установите SIM-карту в мобильный телефон."
+        , MasterElementText "Активируйте SIM-карту в соответствии с инструкциями GSM-оператора."
+        , MasterElementText "Убедитесь в том, что PIN-код при включении телефона выключен."
+        , MasterElementText "В случае необходимости зарегистрируйте SIM-карту на сайте GSM-оператора."
+        , MasterElementText "Выключите мобильный телефон и извлеките из него подготовленную SIM-карту."
         , MasterElementCmdButton "LED" OnLedHelp
         , MasterElementNext OnNext
         ]
@@ -146,14 +152,14 @@ page_1 model =
 page_2 : Model -> UI.MasterItem Msg
 page_2 model =
     UI.MasterItem "Установка подготовленной SIM-карты в Феникс"
-        [ MasterElementText "1. Выкрутите 4 винта и снимите крышку корпуса."
-        , MasterElementText "2. Убедитесь в том, что Феникс выключен – светодиодный индикатор не горит и не мигает."
-        , MasterElementText "3. Установите подготовленную SIM-карту в Феникс."
-        , MasterElementText "4. В случае необходимости произведите привязку экзекуторов."
+        [ MasterElementText "Выкрутите 4 винта и снимите крышку корпуса."
+        , MasterElementText "Убедитесь в том, что Феникс выключен – светодиодный индикатор не горит и не мигает."
+        , MasterElementText "Установите подготовленную SIM-карту в Феникс."
+        , MasterElementText "В случае необходимости произведите привязку экзекуторов."
         , MasterElementPrev OnPrev
         , MasterElementCmdButton "LED" OnLedHelp
         , MasterElementCmdButton "Привязать экзекуторы" (OnPage 3)
-        , MasterElementCmdButton "Далее" (OnPage 4)
+        , MasterElementNext (OnPage 4)
 
         -- , MasterElementCmdButton "" (OnPage 3)
         -- , MasterElementNext OnNext
@@ -163,23 +169,23 @@ page_2 model =
 page_3 : Model -> UI.MasterItem Msg
 page_3 model =
     UI.MasterItem "Привязка экзекуторов и активация Феникса"
-        [ MasterElementText "1. Исходное состояние: Феникс – выключен."
-        , MasterElementText "2. Обесточьте все привязываемые экзекуторы и подготовьте их к подаче питания."
-        , MasterElementText "3. Нажмите и удерживайте 3 секунды кнопку ON-OFF Фениска – загорится светодиод."
-        , MasterElementText "4. Как только светодиод загорится – подайте питание на все привязываемые экзекуторы – светодиод отработает серию частых вспышек и начнёт отрабатывать редкие одиночные вспышки."
-        , MasterElementText "5. Закройте крышку корпуса Фениска и закрутите 4 винта."
+        [ MasterElementText "Исходное состояние: Феникс – выключен."
+        , MasterElementText "Обесточьте все привязываемые экзекуторы и подготовьте их к подаче питания."
+        , MasterElementText "Нажмите и удерживайте 3 секунды кнопку ON-OFF Фениска – загорится светодиод."
+        , MasterElementText "Как только светодиод загорится – подайте питание на все привязываемые экзекуторы – светодиод отработает серию частых вспышек и начнёт отрабатывать редкие одиночные вспышки."
+        , MasterElementText "Закройте крышку корпуса Фениска и закрутите 4 винта."
         , MasterElementPrev OnPrev
         , MasterElementCmdButton "LED" OnLedHelp
-        , MasterElementCmdButton "Далее" (OnPage 5)
+        , MasterElementNext (OnPage 5)
         ]
 
 
 page_4 : Model -> UI.MasterItem Msg
 page_4 model =
     UI.MasterItem "Активация Феникса"
-        [ MasterElementText "1. Нажмите кнопку ON-OFF Феникса – светодиодный индикатор подтвердит включение."
-        , MasterElementText "2. Закройте крышку корпуса Феникса и закрутите 4 винта."
-        , MasterElementCmdButton "Назад" (OnPage 2)
+        [ MasterElementText "Нажмите кнопку ON-OFF Феникса – светодиодный индикатор подтвердит включение."
+        , MasterElementText "Закройте крышку корпуса Феникса и закрутите 4 винта."
+        , MasterElementPrev (OnPage 2)
         , MasterElementCmdButton "LED" OnLedHelp
         , MasterElementNext OnNext
         ]
@@ -218,9 +224,10 @@ ledHelpDialogView s =
             , UI.ModalIconText "images/gifs/led_long_flash.gif" "Серия нечастых вспышек – выключение Феникса"
             , UI.ModalIconText "images/gifs/led_5sec_flash.gif" "Загорается на 5 секунд – привязка экзекуторов"
             ]
-            [ UI.cmdButton "Закрыть" (OnLedHelpCancel)
+            [ UI.cmdButton "Закрыть" OnLedHelpCancel
             ]
         , UI.modal_overlay OnLedHelpCancel
         ]
+
     else
         []

@@ -1,25 +1,23 @@
 module Page.System.Info exposing (init, update, view)
 
-import Page
-import Html exposing (Html, div, a)
-import Html.Attributes as HA exposing (class, href)
-import Html.Events as HE
-import Components.UI as UI exposing (..)
-import Components.Dates as Dates
-import API
-import API.System as System exposing (SystemDocumentInfo, State, State(..))
-import AppState
-import Components.DateTime exposing (dateTimeFormat)
-import Types.Dt as DT
-import Page.System.Info.Types exposing (..)
-import Page.System.Info.Dialogs exposing (..)
-import Page.System.Info.Battery exposing (chartView)
-import Page.System.Info.CmdPanel exposing (..)
-
-
 -- import Page.System.Info.СmdPanel1 exposing (cmdPanel)
 
+import API
+import API.System as System exposing (State(..), SystemDocumentInfo)
+import AppState
+import Components.DateTime exposing (dateTimeFormat)
+import Components.Dates as Dates
+import Components.UI as UI exposing (..)
+import Html exposing (Html, a, div)
+import Html.Attributes as HA exposing (class, href)
+import Html.Events as HE
 import Msg as GMsg
+import Page
+import Page.System.Info.Battery exposing (chartView)
+import Page.System.Info.CmdPanel exposing (..)
+import Page.System.Info.Dialogs exposing (..)
+import Page.System.Info.Types exposing (..)
+import Types.Dt as DT
 
 
 init : ( Model, Cmd Msg )
@@ -110,7 +108,7 @@ update msg model =
                         BC_Capacity _ ->
                             Cmd.batch [ API.websocketOut <| System.setBatteryCapacity sysId capacity ]
             in
-                ( { model | newBatteryCapacity = BC_None, batteryExtendView = BVP1 }, cmd, Nothing )
+            ( { model | newBatteryCapacity = BC_None, batteryExtendView = BVP1 }, cmd, Nothing )
 
         OnBatteryCapacityCancel ->
             ( { model | newBatteryCapacity = BC_None }, Cmd.none, Nothing )
@@ -128,19 +126,19 @@ viewWidget child =
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 view appState model system =
-    UI.container <|
+    UI.div_ <|
         [ header_expander
         , viewWidget <|
-            (viewHeader appState model system)
-                ++ (viewInfo appState model system)
+            viewHeader appState model system
+                ++ viewInfo appState model system
                 ++ [ chartView appState model system ]
-                ++ (viewInfoEntended appState model system)
+                ++ viewInfoEntended appState model system
                 ++ [ UI.row [ UI.linkIconTextButton "clone" "Выбрать другой объект" "/" ] ]
-                ++ (prolongSleepDialogView model system.id)
+                ++ prolongSleepDialogView model system.id
         ]
-            ++ (cmdPanel appState system.id system.dynamic)
-            ++ (viewModalDialogs model)
-            ++ (confirmDialog model system.id)
+            ++ cmdPanel appState system.id system.dynamic
+            ++ viewModalDialogs model
+            ++ confirmDialog model system.id
 
 
 
@@ -180,9 +178,9 @@ viewHeader appState model system =
 
 viewInfo : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
 viewInfo appState model system =
-    (sysState_of appState system.dynamic)
-        ++ (Dates.nextSession appState system.dynamic)
-        ++ (Dates.sysPosition appState system.id system.dynamic)
+    sysState_of appState system.dynamic
+        ++ Dates.nextSession appState system.dynamic
+        ++ Dates.sysPosition appState system.id system.dynamic
         ++ [ UI.row [ UI.linkIconTextButton "eye" "Cобытия" ("/system/" ++ system.id ++ "/logs") ] ]
 
 
@@ -250,13 +248,13 @@ sysState_of appState maybe_dynamic =
                                 _ ->
                                     []
                     in
-                        [ curState "Текущий режим: Поиск" ]
-                            ++ (Dates.expectSleepIn appState dynamic prolongCmd)
+                    [ curState "Текущий режим: Поиск" ]
+                        ++ Dates.expectSleepIn appState dynamic prolongCmd
 
                 -- ++ prolongCmd
                 Just state ->
                     -- [ UI.row_item [ text <| "Текущий режим: " ++ (System.stateAsString state) ] ]
-                    [ curState <| "Текущий режим: " ++ (System.stateAsString state) ]
+                    [ curState <| "Текущий режим: " ++ System.stateAsString state ]
 
 
 curState : String -> Html Msg
@@ -291,7 +289,7 @@ maybeRow label field foo =
             []
 
         Just v ->
-            [ UI.row_item [ text <| label ++ ": " ++ (foo v) ] ]
+            [ UI.row_item [ text <| label ++ ": " ++ foo v ] ]
 
 
 viewInfoEntended : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
@@ -312,13 +310,14 @@ viewInfoEntended appState ({ extendInfo } as model) system =
                     Just any_ ->
                         any_
         in
-            []
-                ++ (maybeRow "Модель" system.hwid identity)
-                ++ (maybeRow "Версия ПО" system.swid identity)
-                ++ (maybeRow "IMEI" system.imei identity)
-                ++ (maybeRow "SIM-карта" system.phone identity)
-                ++ (maybeRow "Баланс" system.balance (\{ dt, value } -> String.fromFloat value))
-                ++ [ UI.row [ UI.cmdTextIconButton "arrow-up" "Меньше информации" OnExtendInfo ]
-                   ]
+        []
+            ++ maybeRow "Модель" system.hwid identity
+            ++ maybeRow "Версия ПО" system.swid identity
+            ++ maybeRow "IMEI" system.imei identity
+            ++ maybeRow "SIM-карта" system.phone identity
+            ++ maybeRow "Баланс" system.balance (\{ dt, value } -> String.fromFloat value)
+            ++ [ UI.row [ UI.cmdTextIconButton "arrow-up" "Меньше информации" OnExtendInfo ]
+               ]
+
     else
         [ UI.row [ UI.cmdTextIconButton "arrow-down" "Больше информации…" OnExtendInfo ] ]

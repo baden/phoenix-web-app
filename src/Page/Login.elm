@@ -97,8 +97,10 @@ authView model =
             [ UI.formInput "Введите Ваш логин" model.username (\new -> Update { model | username = new })
             , UI.formPassword "Введите Ваш пароль" model.password (\new -> Update { model | password = new })
             , UI.formPassword "Повторите Ваш пароль" model.passwordConfirm (\new -> Update { model | passwordConfirm = new })
+            , UI.eula
             , UI.formButton ("Зарегистрировать пользователя " ++ model.username) (checker model) (Just Register)
-            , UI.button "/login" "Я уже зарегестрирован"
+            , UI.loginSecondary "Уже есть аккаунт?"
+            , UI.greenLink "/login" "Войти в систему"
             ]
         ]
 

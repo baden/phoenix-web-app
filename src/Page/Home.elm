@@ -89,19 +89,23 @@ auth_info macc systems timeZone =
                 [ UI.formHeader "Добро пожаловать"
                 , UI.formSubtitle "Чтобы пользоваться сервисом, вы должны "
                 , UI.greenLink "/login" "авторизоваться"
-                , text " "
-                , UI.greenLink "/auth" "или зарегистрироваться"
-
-                -- , UI.linkButton "авторизоваться" "/login"
-                , UI.formSubtitle " в системе."
+                , text " или "
+                , UI.greenLink "/auth" "зарегистрироваться"
+                , text " в системе."
                 ]
 
             --]
             Just acc ->
                 if List.length acc.systems == 0 then
-                    [ UI.row_item [ text <| "Добро пожаловать!" ]
-                    , UI.row_item [ text <| "Добавьте объект в список наблюдения" ]
-                    , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
+                    -- [ UI.row_item [ text <| "Добро пожаловать!" ]
+                    -- , UI.row_item [ text <| "Добавьте объект в список наблюдения" ]
+                    -- , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
+                    -- ]
+                    [ UI.wellcomeContent
+                        [ UI.wellcomeTitle "Добро пожаловать!"
+                        , UI.formSubtitle "Добавьте Феникс в список наблюдения"
+                        , UI.wellcomeButton "Добавить"
+                        ]
                     ]
 
                 else

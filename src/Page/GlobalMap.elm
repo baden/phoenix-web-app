@@ -1,18 +1,18 @@
-module Page.GlobalMap exposing (Model, Msg(..), init, update, view, viewSystem, setCenter)
+module Page.GlobalMap exposing (Model, Msg(..), init, setCenter, update, view, viewSystem)
 
-import Html exposing (Html, div, img, a, h1)
-import Html.Lazy exposing (lazy, lazy2)
-import Html.Attributes exposing (class, src, href)
-import Html.Events exposing (onClick)
-import Json.Encode as Encode
-import API.System as System exposing (SystemDocumentInfo, State, State(..))
-import AppState
-import Components.UI as UI
-import Components.DateTime exposing (dateTimeFormat)
-import Types.Dt as DT
-import Msg as GMsg
 import API.Geo as Geo exposing (Address)
+import API.System as System exposing (State(..), SystemDocumentInfo)
+import AppState
+import Components.DateTime exposing (dateTimeFormat)
+import Components.UI as UI
+import Html exposing (Html, a, div, h1, img)
+import Html.Attributes exposing (class, href, src)
+import Html.Events exposing (onClick)
+import Html.Lazy exposing (lazy, lazy2)
 import Http
+import Json.Encode as Encode
+import Msg as GMsg
+import Types.Dt as DT
 
 
 type alias Model =
@@ -69,7 +69,7 @@ view =
 
 latLng2String : ( Float, Float ) -> String
 latLng2String ( lat, lng ) =
-    (String.fromFloat lat) ++ "," ++ (String.fromFloat lng)
+    String.fromFloat lat ++ "," ++ String.fromFloat lng
 
 
 
@@ -99,23 +99,23 @@ viewSystem appState model system =
                         _ ->
                             model.center
     in
-        div []
-            [ --div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []
-              lazy2 mapAt lat lon
-            , div [ class "control" ]
-                [ -- , div [] [ Html.text <| "Центр: " ++ (String.fromFloat lat) ++ ", " ++ (String.fromFloat lon) ]
-                  -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.4226036 35.0252341) ]
-                  --     [ Html.text "На высоковольтную" ]
-                  -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.5013798 34.6234255) ]
-                  --     [ Html.text "Домой" ]
-                  div []
-                    [ Html.text system.title
-                    , div [] (sysPosition appState system.id system.dynamic model.address)
-                    ]
-                , UI.linkIconTextButton "gamepad" "Управление" ("/system/" ++ system.id)
-                , UI.linkIconTextButton "clone" "Выбрать объект" "/"
+    div []
+        [ --div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []
+          lazy2 mapAt lat lon
+        , div [ class "control" ]
+            [ -- , div [] [ Html.text <| "Центр: " ++ (String.fromFloat lat) ++ ", " ++ (String.fromFloat lon) ]
+              -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.4226036 35.0252341) ]
+              --     [ Html.text "На высоковольтную" ]
+              -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.5013798 34.6234255) ]
+              --     [ Html.text "Домой" ]
+              div []
+                [ Html.text system.title
+                , div [] (sysPosition appState system.id system.dynamic model.address)
                 ]
+            , UI.linkIconTextButton "gamepad" "Управление" ("/system/" ++ system.id)
+            , UI.linkIconTextButton "clone" "Выбрать объект" "/"
             ]
+        ]
 
 
 sysPosition : AppState.AppState -> String -> Maybe System.Dynamic -> Maybe String -> List (Html Msg)
@@ -131,7 +131,7 @@ sysPosition appState sid maybe_dynamic maddress =
                         [ Html.text <| "Последнее положение определено " ++ (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ++ " "
 
                         -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter latitude longitude) ] [ Html.text "Центровать" ]
-                        , Html.button [ class "waves-effect waves-light btn", onClick (GetAddress latitude longitude) ] [ Html.text "?" ]
+                        , Html.button [ class "btn blue-btn", onClick (GetAddress latitude longitude) ] [ Html.text "?" ]
                         ]
                     , case maddress of
                         Nothing ->

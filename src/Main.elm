@@ -616,7 +616,7 @@ viewHeader model =
     case model.page of
         Route.Home ->
             -- UI.header model.showQrCode ShowQrCode HideQrCode
-            [ UI.appHeader ]
+            [ UI.appHeader " header-log" ]
 
         _ ->
             []

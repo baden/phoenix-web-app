@@ -59,43 +59,43 @@ type alias UI msg =
 
 cmdButton : String -> m -> Html m
 cmdButton label cmd =
-    Html.button [ class "waves-effect waves-light btn", onClick cmd ]
+    Html.button [ class "btn btn-sm blue-btn", onClick cmd ]
         [ text label ]
 
 
 cmdIconButton : String -> m -> Html m
 cmdIconButton label cmd =
-    Html.button [ class "waves-effect waves-light btn", onClick cmd ]
+    Html.button [ class "btn btn-sm blue-btn", onClick cmd ]
         [ Html.i [ HA.class ("fas fa-" ++ label) ] [] ]
 
 
 cmdIconButtonR : String -> m -> Html m
 cmdIconButtonR label cmd =
-    Html.button [ class "waves-effect waves-light btn red", onClick cmd ]
+    Html.button [ class "btn btn-sm red-btn red", onClick cmd ]
         [ Html.i [ HA.class ("fas fa-" ++ label) ] [] ]
 
 
 cmdTextIconButton : String -> String -> m -> Html m
 cmdTextIconButton icon label cmd =
-    Html.button [ class "waves-effect waves-light btn", onClick cmd ]
+    Html.button [ class "btn btn-sm blue-btn", onClick cmd ]
         [ Html.i [ HA.class ("left fas fa-" ++ icon) ] [], Html.text label ]
 
 
 cmdTextIconButtonR : String -> String -> m -> Html m
 cmdTextIconButtonR icon label cmd =
-    Html.button [ class "waves-effect waves-light btn red", onClick cmd ]
+    Html.button [ class "btn btn-sm red-btn red", onClick cmd ]
         [ Html.i [ HA.class ("left fas fa-" ++ icon) ] [], Html.text label ]
 
 
 button : String -> String -> Html a
 button url label =
-    a [ class "waves-effect waves-light btn", href url ]
+    a [ class "btn btn-sm blue-btn", href url ]
         [ text label ]
 
 
 iconButton : String -> String -> Html a
 iconButton label url =
-    a [ class "waves-effect waves-light btn", href url ]
+    a [ class "btn btn-sm blue-btn", href url ]
         [ Html.i [ HA.class ("fas fa-" ++ label) ] [] ]
 
 
@@ -176,7 +176,7 @@ formButton text_title enabled update =
                 [ text text_title ]
 
         Just text_ ->
-            text text_
+            Html.span [ class "error" ] [ text text_ ]
 
 
 loginSecondary : String -> Html a
@@ -189,6 +189,20 @@ greenLink url_ txt_ =
     a [ href url_, class "accaunt-link-green accaunt-link" ] [ text txt_ ]
 
 
+eula : Html a
+eula =
+    span [ class "checkmark-wrap" ]
+        [ Html.label [ class "checkboxContainer" ]
+            [ input [ type_ "checkbox", value "", HA.name "" ] []
+            , span [ class "checkmark" ] []
+            ]
+        , span [ class "checkmark-text" ]
+            [ text "Я прочитал и принимаю условия "
+            , a [ href "#" ] [ text "пользовательского соглашения" ]
+            ]
+        ]
+
+
 greenLink2 : String -> String -> Html a
 greenLink2 url_ txt_ =
     a [ href url_, class "accaunt-link-green accaunt-link mt-20" ] [ text txt_ ]
@@ -199,9 +213,9 @@ column12 childrens =
     div [ class "col s12" ] childrens
 
 
-appHeader : Html a
-appHeader =
-    div [ class "header" ]
+appHeader : String -> Html a
+appHeader extra =
+    div [ class <| "header" ++ extra ]
         [ div [ class "language" ]
             [ span [ class "language-menu" ]
                 [ img [ src "static/images/ellipsis.svg", alt "Logo" ] []
@@ -216,9 +230,24 @@ appHeader =
 smallForm : List (Html a) -> Html a
 smallForm childrens =
     div [ class "container container-logo" ]
-        [ appHeader
+        [ appHeader ""
         , div [ class "login-content" ] childrens
         ]
+
+
+wellcomeContent : List (Html a) -> Html a
+wellcomeContent =
+    div [ class "login-content welcome-content" ]
+
+
+wellcomeTitle : String -> Html a
+wellcomeTitle title_ =
+    div [ class "login-title welcome-title" ] [ text title_ ]
+
+
+wellcomeButton : String -> Html a
+wellcomeButton title_ =
+    Html.a [ href "/linksys", class "btn blue-btn btn-add" ] [ text title_ ]
 
 
 type alias MasterItem m =
@@ -240,11 +269,9 @@ type MasterElement m
 master : List (MasterItem m) -> Html m
 master ch =
     div [ class "row" ]
-        [ div [ class "col s12 m8 offset-m2" ]
-            (ch
-                |> List.foldl (\e acc -> acc ++ [ master_element e ]) []
-            )
-        ]
+        (ch
+            |> List.foldl (\e acc -> acc ++ [ master_element e ]) []
+        )
 
 
 master_element : MasterItem m -> Html m
@@ -255,30 +282,34 @@ master_element { title, content } =
                 MasterElementText val ->
                     -- div [ class "row" ] [ div [ class "col s12" ] [ text val ] ]
                     --
-                    Html.p [] [ text val ]
+                    Html.li [] [ text val ]
 
                 MasterElementSMSLink ->
-                    div [ class "row nodesktop" ]
-                        [ div [ class "col s12 m4 offset-m4 l3 offset-l4" ]
-                            [ smsLink "" "link" ]
-                        ]
+                    smsLink "" "link"
 
                 MasterElementCmdButton mtitle mcmd ->
                     -- Html.div [ HA.class "row" ] [ cmdButton mtitle mcmd ]
-                    cmdButton mtitle mcmd
+                    -- cmdButton mtitle mcmd
+                    Html.button [ class "btn btn-sm blue-btn", onClick mcmd ] [ text mtitle ]
 
                 MasterElementTextField mcode mOnCode mStartLink ->
                     smsCodeInput mcode mOnCode mStartLink
 
                 MasterElementNext mOnNext ->
-                    cmdTextIconButton "arrow-right" "Далее" mOnNext
+                    -- cmdTextIconButton "arrow-right"
+                    --     "Далее"
+                    --     mOnNext
+                    Html.button [ class "btn btn-sm blue-btn btn-next", onClick mOnNext ] [ text "Далее" ]
 
                 MasterElementPrev mOnPrev ->
-                    cmdTextIconButton "arrow-left" "Назад" mOnPrev
+                    -- cmdTextIconButton "arrow-left" "Назад" mOnPrev
+                    Html.button [ class "btn btn-sm dark-btn btn-prev", onClick mOnPrev ] [ text "Назад" ]
     in
     div []
-        [ Html.h5 [] [ text title ]
-        , div [ class "left-align" ]
+        [ Html.div [ class "title-st" ] [ text title ]
+
+        -- <ol class="list-numbered list">
+        , Html.ol [ class "list-numbered list" ]
             (content
                 |> List.map melem
             )
@@ -306,28 +337,28 @@ info_2_10 text_title value =
 linkButton : String -> String -> Html a
 linkButton text_title link_ref =
     Html.a
-        [ class "waves-effect waves-light btn", href link_ref ]
+        [ class "btn blue-btn", href link_ref ]
         [ text text_title ]
 
 
 linkIconButton : String -> String -> Html a
 linkIconButton icon link_ref =
     Html.a
-        [ class "waves-effect waves-light btn", href link_ref ]
+        [ class "btn blue-btn", href link_ref ]
         [ Html.i [ HA.class ("left fas fa-" ++ icon) ] [] ]
 
 
 linkIconTextButton : String -> String -> String -> Html a
 linkIconTextButton icon text_title link_ref =
     Html.a
-        [ class "waves-effect waves-light btn", href link_ref ]
+        [ class "btn blue-btn", href link_ref ]
         [ Html.i [ HA.class ("left fas fa-" ++ icon) ] [], text text_title ]
 
 
 linkIconTextButtonR : String -> String -> String -> Html a
 linkIconTextButtonR icon text_title link_ref =
     Html.a
-        [ class "waves-effect waves-light btn", href link_ref ]
+        [ class "btn red-btn red", href link_ref ]
         [ Html.i [ HA.class ("left far fa-" ++ icon) ] [], text text_title ]
 
 
@@ -519,36 +550,34 @@ modal_overlay cancelcmd =
 
 title_item : String -> Html a
 title_item text_label =
-    Html.h4 [ class "hide-on-small-and-down" ] [ text text_label ]
+    Html.div [ class "title-sm-gr hide-on-small-and-down" ] [ text text_label ]
 
 
 smsLink : String -> String -> Html a
 smsLink phone body =
-    Html.a [ HA.href <| "sms:" ++ phone ++ "?body=" ++ body ] [ text "Отправить SMS" ]
+    Html.a [ class "input-label", HA.href <| "sms:" ++ phone ++ "?body=" ++ body ] [ text "Отправить SMS" ]
 
 
 smsCodeInput : String -> (String -> cmd) -> cmd -> Html cmd
 smsCodeInput code_ cmd_ start_ =
-    Html.div [ class "row" ]
-        [ div [ class "col s8 offset-s2 m6 offset-m3 l4 offset-l4" ]
-            ([ Html.input
-                [ HA.class "sms_code"
-                , HA.placeholder "Введите код из SMS"
-                , HA.value code_
-                , HA.autofocus True
-                , onInput cmd_
-                , HA.pattern "[A-Za-z0-9]{3}"
-                ]
-                []
-             ]
-                ++ (if code_ /= "" then
-                        [ cmdButton "Добавить" start_ ]
+    Html.div [ class "input-st" ]
+        ([ Html.input
+            [ HA.class "sms_code"
+            , HA.placeholder "Введите код из SMS"
+            , HA.value code_
+            , HA.autofocus True
+            , onInput cmd_
+            , HA.pattern "[A-Za-z0-9]{3}"
+            ]
+            []
+         ]
+            ++ (if code_ /= "" then
+                    [ cmdButton "Добавить" start_ ]
 
-                    else
-                        []
-                   )
-            )
-        ]
+                else
+                    []
+               )
+        )
 
 
 connectionWidwet : List (Html a)
@@ -595,3 +624,13 @@ systemList =
 systemListTitle : String -> Html a
 systemListTitle ttl_ =
     div [ class "title-st fs-30" ] [ text ttl_ ]
+
+
+grayLinkButton : String -> String -> Html a
+grayLinkButton label_ url_ =
+    Html.a [ class "btn btn-sm gray-btn", href url_ ] [ text label_ ]
+
+
+div_ : List (Html a) -> Html a
+div_ =
+    Html.div [ class "content-wr" ]
