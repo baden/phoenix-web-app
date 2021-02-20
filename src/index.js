@@ -5,6 +5,11 @@ import Map from './Map/leaflet-port.js';
 import './Page/System/Logs/port.js';
 import registerServiceWorker from './registerServiceWorker';
 
+const LANGUAGE_KEY = 'fenix.language';
+
+// process.env.NODE_ENV == "development" || "production"
+const env = process.env.NODE_ENV || 'development';
+
 // TODO: Remove materialize.css
 // import "../node_modules/materialize-css/dist/css/materialize.css";
 // import fontawesome from '@fortawesome/fontawesome-free';
@@ -22,19 +27,44 @@ const global_api_endpoint = protocol + "//" + hostname + api_path;
 const fx_api_endpoint = protocol + "//fx.navi.cc"  + api_path;
 // const fx_api_endpoint = protocol + "//pil.fx.navi.cc"  + api_path;
 
-
 // const choosed_endpoint = (hostname=="localhost") ? local_api_endpoint : global_api_endpoint;
 // const choosed_endpoint = global_api_endpoint;
 const choosed_endpoint = fx_api_endpoint;
 
 console.log("API endpoint: ", choosed_endpoint);
 
+function devLog (name, arg) {
+  if (env === 'development') {
+    console.log('[dev]', name, arg)
+  }
+}
+
+
+function getUserLanguage () {
+  const urlParams = new URLSearchParams(window.location.search)
+
+  return (
+    urlParams.get('lang') ||
+    window.localStorage.getItem(LANGUAGE_KEY) ||
+    navigator.language ||
+    navigator.userLanguage ||
+    'en-US'
+  )
+}
+
+// Translations. Just for simple start. Maybe need refactoring later.
+
+// const translations = await fetch('translations/en-US.json');
+// console.log("translations", translations);
+// console.log("languages", languages);
+
 var app = Elm.Main.init({
   // node: document.getElementById('root'),
   //
   flags: {
       token: localStorage.getItem(tokenKey),
-      api_url: choosed_endpoint
+      api_url: choosed_endpoint,
+      language: getUserLanguage()
   }
 });
 

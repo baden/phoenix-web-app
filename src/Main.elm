@@ -77,7 +77,7 @@ init flags url key =
             , logs = Dict.empty
             , params = Dict.empty
             , errorMessage = Nothing
-            , appState = AppState.initModel
+            , appState = AppState.initModel flags.language
             , connectionState = NotConnected
             , showQrCode = False
             }

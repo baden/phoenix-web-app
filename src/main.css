@@ -279,7 +279,7 @@ span.params_waited {
 }
 
 .params_footer {
-    position: absolute;
+    /* position: absolute; */
     bottom: 0;
     left: 0;
     width: 100%;
@@ -636,6 +636,10 @@ a.input-label {
   will-change: bottom, opacity;
 }
 
+.modal-footer {
+    display: flex;
+}
+
 /* @media only screen and (max-width: 992px) {
     .modal {
         top: 5% !important;
@@ -656,7 +660,7 @@ input.sms_code {
 }
 
 .btn {
-    padding: 10px;
+    padding: 5px 10px 5px 10px;
 }
 
 tr.log-line td {

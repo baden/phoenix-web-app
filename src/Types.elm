@@ -1,26 +1,24 @@
 module Types exposing (..)
 
-import Browser
-import Browser.Navigation as Nav
-import Url
-import Page.Route as Route
-import Page.Home as Home
-import Page.Login as Login
-import Page.LinkSys as LinkSys
+-- import Msg as MsgT exposing (..)
+
 import API.Account exposing (AccountDocumentInfo, fixSysListRequest)
 import API.System exposing (SystemDocumentInfo, SystemDocumentLog, SystemDocumentParams)
 import AppState
-import Page.GlobalMap as GlobalMap
-import Page.System.Info.Types as SystemInfoTypes
+import Browser
+import Browser.Navigation as Nav
 import Dict exposing (Dict)
-import Page.System.Config.Types as SystemConfigTypes
-import Page.System.Logs as SystemLogs
-
-
--- import Msg as MsgT exposing (..)
-
 import Html exposing (Html)
+import Page.GlobalMap as GlobalMap
+import Page.Home as Home
+import Page.LinkSys as LinkSys
+import Page.Login as Login
+import Page.Route as Route
+import Page.System.Config.Types as SystemConfigTypes
+import Page.System.Info.Types as SystemInfoTypes
+import Page.System.Logs as SystemLogs
 import Time
+import Url
 
 
 type ConnectionState
@@ -84,4 +82,5 @@ type PageMsg
 type alias Flags =
     { token : Maybe String
     , api_url : String
+    , language : String
     }

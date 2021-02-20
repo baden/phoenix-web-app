@@ -2,8 +2,10 @@ module AppState exposing (..)
 
 -- import Date exposing (Date)
 
-import Time exposing (Month(..))
+import I18N
+import I18Next exposing (Delims(..), Replacements, Translations, initialTranslations, t, tr)
 import Task
+import Time exposing (Month(..))
 
 
 type alias AppState =
@@ -11,15 +13,23 @@ type alias AppState =
 
     -- , date : Date -- current DateTime
     , now : Time.Posix -- current Date + Time
+
+    -- , translations : Translations
+    , t : String -> String
+    , tr : String -> Replacements -> String
     }
 
 
-initModel : AppState
-initModel =
+initModel : String -> AppState
+initModel lang =
     { timeZone = Time.utc
 
     -- , date = Date.fromCalendarDate 2019 Jan 1
     , now = Time.millisToPosix 0
+
+    -- , translations = initialTranslations
+    , t = t (I18N.translations lang)
+    , tr = tr (I18N.translations lang) Curly
     }
 
 

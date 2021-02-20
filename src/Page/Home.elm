@@ -53,7 +53,7 @@ view appState model acc systems =
     -- UI.column12 <|
     -- TODO: Remove one level - transfer function to List (Html Msg)
     Html.div [ HA.class "content-wr" ] <|
-        [ auth_info acc systems appState.timeZone
+        [ auth_info appState acc systems appState.timeZone
 
         -- , UI.button "/login" "Авторизация"
         -- , UI.button "/map" "Карта"
@@ -79,8 +79,8 @@ viewRemoveWidget model =
         []
 
 
-auth_info : Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Time.Zone -> Html Msg
-auth_info macc systems timeZone =
+auth_info : AppState.AppState -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Time.Zone -> Html Msg
+auth_info { t } macc systems timeZone =
     UI.row <|
         -- UI.card_panel <|
         case macc of
@@ -111,7 +111,7 @@ auth_info macc systems timeZone =
                 else
                     [ -- UI.row_item [ text <| "Вы авторизованы как " ++ acc.realname ]
                       -- UI.row_item [ text <| "В списке наблюдения систем: " ++ (String.fromInt <| List.length acc.systems) ]
-                      UI.systemListTitle "Список фениксов"
+                      UI.systemListTitle (t "Список фениксов")
                     , systemList acc.systems systems timeZone
                     , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
                     ]
