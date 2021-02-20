@@ -14,6 +14,7 @@ import Html exposing (Html)
 import Html.Attributes as HA
 import Json.Encode as Encode
 import List.Extra as ListExtra
+import Menu
 import Msg as MsgT exposing (..)
 import Page
 import Page.GlobalMap as GlobalMap
@@ -495,7 +496,7 @@ view model =
     { title = "Fenix App"
     , body =
         [ UI.container <|
-            viewHeader model
+            viewMenu model
                 ++ [ viewPage model ]
                 ++ modal
                 ++ connection
@@ -609,14 +610,16 @@ view4SystemParams sysId model pageView =
 
 --(model.params |> Dict.get sysId)
 -- SystemInfo.view model.appState model.info system |> Html.map SystemInfoMsg
+-- TODO: To menu?
 
 
-viewHeader : Model -> List (Html Msg)
-viewHeader model =
+viewMenu : Model -> List (Html Msg)
+viewMenu model =
     case model.page of
         Route.Home ->
             -- UI.header model.showQrCode ShowQrCode HideQrCode
-            [ UI.appHeader " header-log" ]
+            [ Menu.view
+            ]
 
         _ ->
             []

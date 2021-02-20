@@ -52,12 +52,8 @@ view : AppState.AppState -> Model -> Maybe AccountDocumentInfo -> Dict String Sy
 view appState model acc systems =
     -- UI.column12 <|
     -- TODO: Remove one level - transfer function to List (Html Msg)
-    Html.div [ HA.class "content-wr" ] <|
-        [ auth_info appState acc systems appState.timeZone
-
-        -- , UI.button "/login" "Авторизация"
-        -- , UI.button "/map" "Карта"
-        ]
+    Html.div [ HA.class "container" ] <|
+        auth_info appState acc systems appState.timeZone
             ++ viewRemoveWidget model
 
 
@@ -79,42 +75,41 @@ viewRemoveWidget model =
         []
 
 
-auth_info : AppState.AppState -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Time.Zone -> Html Msg
+auth_info : AppState.AppState -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Time.Zone -> List (Html Msg)
 auth_info { t } macc systems timeZone =
-    UI.row <|
-        -- UI.card_panel <|
-        case macc of
-            Nothing ->
-                --[ UI.smallForm
-                [ UI.formHeader "Добро пожаловать"
-                , UI.formSubtitle "Чтобы пользоваться сервисом, вы должны "
-                , UI.greenLink "/login" "авторизоваться"
-                , text " или "
-                , UI.greenLink "/auth" "зарегистрироваться"
-                , text " в системе."
+    -- UI.card_panel <|
+    case macc of
+        Nothing ->
+            --[ UI.smallForm
+            [ UI.formHeader "Добро пожаловать"
+            , UI.formSubtitle "Чтобы пользоваться сервисом, вы должны "
+            , UI.greenLink "/login" "авторизоваться"
+            , text " или "
+            , UI.greenLink "/auth" "зарегистрироваться"
+            , text " в системе."
+            ]
+
+        --]
+        Just acc ->
+            if List.length acc.systems == 0 then
+                -- [ UI.row_item [ text <| "Добро пожаловать!" ]
+                -- , UI.row_item [ text <| "Добавьте объект в список наблюдения" ]
+                -- , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
+                -- ]
+                [ UI.wellcomeContent
+                    [ UI.wellcomeTitle "Добро пожаловать!"
+                    , UI.formSubtitle "Добавьте Феникс в список наблюдения"
+                    , UI.wellcomeButton "Добавить"
+                    ]
                 ]
 
-            --]
-            Just acc ->
-                if List.length acc.systems == 0 then
-                    -- [ UI.row_item [ text <| "Добро пожаловать!" ]
-                    -- , UI.row_item [ text <| "Добавьте объект в список наблюдения" ]
-                    -- , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
-                    -- ]
-                    [ UI.wellcomeContent
-                        [ UI.wellcomeTitle "Добро пожаловать!"
-                        , UI.formSubtitle "Добавьте Феникс в список наблюдения"
-                        , UI.wellcomeButton "Добавить"
-                        ]
-                    ]
-
-                else
-                    [ -- UI.row_item [ text <| "Вы авторизованы как " ++ acc.realname ]
-                      -- UI.row_item [ text <| "В списке наблюдения систем: " ++ (String.fromInt <| List.length acc.systems) ]
-                      UI.systemListTitle (t "Список фениксов")
-                    , systemList acc.systems systems timeZone
-                    , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
-                    ]
+            else
+                [ -- UI.row_item [ text <| "Вы авторизованы как " ++ acc.realname ]
+                  -- UI.row_item [ text <| "В списке наблюдения систем: " ++ (String.fromInt <| List.length acc.systems) ]
+                  UI.systemListTitle (t "Список фениксов")
+                , systemList acc.systems systems timeZone
+                , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
+                ]
 
 
 systemList : List String -> Dict String SystemDocumentInfo -> Time.Zone -> Html Msg

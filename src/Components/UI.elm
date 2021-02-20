@@ -57,6 +57,24 @@ type alias UI msg =
     Html msg
 
 
+
+-- TODO: Cleanup
+
+
+container : List (Html a) -> Html a
+container =
+    div [ class "layout" ]
+
+
+systemListTitle : String -> Html a
+systemListTitle ttl_ =
+    div [ class "title-st" ] [ text ttl_ ]
+
+
+
+-- TODO: Deprecated?
+
+
 cmdButton : String -> m -> Html m
 cmdButton label cmd =
     Html.button [ class "btn btn-sm blue-btn", onClick cmd ]
@@ -595,11 +613,6 @@ connectionWidwet =
     ]
 
 
-container : List (Html a) -> Html a
-container =
-    div [ class "container container-logo" ]
-
-
 widget : List (Html a) -> Html a
 widget child =
     div [ class "row" ]
@@ -619,11 +632,6 @@ header_expander =
 systemList : List (Html a) -> Html a
 systemList =
     div [ class "fenix-list" ]
-
-
-systemListTitle : String -> Html a
-systemListTitle ttl_ =
-    div [ class "title-st fs-30" ] [ text ttl_ ]
 
 
 grayLinkButton : String -> String -> Html a
