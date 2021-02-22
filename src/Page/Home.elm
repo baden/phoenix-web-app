@@ -106,7 +106,7 @@ auth_info { t } macc systems timeZone =
             else
                 [ -- UI.row_item [ text <| "Вы авторизованы как " ++ acc.realname ]
                   -- UI.row_item [ text <| "В списке наблюдения систем: " ++ (String.fromInt <| List.length acc.systems) ]
-                  UI.systemListTitle (t "Список фениксов")
+                  UI.systemListTitle (t "Список Фениксов")
                 , systemList acc.systems systems timeZone
                 , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
                 ]

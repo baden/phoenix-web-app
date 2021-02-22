@@ -46,6 +46,7 @@ module Components.UI exposing (..)
 --     , widget
 --     )
 
+import AppState exposing (AppState)
 import Html exposing (Html, a, div, form, h1, h5, i, img, input, span, text)
 import Html.Attributes as HA exposing (alt, class, href, placeholder, src, type_, value)
 import Html.Events exposing (onClick, onInput)

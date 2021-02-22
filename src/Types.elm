@@ -7,6 +7,7 @@ import API.System exposing (SystemDocumentInfo, SystemDocumentLog, SystemDocumen
 import AppState
 import Browser
 import Browser.Navigation as Nav
+import Components.UI.Menu as Menu
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Page.GlobalMap as GlobalMap
@@ -39,6 +40,7 @@ type alias Model =
     , systemConfig : SystemConfigTypes.Model
     , systemLogs : SystemLogs.Model
     , globalMap : GlobalMap.Model
+    , menuModel : Menu.Model
     , account : Maybe AccountDocumentInfo
     , systems : Dict String SystemDocumentInfo
     , logs : Dict String (List SystemDocumentLog)
@@ -77,6 +79,7 @@ type PageMsg
     | SystemLogsMsg SystemLogs.Msg
     | GlobalMapMsg GlobalMap.Msg
     | LinkSysMsg LinkSys.Msg
+    | MenuMsg Menu.Msg
 
 
 type alias Flags =

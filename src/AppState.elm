@@ -15,6 +15,7 @@ type alias AppState =
     , now : Time.Posix -- current Date + Time
 
     -- , translations : Translations
+    , langCode : String
     , t : String -> String
     , tr : String -> Replacements -> String
     }
@@ -28,6 +29,7 @@ initModel lang =
     , now = Time.millisToPosix 0
 
     -- , translations = initialTranslations
+    , langCode = lang
     , t = t (I18N.translations lang)
     , tr = tr (I18N.translations lang) Curly
     }

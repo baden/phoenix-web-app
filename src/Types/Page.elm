@@ -1,13 +1,13 @@
 module Types.Page exposing (..)
 
-import Html exposing (Html)
-import AppState exposing (AppState)
-import Msg as MsgT exposing (UpMsg)
-import API.System exposing (SystemDocumentInfo, SystemDocumentLog, SystemDocumentParams)
-import API.Account exposing (AccountDocumentInfo, fixSysListRequest)
-import Dict exposing (Dict)
-import List.Extra as ListExtra
 import API
+import API.Account exposing (AccountDocumentInfo, fixSysListRequest)
+import API.System exposing (SystemDocumentInfo, SystemDocumentLog, SystemDocumentParams)
+import AppState exposing (AppState)
+import Dict exposing (Dict)
+import Html exposing (Html)
+import List.Extra as ListExtra
+import Msg as MsgT exposing (UpMsg)
 
 
 type alias PageRec pageModel pageMsg parentModel parentMsg =
@@ -46,15 +46,15 @@ updateOverRec msg rec model =
                 ( updatedModel, upstream ) =
                     u msg (rec.get model)
             in
-                ( (rec.set updatedModel model), upstream |> Cmd.map rec.msg )
+            ( rec.set updatedModel model, upstream |> Cmd.map rec.msg )
 
         PUT_Public u ->
             let
                 ( updatedModel, upstream, upmessage ) =
                     u msg (rec.get model)
             in
-                ( (rec.set updatedModel model), upstream |> Cmd.map rec.msg )
-                    |> upmessageUpdate upmessage
+            ( rec.set updatedModel model, upstream |> Cmd.map rec.msg )
+                |> upmessageUpdate upmessage
 
 
 type alias Model x =
@@ -77,4 +77,4 @@ upmessageUpdate msg ( model, cmd ) =
                         newSysList =
                             account.systems |> ListExtra.remove sid
                     in
-                        ( model, Cmd.batch [ cmd, API.websocketOut <| fixSysListRequest newSysList ] )
+                    ( model, Cmd.batch [ cmd, API.websocketOut <| fixSysListRequest newSysList ] )

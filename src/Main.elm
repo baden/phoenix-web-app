@@ -1,5 +1,7 @@
 port module Main exposing (..)
 
+-- import Components.UI.Menu as Menu
+
 import API
 import API.Account exposing (AccountDocumentInfo, fixSysListRequest)
 import API.Error exposing (errorMessageString)
@@ -9,12 +11,14 @@ import Browser
 import Browser.Navigation as Nav
 import Components.ChartSvg as ChartSvg
 import Components.UI as UI
+import Components.UI.Menu as Menu
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes as HA
+import I18N
+import I18Next
 import Json.Encode as Encode
 import List.Extra as ListExtra
-import Menu
 import Msg as MsgT exposing (..)
 import Page
 import Page.GlobalMap as GlobalMap
@@ -73,6 +77,7 @@ init flags url key =
             , systemConfig = systemConfigModel
             , systemLogs = systemLogsModel
             , globalMap = globalMapModel
+            , menuModel = Menu.init
             , account = Nothing
             , systems = Dict.empty
             , logs = Dict.empty
@@ -233,6 +238,37 @@ updatePage pageMsg model =
             in
             ( { model | systemLogs = updatedModel }, Cmd.map (SystemLogsMsg >> OnPageMsg) upstream )
                 |> upmessageUpdate upmessage
+
+        MenuMsg msg ->
+            let
+                ( updatedModel, upstream, upmessage ) =
+                    Menu.update msg model.menuModel
+
+                newModel =
+                    { model | menuModel = updatedModel }
+
+                newCmd =
+                    upstream |> Cmd.map (MenuMsg >> OnPageMsg)
+            in
+            case upmessage of
+                Nothing ->
+                    ( newModel, newCmd )
+
+                Just (Menu.ChangeLanguage langCode) ->
+                    let
+                        t =
+                            I18Next.t (I18N.translations langCode)
+
+                        tr =
+                            I18Next.tr (I18N.translations langCode) I18Next.Curly
+
+                        appState =
+                            newModel.appState
+
+                        newAppState =
+                            { appState | langCode = langCode, t = t, tr = tr }
+                    in
+                    ( { newModel | appState = newAppState }, newCmd )
 
 
 
@@ -615,10 +651,14 @@ view4SystemParams sysId model pageView =
 
 viewMenu : Model -> List (Html Msg)
 viewMenu model =
+    let
+        themes =
+            [ "Темная", "Светлая" ]
+    in
     case model.page of
         Route.Home ->
             -- UI.header model.showQrCode ShowQrCode HideQrCode
-            [ Menu.view
+            [ Menu.view model.appState model.menuModel |> Html.map (OnPageMsg << MenuMsg)
             ]
 
         _ ->

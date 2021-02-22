@@ -5,18 +5,18 @@ import I18Next exposing (fromTree, object, string)
 
 translations =
     fromTree
-        [ ( "custom"
+        [ ( "Список Фениксов", string "Список фениксов" )
+        , ( "themes"
           , object
-                [ ( "morning", string "Morning" )
-                , ( "evening", string "Evening" )
-                , ( "afternoon", string "Afternoon" )
+                [ ( "dark", string "Темная" )
+                , ( "light", string "Светлая" )
                 ]
           )
-        , ( "hello", string "hello" )
-        , ( "Список фениксов", string "Список фениксов" )
+        , ( "menu"
+          , object
+                [ ( "Системные опции", string "Системнi опцii" )
+                , ( "Аккаунт", string "Аккаунт" )
+                , ( "Язык", string "Язык" )
+                ]
+          )
         ]
-
-
-
--- use it like this
--- t translations "custom.morning" -- "Morning"

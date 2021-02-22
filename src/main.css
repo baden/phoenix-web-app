@@ -673,3 +673,11 @@ tr.log-line td:first-child {
     width: 100px;
     color: #8F90A3;
 }
+
+
+
+/* TODO: Move to design */
+
+.dropdown-list li.title {
+    cursor: auto;
+}

@@ -48,7 +48,8 @@ function getUserLanguage () {
     window.localStorage.getItem(LANGUAGE_KEY) ||
     navigator.language ||
     navigator.userLanguage ||
-    'en-US'
+    // 'en-US'
+    'ru-RU'
   )
 }
 
@@ -58,14 +59,18 @@ function getUserLanguage () {
 // console.log("translations", translations);
 // console.log("languages", languages);
 
+const flags = {
+    token: localStorage.getItem(tokenKey),
+    api_url: choosed_endpoint,
+    language: getUserLanguage()
+}
+
+console.log("Start app with flags:", flags);
+
 var app = Elm.Main.init({
   // node: document.getElementById('root'),
   //
-  flags: {
-      token: localStorage.getItem(tokenKey),
-      api_url: choosed_endpoint,
-      language: getUserLanguage()
-  }
+  flags
 });
 
 registerServiceWorker();
@@ -120,6 +125,39 @@ app.ports.saveToken.subscribe(token => {
         localStorage.setItem(tokenKey, token);
     }
 });
+
+app.ports.saveLanguage.subscribe(langCode => {
+    localStorage.setItem(LANGUAGE_KEY, langCode);
+});
+
+
+
+// ---------
+// Dark mode
+// ---------
+//
+// Use in flags:
+//
+// {
+//     darkMode: preferredColorScheme().matches
+// }
+//
+// function preferredColorScheme() {
+//   const m =
+//     window.matchMedia &&
+//     window.matchMedia("(prefers-color-scheme: dark)")
+//
+//   m && m.addEventListener && m.addEventListener("change", e => {
+//     app.ports.preferredColorSchemaChanged.send({ dark: e.matches })
+//   })
+//
+//   return m
+// }
+
+// In ELM:
+// port preferredColorSchemaChanged : ({ dark : Bool } -> msg) -> Sub msg
+
+
 
 // app.ports.logger.subscribe(text => {
 //     console.log(text);
