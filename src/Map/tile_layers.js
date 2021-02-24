@@ -2,7 +2,7 @@ export function MapTiles() {
     // Links:
     // https://github.com/RSteenson/webtest/blob/b7dd80f98709785ee896341a10b436e443ee5065/site_libs/leaflet-binding-2.0.2/lib/leaflet-providers/leaflet-providers.js
 
-    console.log("Init LeafletTileLayers service");
+    // console.log("Init LeafletTileLayers service");
     // Чет не получается переиспользовать их прямо. Какая-то привязка к старой карте остается.
     return function() {
         // var NationalGeographicMap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}.png', {

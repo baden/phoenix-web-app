@@ -23,10 +23,10 @@ const attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">Ope
 
 const tileLayers = MapTiles();
 const settings = MapSettings();
-console.log("settings = ", settings);
-console.log('tileLayers = ', tileLayers);
+// console.log("settings = ", settings);
+// console.log('tileLayers = ', tileLayers);
 
-console.log("Lem = ", Lem);
+// console.log("Lem = ", Lem);
 
 // FIX leaflet's default icon path problems with webpack
 let DefaultIcon = L.icon({

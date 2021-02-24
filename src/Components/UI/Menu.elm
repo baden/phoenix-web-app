@@ -1,5 +1,6 @@
 port module Components.UI.Menu exposing (..)
 
+import API.Account as Account exposing (AccountDocumentInfo)
 import AppState exposing (AppState)
 import AssocList as Dict exposing (Dict)
 import Components.UI.Theme as Theme
@@ -7,12 +8,15 @@ import Html exposing (Html, a, button, div, img, li, span, text, ul)
 import Html.Attributes as HA exposing (alt, attribute, class, classList, href, id, src, style)
 import Html.Events as HE exposing (onClick)
 import I18N
+import Json.Decode as Json
 import Msg as GMsg
 
 
 type alias Model =
     { themePopup : Bool
     , languagePopup : Bool
+    , accountPopup : Bool
+    , showLogoutModal : Bool
     }
 
 
@@ -21,16 +25,24 @@ type Msg
     | SelectTheme Theme.ThemeID
     | ShowLanguagePopup
     | SelectLanguage String
+    | ShowAccountPopup
+    | ShowLogoutModal
+    | HideLogoutModal
+    | HidePopups
+    | OnLogout
 
 
 type MenuMsg
     = ChangeLanguage String
+    | Logout
 
 
 init : Model
 init =
     { themePopup = False
     , languagePopup = False
+    , accountPopup = False
+    , showLogoutModal = False
     }
 
 
@@ -49,9 +61,29 @@ update msg model =
         SelectLanguage langCode ->
             ( { model | languagePopup = False }, Cmd.batch [ saveLanguage langCode ], Just <| ChangeLanguage langCode )
 
+        ShowAccountPopup ->
+            ( { model | accountPopup = True }, Cmd.none, Nothing )
 
-view : AppState -> Model -> Html Msg
-view ({ t } as appState) ({ themePopup, languagePopup } as model) =
+        ShowLogoutModal ->
+            ( { model | showLogoutModal = True }, Cmd.none, Nothing )
+
+        HideLogoutModal ->
+            ( { model | showLogoutModal = False }, Cmd.none, Nothing )
+
+        HidePopups ->
+            ( { model | themePopup = False, languagePopup = False, accountPopup = False }, Cmd.none, Nothing )
+
+        OnLogout ->
+            let
+                _ =
+                    Debug.log "logout Pressed" 0
+            in
+            -- ( model, Cmd.none, Nothing )
+            ( model, Cmd.none, Just Logout )
+
+
+view : Maybe AccountDocumentInfo -> AppState -> Model -> Html Msg
+view maccount ({ t } as appState) ({ themePopup, languagePopup } as model) =
     let
         popupShow i =
             case i of
@@ -63,20 +95,14 @@ view ({ t } as appState) ({ themePopup, languagePopup } as model) =
     in
     div [ class "menu" ]
         [ div [ class "menu-header" ]
-            [ div [ class "logo" ]
-                [ img [ alt "Logo", src "images/logo.svg" ]
-                    []
-                ]
-            , button [ class "menu-toggle-btn", id "toggleBtn" ]
-                []
+            [ div [ class "logo" ] [ img [ alt "Logo", src "images/logo.svg" ] [] ]
+            , button [ class "menu-toggle-btn", id "toggleBtn" ] []
             ]
         , ul [ class "menu-items" ]
             [ li []
                 [ a [ class "active", href "#" ]
-                    [ span [ class "list-icon menu-icon" ]
-                        []
-                    , span [ class "menu-item-title" ]
-                        [ text <| t "Список Фениксов" ]
+                    [ span [ class "list-icon menu-icon" ] []
+                    , span [ class "menu-item-title" ] [ text <| t "Список Фениксов" ]
                     ]
                 ]
             ]
@@ -87,82 +113,54 @@ view ({ t } as appState) ({ themePopup, languagePopup } as model) =
                 , menuLanguage appState model
                 ]
             , div [ class "menu-options" ]
-                [ span [ class "menu-options-title" ]
-                    [ text <| t "menu.Аккаунт" ]
-                , div [ class "dropdown" ]
-                    [ div [ class "dropdown-title" ]
-                        [ span [ class "accaunt-icon" ] []
-                        , span [ class "accaunt-title" ] [ text "loginexample" ]
-                        , span [ class "dropdown-icon" ] []
-                        ]
-                    , ul [ class "dropdown-list" ]
-                        [ li [] [ a [ href "#" ] [ text "Настройки" ] ]
-                        , li []
-                            [ a [ href "#" ]
-                                [ text "Выйти" ]
-                            ]
-                        ]
-                    ]
+                [ span [ class "menu-options-title" ] [ text <| t "menu.Аккаунт" ]
+                , menuAccount maccount appState model
                 ]
             ]
         , div [ class "submenu" ]
-            [ span [ class "icon-car submenu-type" ]
-                []
+            [ span [ class "icon-car submenu-type" ] []
             , div [ class "submenu-header" ]
                 [ a [ class "submenu-back", href "#" ]
-                    [ span [ class "arrow" ]
-                        []
-                    , span [ class "title" ]
-                        [ text "Список Фениксов" ]
+                    [ span [ class "arrow" ] []
+                    , span [ class "title" ] [ text <| t "Список Фениксов" ]
                     ]
-                , span [ class "submenu-name" ]
-                    [ text "АА 1234 АС" ]
+                , span [ class "submenu-name" ] [ text "АА 1234 АС" ]
                 , span [ class "submenu-status" ]
                     [ div [ class "fenix-status" ]
-                        [ span [ class "status-icon wait-status" ]
-                            []
-                        , span [ class "status" ]
-                            [ text "Ожидание" ]
-                        , span [ class "icon sleep" ]
-                            []
+                        [ span [ class "status-icon wait-status" ] []
+                        , span [ class "status" ] [ text "Ожидание" ]
+                        , span [ class "icon sleep" ] []
                         ]
                     ]
                 ]
             , ul [ class "submenu-items" ]
                 [ li []
                     [ a [ href "#" ]
-                        [ span [ class "icon-map submenu-icon" ]
-                            []
-                        , span [ class "submenu-item-title" ]
-                            [ text "Карта" ]
+                        [ span [ class "icon-map submenu-icon" ] []
+                        , span [ class "submenu-item-title" ] [ text "Карта" ]
                         ]
                     ]
                 , li []
                     [ a [ class "active", href "#" ]
-                        [ span [ class "icon-manage submenu-icon" ]
-                            []
-                        , span [ class "submenu-item-title" ]
-                            [ text "Управление" ]
+                        [ span [ class "icon-manage submenu-icon" ] []
+                        , span [ class "submenu-item-title" ] [ text "Управление" ]
                         ]
                     ]
                 , li []
                     [ a [ href "#" ]
-                        [ span [ class "icon-settings submenu-icon" ]
-                            []
-                        , span [ class "submenu-item-title" ]
-                            [ text "Настройки" ]
+                        [ span [ class "icon-settings submenu-icon" ] []
+                        , span [ class "submenu-item-title" ] [ text "Настройки" ]
                         ]
                     ]
                 , li []
                     [ a [ href "#" ]
-                        [ span [ class "icon-calendar submenu-icon" ]
-                            []
-                        , span [ class "submenu-item-title" ]
-                            [ text "События" ]
+                        [ span [ class "icon-calendar submenu-icon" ] []
+                        , span [ class "submenu-item-title" ] [ text "События" ]
                         ]
                     ]
                 ]
             ]
+        , modal model.showLogoutModal appState
         ]
 
 
@@ -182,7 +180,7 @@ menuTheme { t } { themePopup } =
                 [ span [ class "item" ] [ text <| t ("themes." ++ name) ] ]
     in
     activableDropdown themePopup
-        [ div [ class "dropdown-title", onClick ShowThemesPopup ]
+        [ div [ class "dropdown-title", onClickStopPropagation ShowThemesPopup ]
             [ span [ class "mode-icon" ] []
             , span [ id "selectedTheme" ] [ text "Темная" ]
             , span [ class "dropdown-icon" ] []
@@ -207,7 +205,7 @@ menuLanguage { langCode, t } { languagePopup } =
                 ]
     in
     activableDropdown languagePopup
-        [ div [ class "dropdown-title", onClick ShowLanguagePopup ]
+        [ div [ class "dropdown-title", onClickStopPropagation ShowLanguagePopup ]
             [ span [ class "language-icon" ] []
             , span [ id "selectedLanguage" ] [ text <| .title <| I18N.langCode2lang langCode ]
             , span [ class "dropdown-icon" ] []
@@ -218,9 +216,64 @@ menuLanguage { langCode, t } { languagePopup } =
         ]
 
 
+menuAccount : Maybe AccountDocumentInfo -> AppState -> Model -> Html Msg
+menuAccount maccount { t } { accountPopup } =
+    let
+        account_text =
+            case maccount of
+                Nothing ->
+                    t "not_auth"
+
+                Just account ->
+                    account.realname
+    in
+    activableDropdown accountPopup
+        [ div [ class "dropdown-title", onClickStopPropagation ShowAccountPopup ]
+            [ span [ class "accaunt-icon" ] []
+            , span [ class "accaunt-title" ] [ text account_text ]
+            , span [ class "dropdown-icon" ] []
+            ]
+        , ul [ class "dropdown-list" ]
+            [ li [ class "title" ] [ text <| t "menu.Аккаунт" ]
+            , li [] [ a [ href "#", onClick ShowLogoutModal ] [ span [ class "icon-logout logout-image" ] [], text <| t "menu.Выйти" ] ]
+            ]
+        ]
+
+
+modal : Bool -> AppState -> Html Msg
+modal show { t } =
+    div
+        [ class <|
+            "modal-bg"
+                ++ (if show then
+                        " show"
+
+                    else
+                        ""
+                   )
+        ]
+        [ div [ class "modal-wr" ]
+            [ div [ class "modal-content modal-sm" ]
+                [ div [ class "modal-close-sm close modal-close-btn", onClick HideLogoutModal ] []
+                , div [ class "modal-title modal-title-sm" ] [ text <| t "menu.Выйти?" ]
+                , div [ class "modal-body" ] [ span [ class "modal-text" ] [ text <| t "menu.Вы действительно хотите выйти?" ] ]
+                , div [ class "modal-btn-group" ]
+                    [ button [ class "btn btn-md btn-secondary modal-close-btn", onClick HideLogoutModal ] [ text <| t "Нет" ]
+                    , button [ class "btn btn-md btn-cancel", onClick OnLogout ] [ text <| t "Да" ]
+                    ]
+                ]
+            ]
+        ]
+
+
 activableDropdown : Bool -> List (Html Msg) -> Html Msg
 activableDropdown d =
     div [ classList [ ( "dropdown", True ), ( "active", d ) ] ]
+
+
+onClickStopPropagation : Msg -> Html.Attribute Msg
+onClickStopPropagation msg =
+    HE.stopPropagationOn "click" <| Json.succeed ( msg, True )
 
 
 port saveLanguage : String -> Cmd msg

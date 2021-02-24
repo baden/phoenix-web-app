@@ -681,3 +681,7 @@ tr.log-line td:first-child {
 .dropdown-list li.title {
     cursor: auto;
 }
+
+.menu {
+    z-index: 1001;
+}

@@ -270,8 +270,23 @@ updatePage pageMsg model =
                     in
                     ( { newModel | appState = newAppState }, newCmd )
 
+                Just Menu.Logout ->
+                    let
+                        _ =
+                            Debug.log "Logout" 0
+                    in
+                    -- ( newModel, Cmd.batch [ newCmd, saveToken "", Nav.pushUrl model.key "/login" ] )
+                    -- ( newModel, newCmd )
+                    ( newModel, Cmd.batch [ newCmd, saveToken "" ] )
 
 
+
+-- ( newModel, Cmd.batch [ newCmd, logout model.key ] )
+-- logout : Nav.Key -> Cmd Msg
+-- logout key =
+--     saveToken ""
+--         |> Task.andThen
+--             (Nav.pushUrl key "/login")
 -- upmessageUpdate : Maybe UpMsg -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 -- upmessageUpdate msg ( model, cmd ) =
 --     case msg of
@@ -467,6 +482,13 @@ update msg model =
         HideQrCode ->
             ( { model | showQrCode = False }, Cmd.none )
 
+        BodyClick ->
+            updatePage (MenuMsg Menu.HidePopups) model
+
+
+
+-- ( model, Cmd.none )
+
 
 computeViewForPage : Route.Page -> Model -> ( Model, Cmd Msg )
 computeViewForPage page model =
@@ -531,7 +553,8 @@ view model =
     in
     { title = "Fenix App"
     , body =
-        [ UI.container <|
+        [ UI.layout BodyClick <|
+            -- UI.container <|
             viewMenu model
                 ++ [ viewPage model ]
                 ++ modal
@@ -651,14 +674,10 @@ view4SystemParams sysId model pageView =
 
 viewMenu : Model -> List (Html Msg)
 viewMenu model =
-    let
-        themes =
-            [ "Темная", "Светлая" ]
-    in
     case model.page of
         Route.Home ->
             -- UI.header model.showQrCode ShowQrCode HideQrCode
-            [ Menu.view model.appState model.menuModel |> Html.map (OnPageMsg << MenuMsg)
+            [ Menu.view model.account model.appState model.menuModel |> Html.map (OnPageMsg << MenuMsg)
             ]
 
         _ ->

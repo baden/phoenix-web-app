@@ -47,7 +47,7 @@ module Components.UI exposing (..)
 --     )
 
 import AppState exposing (AppState)
-import Html exposing (Html, a, div, form, h1, h5, i, img, input, span, text)
+import Html exposing (Html, a, div, h1, h5, i, img, input, span, text)
 import Html.Attributes as HA exposing (alt, class, href, placeholder, src, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Svg exposing (path, svg, text_)
@@ -60,6 +60,11 @@ type alias UI msg =
 
 
 -- TODO: Cleanup
+
+
+layout : msg -> List (Html msg) -> Html msg
+layout click =
+    div [ class "layout", onClick click ]
 
 
 container : List (Html a) -> Html a
@@ -147,7 +152,7 @@ formInput text_title value_ update =
 
 formLogin : List (Html msg) -> Html msg
 formLogin =
-    form [ class "login-inputs" ]
+    div [ class "login-inputs" ]
 
 
 formInputInline : String -> String -> (String -> msg) -> Html msg

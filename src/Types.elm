@@ -65,6 +65,7 @@ type Msg
     | ShowQrCode
     | HideQrCode
     | OnPageMsg PageMsg
+    | BodyClick
 
 
 

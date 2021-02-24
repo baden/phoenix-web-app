@@ -174,13 +174,19 @@
 					</li>
 				</ul> 
 			</div>
+
 		</div>
+
+		<!-- блок для меню, появляеться на мобильном при открытии меню, есть только в этом файле -->
+
+		<div class="menu-close-bg closeMenuBg"></div>
 
 		<!-- враппер для центрального контента, вся ширина минус 334px -->
 		<div class="container">
 			<!-- wrapper-page - без этого класса блок будет по центру страницы, с этим - отступ сверху 50px -->
 			<div class="wrapper-content wrapper-page">
-				<div class="details-wrapper-bg scroll-wr">
+				<!-- scroll-wr класс  когда есть скролл, токда для блока к которому добавить скролл нужно вставить ід #scroll-wr -->
+				<div class="details-wrapper-bg">
 				</div>
 			</div>
 		</div>
@@ -192,7 +198,7 @@
 			<!-- Для меньшых окон добавляеться класс modal-sm, для средних modal-md -->
 			<div class="modal-content modal-sm">
 
-				<div class="modal-close-sm close modal-close-btn"></div>
+				<div class="modal-close close modal-close-btn"></div>
 				<div class="modal-title modal-title-sm">
 					Выйти?
 				</div>

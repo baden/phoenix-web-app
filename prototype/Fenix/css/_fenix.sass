@@ -1,7 +1,8 @@
 .fenix
 	position: relative
-	flex: 0 0 388px
+	flex: 0 0 30%
 	min-height: 305px
+	max-width: 388px
 	&-type
 		color: $secondary
 		position: absolute
@@ -333,7 +334,8 @@
 	&-item
 		display: flex
 		justify-content: space-between
-		padding-bottom: 30px
+		&:not(:last-child)
+			padding-bottom: 30px
 		.title
 			color: $secondaryTxt
 			flex: 0 0 40%
@@ -510,15 +512,6 @@
 	cursor: pointer
 	.icon-card
 		font-size: 13px
-	.top-account
-		display: none
-	.show-accaunt
-		display: block
-	&.number-account-actions
-		.top-account
-			display: block
-		.show-accaunt
-			display: none
 
 .processing-engeine
 	display: flex
@@ -652,3 +645,38 @@
 			.date
 				font-weight: 700
 				margin-left: 5px
+
+
+.topUpText
+	cursor: pointer
+
+.accountPhone
+	display: none
+
+.showAnimate
+	display: block !important
+	animation: showPhone 7s ease-in-out infinite
+
+@keyframes showPhone
+	0% 
+		opacity: 1
+	100% 
+		opacity: 0
+
+.copiedMess
+	display: none
+	z-index: 103
+	position: absolute
+	top: 0
+	left: 0
+	right: 0
+
+.phone-copied-message
+	font-size: 1rem
+	color: #fff
+	font-weight: 700
+	display: flex
+	align-items: center
+	justify-content: center
+	padding: 10px
+	background: #27AE60

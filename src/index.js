@@ -77,24 +77,24 @@ registerServiceWorker();
 
 let socket;
 
-console.log("app.ports", [app.ports]);
+// console.log("app.ports", [app.ports]);
 
 function open(url) {
-    console.log("open");
+    // console.log("open");
     socket = new WebSocket(url);
     socket.onopen = () => {
-        console.log("onopen");
+        // console.log("onopen");
         app.ports.websocketOpened.send(true);
     }
     socket.onmessage = message => {
-        console.log("onmessage", [message.data, JSON.parse(message.data)]);
+        // console.log("onmessage", [message.data, JSON.parse(message.data)]);
         app.ports.websocketIn.send(message.data);
     }
     socket.onerror = (error) => {
-        console.log("onerror", error.message);
+        // console.log("onerror", error.message);
     };
     socket.onclose = () => {
-        console.log("onclose");
+        // console.log("onclose");
         app.ports.websocketOpened.send(false);
         socket = null;
         setTimeout(function() {
@@ -108,7 +108,7 @@ app.ports.websocketOpen.subscribe(url => {
 });
 
 app.ports.websocketOut.subscribe(message => {
-    console.log("websocketOut", [message]);
+    console.log("websocketOut", JSON.stringify(message));
     if (socket && socket.readyState === 1) {
         socket.send(JSON.stringify(message));
     } else {
@@ -119,8 +119,10 @@ app.ports.websocketOut.subscribe(message => {
 
 app.ports.saveToken.subscribe(token => {
     console.log('saveToken', token);
-    if (token === null) {
+    if (token === null || token == "") {
+    // if (token === null) {
         localStorage.removeItem(tokenKey);
+        location.reload();
     } else {
         localStorage.setItem(tokenKey, token);
     }
@@ -131,6 +133,7 @@ app.ports.saveLanguage.subscribe(langCode => {
 });
 
 
+// TODO: Не удалять следующие коментарии. Он в скором времени пригодятся.
 
 // ---------
 // Dark mode
@@ -156,6 +159,53 @@ app.ports.saveLanguage.subscribe(langCode => {
 
 // In ELM:
 // port preferredColorSchemaChanged : ({ dark : Bool } -> msg) -> Sub msg
+
+
+
+// ---------
+// Clipboard
+// ---------
+
+// wire.clipboard = () => {
+//   app.ports.copyToClipboard.subscribe(copyToClipboard)
+// }
+//
+//
+// function copyToClipboard(text) {
+//
+//   // Insert a textarea element
+//   const el = document.createElement("textarea")
+//
+//   el.value = text
+//   el.setAttribute("readonly", "")
+//   el.style.position = "absolute"
+//   el.style.left = "-9999px"
+//
+//   document.body.appendChild(el)
+//
+//   // Store original selection
+//   const selected = document.getSelection().rangeCount > 0
+//     ? document.getSelection().getRangeAt(0)
+//     : false
+//
+//   // Select & copy the text
+//   el.select()
+//   document.execCommand("copy")
+//
+//   // Remove textarea element
+//   document.body.removeChild(el)
+//
+//   // Restore original selection
+//   if (selected) {
+//     document.getSelection().removeAllRanges()
+//     document.getSelection().addRange(selected)
+//   }
+//
+// }
+
+
+
+
 
 
 
