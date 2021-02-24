@@ -50,13 +50,13 @@ update : Msg -> Model -> ( Model, Cmd Msg, Maybe MenuMsg )
 update msg model =
     case msg of
         ShowThemesPopup ->
-            ( { model | themePopup = True }, Cmd.none, Nothing )
+            ( { model | themePopup = True, languagePopup = False, showLogoutModal = False }, Cmd.none, Nothing )
 
         SelectTheme tid ->
             ( { model | themePopup = False }, Cmd.none, Nothing )
 
         ShowLanguagePopup ->
-            ( { model | languagePopup = True }, Cmd.none, Nothing )
+            ( { model | languagePopup = True, themePopup = False, showLogoutModal = False }, Cmd.none, Nothing )
 
         SelectLanguage langCode ->
             ( { model | languagePopup = False }, Cmd.batch [ saveLanguage langCode ], Just <| ChangeLanguage langCode )
@@ -82,8 +82,8 @@ update msg model =
             ( model, Cmd.none, Just Logout )
 
 
-view : Maybe AccountDocumentInfo -> AppState -> Model -> Html Msg
-view maccount ({ t } as appState) ({ themePopup, languagePopup } as model) =
+view : AccountDocumentInfo -> AppState -> Model -> Html Msg
+view account ({ t } as appState) ({ themePopup, languagePopup } as model) =
     let
         popupShow i =
             case i of
@@ -114,7 +114,7 @@ view maccount ({ t } as appState) ({ themePopup, languagePopup } as model) =
                 ]
             , div [ class "menu-options" ]
                 [ span [ class "menu-options-title" ] [ text <| t "menu.Аккаунт" ]
-                , menuAccount maccount appState model
+                , menuAccount account appState model
                 ]
             ]
         , div [ class "submenu" ]
@@ -216,16 +216,11 @@ menuLanguage { langCode, t } { languagePopup } =
         ]
 
 
-menuAccount : Maybe AccountDocumentInfo -> AppState -> Model -> Html Msg
-menuAccount maccount { t } { accountPopup } =
+menuAccount : AccountDocumentInfo -> AppState -> Model -> Html Msg
+menuAccount account { t } { accountPopup } =
     let
         account_text =
-            case maccount of
-                Nothing ->
-                    t "not_auth"
-
-                Just account ->
-                    account.realname
+            account.realname
     in
     activableDropdown accountPopup
         [ div [ class "dropdown-title", onClickStopPropagation ShowAccountPopup ]

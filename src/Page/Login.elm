@@ -7,8 +7,12 @@ module Page.Login exposing (Model, Msg(..), authView, init, loginView, update)
 -- import Element.Border as Border
 
 import API exposing (registerUserRequest)
+import AppState exposing (AppState)
 import Components.UI as UI
-import Html exposing (Html)
+import Components.UI.Menu as Menu
+import Html exposing (Html, a, button, div, img, input, label, li, span, text, ul)
+import Html.Attributes as HA exposing (alt, attribute, class, classList, href, id, src, style, type_, value)
+import Html.Events as HE exposing (onClick)
 import MD5 exposing (hex)
 
 
@@ -16,6 +20,7 @@ type alias Model =
     { username : String
     , password : String
     , passwordConfirm : String
+    , menuModel : Menu.Model
     }
 
 
@@ -25,11 +30,12 @@ type Msg
     | Update Model
     | Auth
     | Register
+    | MenuMsg Menu.Msg
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model "" "" "", Cmd.none )
+    ( Model "" "" "" Menu.init, Cmd.none )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -68,9 +74,58 @@ update msg model =
                 ]
             )
 
+        MenuMsg menuMsg ->
+            -- TODO: Не очень мне нравится что меню нужно пробрасывать везде.
+            let
+                _ =
+                    Debug.log "menuMsg" menuMsg
 
-loginView : Model -> Html Msg
-loginView model =
+                ( updatedMenuModel, upstream, upmessage ) =
+                    Menu.update menuMsg model.menuModel
+            in
+            -- Menu.Msg
+            ( { model | menuModel = updatedMenuModel }, Cmd.none )
+
+
+loginView : AppState -> Model -> Html Msg
+loginView ({ t } as appState) model =
+    div [ class "container container-login" ]
+        [ div [ class "wrapper-content" ]
+            [ div [ class "wrapper-bg" ]
+                [ div [ class "logo logo-wr" ]
+                    [ img [ alt "Logo", src "images/logo.svg" ] [] ]
+                , div [ class "login-title" ] [ text "Добро пожаловать" ]
+                , div [ class "login-subtitle" ] [ text "Войдите, чтобы продолжить" ]
+                , div [ class "login-inputs" ]
+                    [ div [ class "input-st input-errored" ]
+                        [ input [ attribute "autocomplete" "off", attribute "required" "", type_ "text" ]
+                            []
+                        , label [ class "input-label" ] [ text "Введите Ваш логин" ]
+                        , span [ class "input-error" ]
+                            [ span [ class "error-icon" ] [], text "Адрес электронной почты недействителен. Пожалуйста проверьте и попробуйте снова." ]
+                        ]
+                    , div [ class "input-st password" ]
+                        [ input [ attribute "autocomplete" "off", id "password", attribute "required" "", type_ "password" ] []
+                        , label [ class "input-label" ] [ text "Введите Ваш пароль" ]
+                        , span [ class "password-icon", id "passwordBtn" ] []
+                        , span [ class "input-error" ]
+                            [ span [ class "error-icon" ] [], text "Неправильный пароль" ]
+                        ]
+                    , button [ class "btn btn-lg btn-primary login-btn" ] [ text "Войти в систему" ]
+                    , span [ class "accaunt-link" ]
+                        [ span [] [ text "У вас нет аккаунта?" ], a [ class "link", href "#" ] [ text "Зарегистрироваться" ] ]
+                    ]
+                ]
+            , div [ class "wrapper-content-footer" ]
+                [ Menu.menuLanguage appState model.menuModel |> Html.map MenuMsg
+                , Menu.menuTheme appState model.menuModel |> Html.map MenuMsg
+                ]
+            ]
+        ]
+
+
+loginViewOld : Model -> Html Msg
+loginViewOld model =
     UI.smallForm
         [ UI.formHeader "Добро пожаловать"
         , UI.formSubtitle "Войдите, чтобы продолжить"
@@ -88,8 +143,8 @@ loginView model =
         ]
 
 
-authView : Model -> Html Msg
-authView model =
+authView : AppState -> Model -> Html Msg
+authView { t } model =
     UI.smallForm
         [ UI.formHeader "Создать аккаунт"
         , UI.formSubtitle "Чтобы начать работать"

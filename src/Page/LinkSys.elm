@@ -1,6 +1,7 @@
 module Page.LinkSys exposing (..)
 
 import API
+import AppState exposing (AppState)
 import Components.UI as UI exposing (..)
 import Html exposing (Html, div, text)
 import Html.Attributes as HA exposing (class, pattern, placeholder, value)
@@ -103,8 +104,8 @@ update msg model =
             ( { model | showLedHelpDialog = False }, Cmd.none )
 
 
-view : Model -> Html Msg
-view model =
+view : AppState -> Model -> Html Msg
+view { t } model =
     let
         masterPage =
             case model.masterPage of

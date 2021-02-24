@@ -104,6 +104,13 @@ init flags url key =
         -- , Date.today |> Task.perform ReceiveDate
         ]
             ++ AppState.initCmd TimeZoneDetected ReceiveNow
+            -- TODO: Решение не идеальное, возможно это стоит реализовать без перехода
+            ++ (if model.token == Nothing then
+                    [ Nav.pushUrl key "/login" ]
+
+                else
+                    []
+               )
     )
 
 
@@ -634,7 +641,7 @@ view4SystemRec sysId model ir =
 
         -- view4SystemParams sysId model (v model.appState (ir.get model) >> Html.map (ir.msg >> OnPageMsg))
         PT_Nodata v ->
-            v (ir.get model) |> Html.map ir.msg
+            v model.appState (ir.get model) |> Html.map ir.msg
 
         PT_Full v ->
             v model.appState (ir.get model) model.account model.systems |> Html.map ir.msg
@@ -674,11 +681,17 @@ view4SystemParams sysId model pageView =
 
 viewMenu : Model -> List (Html Msg)
 viewMenu model =
+    -- Хрень с этим меню, нужно решить как его прокинуть в страницы без авторизации
     case model.page of
         Route.Home ->
             -- UI.header model.showQrCode ShowQrCode HideQrCode
-            [ Menu.view model.account model.appState model.menuModel |> Html.map (OnPageMsg << MenuMsg)
-            ]
+            case model.account of
+                Nothing ->
+                    []
+
+                Just account ->
+                    [ Menu.view account model.appState model.menuModel |> Html.map (OnPageMsg << MenuMsg)
+                    ]
 
         _ ->
             []

@@ -22,7 +22,7 @@ type alias PageRec pageModel pageMsg parentModel parentMsg =
 type PageType pageModel pageMsg
     = PT_System (AppState -> pageModel -> SystemDocumentInfo -> Html pageMsg)
     | PT_SystemParams (AppState -> pageModel -> SystemDocumentInfo -> Maybe SystemDocumentParams -> Html pageMsg)
-    | PT_Nodata (pageModel -> Html pageMsg)
+    | PT_Nodata (AppState -> pageModel -> Html pageMsg)
     | PT_Full (AppState -> pageModel -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> Html pageMsg)
 
 
