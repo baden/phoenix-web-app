@@ -14,6 +14,7 @@ import Html exposing (Html, a, button, div, img, input, label, li, span, text, u
 import Html.Attributes as HA exposing (alt, attribute, class, classList, href, id, src, style, type_, value)
 import Html.Events as HE exposing (onClick)
 import MD5 exposing (hex)
+import Msg as GMsg
 
 
 type alias Model =
@@ -38,17 +39,17 @@ init =
     ( Model "" "" "" Menu.init, Cmd.none )
 
 
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> ( Model, Cmd Msg, Maybe GMsg.UpMsg )
 update msg model =
     case msg of
         OnName val ->
-            ( { model | username = val }, Cmd.none )
+            ( { model | username = val }, Cmd.none, Nothing )
 
         OnPassword val ->
-            ( { model | password = val }, Cmd.none )
+            ( { model | password = val }, Cmd.none, Nothing )
 
         Update newModel ->
-            ( newModel, Cmd.none )
+            ( newModel, Cmd.none, Nothing )
 
         Auth ->
             let
@@ -56,10 +57,8 @@ update msg model =
                     hex model.password
             in
             ( model
-            , Cmd.batch
-                [ API.websocketOut <|
-                    API.authUserRequest model.username password_hash
-                ]
+            , Cmd.batch [ API.websocketOut <| API.authUserRequest model.username password_hash ]
+            , Nothing
             )
 
         Register ->
@@ -68,23 +67,25 @@ update msg model =
                     hex model.password
             in
             ( model
-            , Cmd.batch
-                [ API.websocketOut <|
-                    API.registerUserRequest model.username password_hash
-                ]
+            , Cmd.batch [ API.websocketOut <| API.registerUserRequest model.username password_hash ]
+            , Nothing
             )
 
         MenuMsg menuMsg ->
             -- TODO: Не очень мне нравится что меню нужно пробрасывать везде.
             let
-                _ =
-                    Debug.log "menuMsg" menuMsg
-
+                -- _ =
+                --     Debug.log "menuMsg" menuMsg
                 ( updatedMenuModel, upstream, upmessage ) =
                     Menu.update menuMsg model.menuModel
             in
             -- Menu.Msg
-            ( { model | menuModel = updatedMenuModel }, Cmd.none )
+            case upmessage of
+                Nothing ->
+                    ( { model | menuModel = updatedMenuModel }, upstream |> Cmd.map MenuMsg, Nothing )
+
+                Just upMsg ->
+                    ( { model | menuModel = updatedMenuModel }, upstream |> Cmd.map MenuMsg, Just (GMsg.MenuMsg upMsg) )
 
 
 loginView : AppState -> Model -> Html Msg
@@ -94,26 +95,26 @@ loginView ({ t } as appState) model =
             [ div [ class "wrapper-bg" ]
                 [ div [ class "logo logo-wr" ]
                     [ img [ alt "Logo", src "images/logo.svg" ] [] ]
-                , div [ class "login-title" ] [ text "Добро пожаловать" ]
-                , div [ class "login-subtitle" ] [ text "Войдите, чтобы продолжить" ]
+                , div [ class "login-title" ] [ text <| t "login.Добро пожаловать" ]
+                , div [ class "login-subtitle" ] [ text <| t "login.Войдите, чтобы продолжить" ]
                 , div [ class "login-inputs" ]
                     [ div [ class "input-st input-errored" ]
-                        [ input [ attribute "autocomplete" "off", attribute "required" "", type_ "text" ]
+                        [ input [ type_ "text", attribute "required" "", value model.username, HE.onInput (\new -> Update { model | username = new }) ]
                             []
-                        , label [ class "input-label" ] [ text "Введите Ваш логин" ]
-                        , span [ class "input-error" ]
-                            [ span [ class "error-icon" ] [], text "Адрес электронной почты недействителен. Пожалуйста проверьте и попробуйте снова." ]
+                        , label [ class "input-label" ] [ text <| t "login.Введите Ваш логин" ]
+
+                        -- , span [ class "input-error" ] [ span [ class "error-icon" ] [], text <| t "login.name_not_found" ]
                         ]
                     , div [ class "input-st password" ]
-                        [ input [ attribute "autocomplete" "off", id "password", attribute "required" "", type_ "password" ] []
-                        , label [ class "input-label" ] [ text "Введите Ваш пароль" ]
+                        [ input [ id "password", attribute "required" "", type_ "password", value model.password, HE.onInput (\new -> Update { model | password = new }) ] []
+                        , label [ class "input-label" ] [ text <| t "login.Введите Ваш пароль" ]
                         , span [ class "password-icon", id "passwordBtn" ] []
                         , span [ class "input-error" ]
-                            [ span [ class "error-icon" ] [], text "Неправильный пароль" ]
+                            [ span [ class "error-icon" ] [], text <| t "login.Неправильный пароль" ]
                         ]
-                    , button [ class "btn btn-lg btn-primary login-btn" ] [ text "Войти в систему" ]
+                    , button [ class "btn btn-lg btn-primary login-btn", onClick Auth ] [ text <| t "login.Войти в систему" ]
                     , span [ class "accaunt-link" ]
-                        [ span [] [ text "У вас нет аккаунта?" ], a [ class "link", href "#" ] [ text "Зарегистрироваться" ] ]
+                        [ span [] [ text <| t "login.У вас нет аккаунта?" ], a [ class "link", href "/auth" ] [ text <| t "login.Зарегистрироваться" ] ]
                     ]
                 ]
             , div [ class "wrapper-content-footer" ]

@@ -9,7 +9,6 @@ import Html.Attributes as HA exposing (alt, attribute, class, classList, href, i
 import Html.Events as HE exposing (onClick)
 import I18N
 import Json.Decode as Json
-import Msg as GMsg
 
 
 type alias Model =
@@ -74,11 +73,6 @@ update msg model =
             ( { model | themePopup = False, languagePopup = False, accountPopup = False }, Cmd.none, Nothing )
 
         OnLogout ->
-            let
-                _ =
-                    Debug.log "logout Pressed" 0
-            in
-            -- ( model, Cmd.none, Nothing )
             ( model, Cmd.none, Just Logout )
 
 

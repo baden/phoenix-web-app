@@ -178,7 +178,7 @@ loginRec : PageRec Login.Model Login.Msg Model Msg
 loginRec =
     { get = .login
     , set = \newModel model -> { model | login = newModel }
-    , update = PUT_Private Login.update
+    , update = PUT_Public Login.update
     , view = PT_Nodata Login.loginView
     , msg = LoginMsg >> OnPageMsg
     }
@@ -246,7 +246,7 @@ updatePage pageMsg model =
             ( { model | systemLogs = updatedModel }, Cmd.map (SystemLogsMsg >> OnPageMsg) upstream )
                 |> upmessageUpdate upmessage
 
-        MenuMsg msg ->
+        Types.MenuMsg msg ->
             let
                 ( updatedModel, upstream, upmessage ) =
                     Menu.update msg model.menuModel
@@ -255,9 +255,10 @@ updatePage pageMsg model =
                     { model | menuModel = updatedModel }
 
                 newCmd =
-                    upstream |> Cmd.map (MenuMsg >> OnPageMsg)
+                    upstream |> Cmd.map (Types.MenuMsg >> OnPageMsg)
             in
             case upmessage of
+                -- TODO: Move to Page.upmessageUpdate
                 Nothing ->
                     ( newModel, newCmd )
 
@@ -278,10 +279,6 @@ updatePage pageMsg model =
                     ( { newModel | appState = newAppState }, newCmd )
 
                 Just Menu.Logout ->
-                    let
-                        _ =
-                            Debug.log "Logout" 0
-                    in
                     -- ( newModel, Cmd.batch [ newCmd, saveToken "", Nav.pushUrl model.key "/login" ] )
                     -- ( newModel, newCmd )
                     ( newModel, Cmd.batch [ newCmd, saveToken "" ] )
@@ -490,7 +487,7 @@ update msg model =
             ( { model | showQrCode = False }, Cmd.none )
 
         BodyClick ->
-            updatePage (MenuMsg Menu.HidePopups) model
+            updatePage (Types.MenuMsg Menu.HidePopups) model
 
 
 
@@ -690,7 +687,7 @@ viewMenu model =
                     []
 
                 Just account ->
-                    [ Menu.view account model.appState model.menuModel |> Html.map (OnPageMsg << MenuMsg)
+                    [ Menu.view account model.appState model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg)
                     ]
 
         _ ->

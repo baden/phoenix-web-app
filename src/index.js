@@ -29,7 +29,8 @@ const fx_api_endpoint = protocol + "//fx.navi.cc"  + api_path;
 
 // const choosed_endpoint = (hostname=="localhost") ? local_api_endpoint : global_api_endpoint;
 // const choosed_endpoint = global_api_endpoint;
-const choosed_endpoint = fx_api_endpoint;
+// const choosed_endpoint = fx_api_endpoint;
+const choosed_endpoint = (hostname=="localhost") ? fx_api_endpoint : global_api_endpoint;
 
 console.log("API endpoint: ", choosed_endpoint);
 
@@ -129,6 +130,7 @@ app.ports.saveToken.subscribe(token => {
 });
 
 app.ports.saveLanguage.subscribe(langCode => {
+    console.log("Save language", langCode);
     localStorage.setItem(LANGUAGE_KEY, langCode);
 });
 

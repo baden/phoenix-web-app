@@ -4,8 +4,11 @@ import API
 import API.Account exposing (AccountDocumentInfo, fixSysListRequest)
 import API.System exposing (SystemDocumentInfo, SystemDocumentLog, SystemDocumentParams)
 import AppState exposing (AppState)
+import Components.UI.Menu as Menu
 import Dict exposing (Dict)
 import Html exposing (Html)
+import I18N
+import I18Next
 import List.Extra as ListExtra
 import Msg as MsgT exposing (UpMsg)
 
@@ -58,7 +61,10 @@ updateOverRec msg rec model =
 
 
 type alias Model x =
-    { x | account : Maybe AccountDocumentInfo }
+    { x
+        | account : Maybe AccountDocumentInfo
+        , appState : AppState
+    }
 
 
 upmessageUpdate : Maybe UpMsg -> ( Model x, Cmd parentMsg ) -> ( Model x, Cmd parentMsg )
@@ -78,3 +84,25 @@ upmessageUpdate msg ( model, cmd ) =
                             account.systems |> ListExtra.remove sid
                     in
                     ( model, Cmd.batch [ cmd, API.websocketOut <| fixSysListRequest newSysList ] )
+
+        Just (MsgT.MenuMsg menuMsg) ->
+            case menuMsg of
+                Menu.ChangeLanguage langCode ->
+                    let
+                        t =
+                            I18Next.t (I18N.translations langCode)
+
+                        tr =
+                            I18Next.tr (I18N.translations langCode) I18Next.Curly
+
+                        appState =
+                            model.appState
+
+                        newAppState =
+                            { appState | langCode = langCode, t = t, tr = tr }
+                    in
+                    ( { model | appState = newAppState }, cmd )
+
+                Menu.Logout ->
+                    -- TODO:
+                    ( model, cmd )
