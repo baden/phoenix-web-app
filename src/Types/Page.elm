@@ -88,20 +88,21 @@ upmessageUpdate msg ( model, cmd ) =
         Just (MsgT.MenuMsg menuMsg) ->
             case menuMsg of
                 Menu.ChangeLanguage langCode ->
-                    let
-                        t =
-                            I18Next.t (I18N.translations langCode)
-
-                        tr =
-                            I18Next.tr (I18N.translations langCode) I18Next.Curly
-
-                        appState =
-                            model.appState
-
-                        newAppState =
-                            { appState | langCode = langCode, t = t, tr = tr }
-                    in
-                    ( { model | appState = newAppState }, cmd )
+                    -- let
+                    --     t =
+                    --         I18Next.t (I18N.translations langCode)
+                    --
+                    --     tr =
+                    --         I18Next.tr (I18N.translations langCode) I18Next.Curly
+                    --
+                    --     appState =
+                    --         model.appState
+                    --
+                    --     newAppState =
+                    --         { appState | langCode = langCode, t = t, tr = tr }
+                    -- in
+                    -- ( { model | appState = newAppState }, cmd )
+                    ( model, cmd ) |> I18N.replaceTranslator langCode
 
                 Menu.Logout ->
                     -- TODO:

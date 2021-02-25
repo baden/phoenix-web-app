@@ -685,3 +685,12 @@ tr.log-line td:first-child {
 .menu {
     z-index: 1001;
 }
+
+.d-flex {
+    display: flex;
+}
+
+button[disabled] {
+    background-color: gray;
+    cursor: not-allowed;
+}

@@ -263,34 +263,14 @@ updatePage pageMsg model =
                     ( newModel, newCmd )
 
                 Just (Menu.ChangeLanguage langCode) ->
-                    let
-                        t =
-                            I18Next.t (I18N.translations langCode)
-
-                        tr =
-                            I18Next.tr (I18N.translations langCode) I18Next.Curly
-
-                        appState =
-                            newModel.appState
-
-                        newAppState =
-                            { appState | langCode = langCode, t = t, tr = tr }
-                    in
-                    ( { newModel | appState = newAppState }, newCmd )
+                    ( newModel, newCmd ) |> I18N.replaceTranslator langCode
 
                 Just Menu.Logout ->
                     -- ( newModel, Cmd.batch [ newCmd, saveToken "", Nav.pushUrl model.key "/login" ] )
-                    -- ( newModel, newCmd )
                     ( newModel, Cmd.batch [ newCmd, saveToken "" ] )
 
 
 
--- ( newModel, Cmd.batch [ newCmd, logout model.key ] )
--- logout : Nav.Key -> Cmd Msg
--- logout key =
---     saveToken ""
---         |> Task.andThen
---             (Nav.pushUrl key "/login")
 -- upmessageUpdate : Maybe UpMsg -> ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 -- upmessageUpdate msg ( model, cmd ) =
 --     case msg of

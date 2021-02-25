@@ -1,5 +1,8 @@
 module I18N exposing (..)
 
+-- import AppState exposing (AppState)
+-- import API.Account exposing (AccountDocumentInfo)
+
 import I18N.En
 import I18N.Ru
 import I18N.Ua
@@ -55,3 +58,46 @@ langCode2lang langCode =
 --         [ "translations"
 --         , langCode
 --         ]
+-- TODO:  Не самое элегантное решение
+-- type alias AppState a =
+--     { a
+--         | langCode : String
+--         , t : String -> String
+--         , tr : String -> I18Next.Replacements -> String
+--     }
+--
+--
+-- type alias Model m =
+--     { m | appState : AppState m }
+-- type alias Model x =
+--     { x
+--         | account : Maybe AccountDocumentInfo
+--         , appState :
+--             { x
+--                 | account : Maybe AccountDocumentInfo
+--                 , langCode : String
+--                 , t : String -> String
+--                 , tr : String -> I18Next.Replacements -> String
+--             }
+--     }
+--
+--
+-- replaceTranslator : String -> ( Model mdl, Cmd msg ) -> ( Model mdl, Cmd msg )
+
+
+replaceTranslator langCode ( model, cmd ) =
+    -- TODO: Type it.
+    let
+        t =
+            I18Next.t (translations langCode)
+
+        tr =
+            I18Next.tr (translations langCode) I18Next.Curly
+
+        appState =
+            model.appState
+
+        newAppState =
+            { appState | langCode = langCode, t = t, tr = tr }
+    in
+    ( { model | appState = newAppState }, cmd )
