@@ -1,6 +1,7 @@
 module Types exposing (..)
 
 -- import Msg as MsgT exposing (..)
+-- import Page.Home as Home
 
 import API.Account exposing (AccountDocumentInfo, fixSysListRequest)
 import API.System exposing (SystemDocumentInfo, SystemDocumentLog, SystemDocumentParams)
@@ -11,7 +12,7 @@ import Components.UI.Menu as Menu
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Page.GlobalMap as GlobalMap
-import Page.Home as Home
+import Page.Home.Types as Home
 import Page.LinkSys as LinkSys
 import Page.Login as Login
 import Page.Route as Route

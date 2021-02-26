@@ -16,6 +16,7 @@ type alias Model =
     , languagePopup : Bool
     , accountPopup : Bool
     , showLogoutModal : Bool
+    , menuVisibility : Bool
     }
 
 
@@ -29,6 +30,7 @@ type Msg
     | HideLogoutModal
     | HidePopups
     | OnLogout
+    | ToggleMenu
 
 
 type MenuMsg
@@ -42,6 +44,7 @@ init =
     , languagePopup = False
     , accountPopup = False
     , showLogoutModal = False
+    , menuVisibility = False
     }
 
 
@@ -75,6 +78,9 @@ update msg model =
         OnLogout ->
             ( model, Cmd.none, Just Logout )
 
+        ToggleMenu ->
+            ( { model | menuVisibility = not model.menuVisibility }, Cmd.none, Nothing )
+
 
 view : AccountDocumentInfo -> AppState -> Model -> Html Msg
 view account ({ t } as appState) ({ themePopup, languagePopup } as model) =
@@ -87,10 +93,10 @@ view account ({ t } as appState) ({ themePopup, languagePopup } as model) =
                 False ->
                     []
     in
-    div [ class "menu" ]
+    div [ classList [ ( "menu", True ), ( "menu-visibility", model.menuVisibility ) ] ]
         [ div [ class "menu-header" ]
             [ div [ class "logo" ] [ img [ alt "Logo", src "images/logo.svg" ] [] ]
-            , button [ class "menu-toggle-btn", id "toggleBtn" ] []
+            , button [ classList [ ( "menu-toggle-btn", True ), ( "visibility", model.menuVisibility ) ], id "toggleBtn", onClick ToggleMenu ] []
             ]
         , ul [ class "menu-items" ]
             [ li []

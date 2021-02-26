@@ -72,11 +72,6 @@ container =
     div [ class "layout" ]
 
 
-systemListTitle : String -> Html a
-systemListTitle ttl_ =
-    div [ class "title-st" ] [ text ttl_ ]
-
-
 
 -- TODO: Deprecated?
 

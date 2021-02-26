@@ -104,7 +104,6 @@ dd {
     color: black;
     border: 1px solid black;
     opacity: 1;
-
 }
 
 .head-control {
@@ -120,12 +119,6 @@ dd {
 }
 
 /* @import './leaflet.scss';*/
-
-span.title {
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
 
 .scard {
     margin-top: 10px;
@@ -517,11 +510,6 @@ a.disabled {
     pointer-events: none;
 }
 
-.container {
-    color: #DFE0F3;
-    font-size: 18px;
-}
-
 span.error {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -659,10 +647,6 @@ input.sms_code {
     border-bottom: 1px solid gray; */
 }
 
-.btn {
-    padding: 5px 10px 5px 10px;
-}
-
 tr.log-line td {
     padding-top: 15px;
 }
@@ -693,4 +677,39 @@ tr.log-line td:first-child {
 button[disabled] {
     background-color: gray;
     cursor: not-allowed;
+}
+
+.btn {
+    /* padding: 5px 10px 5px 10px; */
+    white-space: nowrap;
+}
+
+.btn-lg {
+    padding: 2px 43px 2px 18px;
+}
+
+
+.fenix {
+      -ms-flex: 1 0 30%;
+          flex: 1 0 30%;
+}
+
+@media screen and (max-width: 1200px) {
+  .fenix {
+        -ms-flex: 1 0 25%;
+            flex: 1 0 25%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .fenix {
+          -ms-flex: 1 0 100%;
+              flex: 1 0 100%;
+              /* min-width: 286px; */
+  }
+}
+
+.fenix-status .off-status {
+  background: -webkit-gradient(linear, left bottom, left top, from(#101010), to(#000000));
+  background: linear-gradient(0deg, #101010 0%, #000000 100%);
 }

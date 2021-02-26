@@ -23,6 +23,7 @@ import Msg as MsgT exposing (..)
 import Page
 import Page.GlobalMap as GlobalMap
 import Page.Home as Home
+import Page.Home.Types as HomeTypes
 import Page.LinkSys as LinkSys
 import Page.Login as Login
 import Page.NotFound as NotFound
@@ -164,7 +165,7 @@ linkSysRec =
     }
 
 
-homeRec : PageRec Home.Model Home.Msg Model Msg
+homeRec : PageRec HomeTypes.Model HomeTypes.Msg Model Msg
 homeRec =
     { get = .home
     , set = \newModel model -> { model | home = newModel }
