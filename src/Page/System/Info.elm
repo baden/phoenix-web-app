@@ -8,8 +8,8 @@ import AppState
 import Components.DateTime exposing (dateTimeFormat)
 import Components.Dates as Dates
 import Components.UI as UI exposing (..)
-import Html exposing (Html, a, div)
-import Html.Attributes as HA exposing (class, href)
+import Html exposing (Html, a, div, span)
+import Html.Attributes as HA exposing (attribute, class, href, id)
 import Html.Events as HE
 import Msg as GMsg
 import Page
@@ -17,6 +17,8 @@ import Page.System.Info.Battery exposing (chartView)
 import Page.System.Info.CmdPanel exposing (..)
 import Page.System.Info.Dialogs exposing (..)
 import Page.System.Info.Types exposing (..)
+import Svg exposing (path, svg, text_)
+import Svg.Attributes exposing (d, preserveAspectRatio, strokeDasharray, viewBox, x, y)
 import Types.Dt as DT
 
 
@@ -126,6 +128,170 @@ viewWidget child =
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 view appState model system =
+    div [ class "container" ]
+        [ div [ class "wrapper-content" ]
+            [ div [ class "details-wrapper-bg" ]
+                [ div [ class "details-title" ]
+                    [ text "АА 1234 АС\t\t\t\t\t" ]
+                , div [ class "details-items" ]
+                    [ div [ class "details-item" ]
+                        [ div [ class "title" ]
+                            [ text "Текущий режим\t\t\t\t\t\t\t" ]
+                        , div [ class "content" ]
+                            [ div [ class "content-item fenix-status fenix-big-status" ]
+                                [ span [ class "status-big-icon wait-status status-icon" ]
+                                    []
+                                , span [ class "status" ]
+                                    [ text "Ожидание" ]
+                                , span [ class "icon sleep" ]
+                                    []
+                                ]
+                            , div [ class "content-item" ]
+                                [ div [ class "details-blue-title blue-gradient-text" ]
+                                    [ span [ class "details-icon icon-search" ]
+                                        []
+                                    , text "Включить режим Поиск\t\t\t\t\t\t\t\t\t"
+                                    ]
+                                ]
+                            ]
+                        ]
+                    , div [ class "details-item" ]
+                        [ div [ class "title" ]
+                            [ text "Связь\t\t\t\t\t\t\t" ]
+                        , div [ class "content" ]
+                            [ div [ class "content-item" ]
+                                [ span [ class "name" ]
+                                    [ text "Последний сеанс связи:" ]
+                                , span [ class "text" ]
+                                    [ text "23 Июн 18:17" ]
+                                ]
+                            , div [ class "content-item" ]
+                                [ span [ class "name" ]
+                                    [ text "Следующий сеанс связи:" ]
+                                , span [ class "text" ]
+                                    [ text "23 Июн 18:47" ]
+                                ]
+                            ]
+                        ]
+                    , div [ class "details-item" ]
+                        [ div [ class "title" ]
+                            [ text "Положение\t\t\t\t\t\t\t" ]
+                        , div [ class "content" ]
+                            [ div [ class "content-item" ]
+                                [ span [ class "name" ]
+                                    [ text "Положение определено:" ]
+                                , span [ class "text" ]
+                                    [ text "14 Июн 18:23" ]
+                                ]
+                            , div [ class "content-item content-item-group" ]
+                                [ a [ class "details-blue-title blue-gradient-text", href "#" ]
+                                    [ span [ class "details-icon icon-map" ]
+                                        []
+                                    , text "Показать\t\t\t\t\t\t\t\t\t"
+                                    ]
+                                , div [ class "details-blue-title blue-gradient-text" ]
+                                    [ span [ class "details-icon icon-refresh" ]
+                                        []
+                                    , text "Обновить\t\t\t\t\t\t\t\t\t"
+                                    ]
+                                ]
+                            ]
+                        ]
+                    , div [ class "details-item" ]
+                        [ div [ class "title" ]
+                            [ text "Предполагаемое время работы батареи\t\t\t\t\t\t\t" ]
+                        , div [ class "content" ]
+                            [ div [ class "content-item" ]
+                                [ div [ class "content-item-group" ]
+                                    [ div [ class "power-status" ]
+                                        [ span [ class "power" ]
+                                            [ span [ class "power-top" ]
+                                                []
+                                            , span [ class "power-wr" ]
+                                                [ span [ class "power-bg high", attribute "style" "height: 80%" ]
+                                                    [ svg [ attribute "preserveAspectRatio" "xMinYMin meet", viewBox "0 0 500 500" ]
+                                                        [ path [ d "M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z", attribute "style" "stroke:none; fill: #323343;" ]
+                                                            []
+                                                        ]
+                                                    ]
+                                                ]
+                                            ]
+                                        , div [ class "power-status-title high" ]
+                                            [ text "85%\t\t\t\t\t\t\t\t\t\t\t" ]
+                                        ]
+                                    , span [ class "details-mode" ]
+                                        [ div [ class "wait-mode" ]
+                                            [ span [ class "mode-title" ]
+                                                [ text "Режим "
+                                                , span [ class "uppercase-txt" ]
+                                                    [ text "Ожидание" ]
+                                                , text ":"
+                                                ]
+                                            , span []
+                                                [ text "8 месяцев 17 дней\t\t\t\t\t\t\t\t\t\t\t\t" ]
+                                            ]
+                                        , div [ class "search-mode" ]
+                                            [ span [ class "mode-title" ]
+                                                [ text "Режим "
+                                                , span [ class "uppercase-txt" ]
+                                                    [ text "Поиск" ]
+                                                , text ":"
+                                                ]
+                                            , span []
+                                                [ text "8 месяцев 17 дней\t\t\t\t\t\t\t\t\t\t\t\t" ]
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    , div [ class "details-item" ]
+                        [ div [ class "title" ]
+                            [ text "SIM-карта\t\t\t\t\t\t\t" ]
+                        , div [ class "content" ]
+                            [ div [ class "content-item" ]
+                                [ span [ class "icon-sim" ]
+                                    []
+                                , span [ class "name" ]
+                                    [ text "Баланс:" ]
+                                , span [ class "text" ]
+                                    [ text "93" ]
+                                ]
+                            , div [ class "content-item topUpAccount" ]
+                                [ div [ class "number-phone accountPhone" ]
+                                    [ span [ class "details-icon icon-phone" ]
+                                        []
+                                    , span [ class "text", id "phoneForCopy" ]
+                                        [ text "+38 098 502 67 13" ]
+                                    ]
+                                , div [ class "details-blue-title blue-gradient-text topUpText" ]
+                                    [ span [ class "details-icon icon-card" ]
+                                        []
+                                    , span [ class "top-account" ]
+                                        [ text "Пополнить счет" ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                , div [ class "details-footer" ]
+                    [ a [ class "orange-gradient-text block-engine-btn modal-open cursor-pointer", href "#" ]
+                        [ span [ class "icon-block" ]
+                            []
+                        , text "Заблокировать двигатель\t\t\t\t\t\t"
+                        ]
+                    ]
+                ]
+            ]
+        , div [ class "copiedMess" ]
+            [ div [ class "phone-copied-message" ]
+                [ text "Номер телефона был скопирован\t\t\t\t" ]
+            ]
+        ]
+
+
+viewOld : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
+viewOld appState model system =
     UI.div_ <|
         [ header_expander
         , viewWidget <|

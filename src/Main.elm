@@ -659,20 +659,27 @@ view4SystemParams sysId model pageView =
 
 viewMenu : Model -> List (Html Msg)
 viewMenu model =
-    -- Хрень с этим меню, нужно решить как его прокинуть в страницы без авторизации
-    case model.page of
-        Route.Home ->
-            -- UI.header model.showQrCode ShowQrCode HideQrCode
-            case model.account of
-                Nothing ->
-                    []
-
-                Just account ->
-                    [ Menu.view account model.appState model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg)
-                    ]
-
-        _ ->
+    case model.account of
+        Nothing ->
             []
+
+        Just account ->
+            -- Хрень с этим меню, нужно решить как его прокинуть в страницы без авторизации
+            case model.page of
+                Route.Home ->
+                    -- UI.header model.showQrCode ShowQrCode HideQrCode
+                    [ Menu.view account model.appState Nothing model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+
+                Route.SystemInfo sysId ->
+                    case Dict.get sysId model.systems of
+                        Nothing ->
+                            [ Menu.view account model.appState Nothing model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+
+                        Just system ->
+                            [ Menu.view account model.appState (Just system) model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+
+                _ ->
+                    []
 
 
 

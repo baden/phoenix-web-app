@@ -1,6 +1,7 @@
 port module Components.UI.Menu exposing (..)
 
 import API.Account as Account exposing (AccountDocumentInfo)
+import API.System exposing (SystemDocumentInfo)
 import AppState exposing (AppState)
 import AssocList as Dict exposing (Dict)
 import Components.UI.Theme as Theme
@@ -82,8 +83,8 @@ update msg model =
             ( { model | menuVisibility = not model.menuVisibility }, Cmd.none, Nothing )
 
 
-view : AccountDocumentInfo -> AppState -> Model -> Html Msg
-view account ({ t } as appState) ({ themePopup, languagePopup } as model) =
+view : AccountDocumentInfo -> AppState -> Maybe SystemDocumentInfo -> Model -> Html Msg
+view account ({ t } as appState) msystem ({ themePopup, languagePopup } as model) =
     let
         popupShow i =
             case i of
@@ -92,15 +93,23 @@ view account ({ t } as appState) ({ themePopup, languagePopup } as model) =
 
                 False ->
                     []
+
+        systemSelected =
+            case msystem of
+                Nothing ->
+                    False
+
+                Just _ ->
+                    True
     in
     div [ classList [ ( "menu", True ), ( "menu-visibility", model.menuVisibility ) ] ]
         [ div [ class "menu-header" ]
-            [ div [ class "logo" ] [ img [ alt "Logo", src "images/logo.svg" ] [] ]
+            [ div [ class "logo" ] [ img [ alt "Logo", src "/images/logo.svg" ] [] ]
             , button [ classList [ ( "menu-toggle-btn", True ), ( "visibility", model.menuVisibility ) ], id "toggleBtn", onClick ToggleMenu ] []
             ]
         , ul [ class "menu-items" ]
             [ li []
-                [ a [ class "active", href "#" ]
+                [ a [ class "active", href "/" ]
                     [ span [ class "list-icon menu-icon" ] []
                     , span [ class "menu-item-title" ] [ text <| t "Список Фениксов" ]
                     ]
@@ -117,13 +126,10 @@ view account ({ t } as appState) ({ themePopup, languagePopup } as model) =
                 , menuAccount account appState model
                 ]
             ]
-        , div [ class "submenu" ]
+        , div [ classList [ ( "submenu", True ), ( "submenu-active", systemSelected ) ] ]
             [ span [ class "icon-car submenu-type" ] []
             , div [ class "submenu-header" ]
-                [ a [ class "submenu-back", href "#" ]
-                    [ span [ class "arrow" ] []
-                    , span [ class "title" ] [ text <| t "Список Фениксов" ]
-                    ]
+                [ a [ class "submenu-back", href "/" ] [ span [ class "arrow" ] [], span [ class "title" ] [ text <| t "Список Фениксов" ] ]
                 , span [ class "submenu-name" ] [ text "АА 1234 АС" ]
                 , span [ class "submenu-status" ]
                     [ div [ class "fenix-status" ]
