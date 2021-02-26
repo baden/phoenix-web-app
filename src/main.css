@@ -713,3 +713,8 @@ button[disabled] {
   background: -webkit-gradient(linear, left bottom, left top, from(#101010), to(#000000));
   background: linear-gradient(0deg, #101010 0%, #000000 100%);
 }
+
+.modal-body {
+    color: #DFE0F3;
+    font-size: 1.14rem;
+}

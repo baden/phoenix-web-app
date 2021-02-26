@@ -78,13 +78,13 @@ container =
 
 cmdButton : String -> m -> Html m
 cmdButton label cmd =
-    Html.button [ class "btn btn-sm blue-btn", onClick cmd ]
+    Html.button [ class "btn btn-md btn-primary blue-btn", onClick cmd ]
         [ text label ]
 
 
 cmdIconButton : String -> m -> Html m
 cmdIconButton label cmd =
-    Html.button [ class "btn btn-sm blue-btn", onClick cmd ]
+    Html.button [ class "btn btn-md btn-primary blue-btn", onClick cmd ]
         [ Html.i [ HA.class ("fas fa-" ++ label) ] [] ]
 
 
@@ -537,21 +537,31 @@ modal text_title content buttons =
                     ModalHtml html ->
                         html
     in
-    Html.div
-        [ class "modal open left-align"
-        , HA.tabindex 0
-        , HA.style "z-index" "1003"
-        , HA.style "display" "block"
-        , HA.style "opacity" "1"
-        , HA.style "top" "10%"
-        , HA.style "transform" "scaleX(1) scaleY(1)"
-        ]
-        [ Html.div [ class "modal-content" ] <|
-            [ Html.h4 []
-                [ Html.text text_title ]
+    -- Html.div
+    --     [ class "modal open left-align"
+    --     , HA.tabindex 0
+    --     , HA.style "z-index" "1003"
+    --     , HA.style "display" "block"
+    --     , HA.style "opacity" "1"
+    --     , HA.style "top" "10%"
+    --     , HA.style "transform" "scaleX(1) scaleY(1)"
+    --     ]
+    --     [ Html.div [ class "modal-content" ] <|
+    --         [ Html.h4 []
+    --             [ Html.text text_title ]
+    --         ]
+    --             ++ (content |> List.map element)
+    --     , Html.div [ class "modal-footer" ] buttons
+    --     ]
+    Html.div [ class "modal-bg show" ]
+        [ div [ class "modal-wr" ]
+            [ div [ class "modal-content modal-content-light" ]
+                [ div [ class "modal-close close modal-close-btn" ] []
+                , div [ class "modal-title" ] [ text text_title ]
+                , div [ class "modal-body" ] (content |> List.map element)
+                , div [ class "modal-btn-group" ] buttons
+                ]
             ]
-                ++ (content |> List.map element)
-        , Html.div [ class "modal-footer" ] buttons
         ]
 
 

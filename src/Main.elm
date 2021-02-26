@@ -664,11 +664,19 @@ viewMenu model =
             []
 
         Just account ->
+            let
+                commonMenu =
+                    [ Menu.view account model.appState Nothing model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+            in
             -- Хрень с этим меню, нужно решить как его прокинуть в страницы без авторизации
             case model.page of
                 Route.Home ->
                     -- UI.header model.showQrCode ShowQrCode HideQrCode
-                    [ Menu.view account model.appState Nothing model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+                    -- [ Menu.view account model.appState Nothing model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+                    commonMenu
+
+                Route.LinkSys ->
+                    commonMenu
 
                 Route.SystemInfo sysId ->
                     case Dict.get sysId model.systems of
