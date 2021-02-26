@@ -11,3 +11,8 @@
 Если нет необходимости исправлять русский перевод, то файл [Ru.elm] редактировать не нужно.
 Но если в тексте будет обнаружена ошибка или нужно изменить содержимое, то можно это сделать,
 изменив текст после слова **string** по аналогии.
+
+## Прямые ссылки для скачивания файлов перевода:
+* [Русский](https://raw.githubusercontent.com/baden/phoenix-web-app/master/src/I18N/Ru.elm)
+* [Английский](https://raw.githubusercontent.com/baden/phoenix-web-app/master/src/I18N/En.elm)
+* [Украинский](https://raw.githubusercontent.com/baden/phoenix-web-app/master/src/I18N/Ua.elm)
