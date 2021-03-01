@@ -1,8 +1,9 @@
 .fenix
 	position: relative
-	flex: 0 0 30%
+	flex: 1 1 100%
+	max-width: 370px
 	min-height: 305px
-	max-width: 388px
+	margin: 15px
 	&-type
 		color: $secondary
 		position: absolute
@@ -12,8 +13,8 @@
 	&-list
 		padding-top: 14px
 		display: flex
-		gap: 30px
 		flex-wrap: wrap
+		margin: 0 -15px
 	&-bg
 		background: $bgckGradient
 		box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5)
@@ -92,7 +93,10 @@
 		justify-content: space-between
 		position: relative
 		z-index: 2
-		gap: 44px
+		gap: 0 30px
+		.btn-md
+			padding: 13px 10px
+			width: 150px
 	&-power-wr
 		display: flex
 		margin: 30px 0 27px
@@ -217,13 +221,13 @@
 		border-radius: 2px
 		svg
 			position: absolute
-			left: 0
-			right: 0
-			top: 0
+			left: -2px
+			right: -2px
+			top: -2px
 		&.low
 			background: $redGradient
 		&.full
-			height: 100% !important
+			height: 28px!important
 			background: $greenGradient
 			svg
 				display: none

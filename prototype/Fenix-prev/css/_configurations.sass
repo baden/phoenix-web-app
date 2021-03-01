@@ -134,12 +134,17 @@
 				display: block
 				margin: auto
 
-.bindingPhoneShowed, .setPasswordShowed
+.bindingPhoneShowed, .setPasswordShowed, .phoneText
 	display: none
+
+.security-wr
+	display: flex
+	flex-direction: column
 
 .setting
 	&-item
 		margin-bottom: 15px
+		width: 100%
 	&-item-wr
 		flex: 0 0 60%
 		display: flex
@@ -241,6 +246,7 @@
 		position: relative
 		display: flex
 		margin-top: 0
+		margin-bottom: 40px
 		.checkmark-text
 			font-size: 1rem
 			color: $defaultTxt
@@ -337,3 +343,9 @@
 		display: block
 		margin-left: 25px
 
+.details-edit-btn
+	margin-left: auto
+
+.setting-det-phone
+	width: 100%
+	display: flex

@@ -1,6 +1,6 @@
-module Page.Route exposing (routeParser, Page(..))
+module Page.Route exposing (Page(..), PageBase(..), routeParser)
 
-import Url.Parser as Parser exposing (Parser, oneOf, s, string, map, top, (</>))
+import Url.Parser as Parser exposing ((</>), Parser, map, oneOf, s, string, top)
 
 
 type alias SysId =
@@ -21,6 +21,12 @@ type Page
     | SystemLogs String
     | BouncePage
     | LinkSys
+
+
+type PageBase
+    = HomeBase
+    | SystemInfoBase
+    | SystemLogsBase
 
 
 routeParser : Parser (Page -> a) a

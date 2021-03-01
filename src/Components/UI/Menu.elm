@@ -10,6 +10,7 @@ import Html.Attributes as HA exposing (alt, attribute, class, classList, href, i
 import Html.Events as HE exposing (onClick)
 import I18N
 import Json.Decode as Json
+import Page.Route exposing (Page)
 
 
 type alias Model =
@@ -83,8 +84,8 @@ update msg model =
             ( { model | menuVisibility = not model.menuVisibility }, Cmd.none, Nothing )
 
 
-view : AccountDocumentInfo -> AppState -> Maybe SystemDocumentInfo -> Model -> Html Msg
-view account ({ t } as appState) msystem ({ themePopup, languagePopup } as model) =
+view : Page.Route.PageBase -> AccountDocumentInfo -> AppState -> Maybe SystemDocumentInfo -> Model -> Html Msg
+view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup } as model) =
     let
         popupShow i =
             case i of
@@ -94,13 +95,28 @@ view account ({ t } as appState) msystem ({ themePopup, languagePopup } as model
                 False ->
                     []
 
-        systemSelected =
+        ( systemSelected, systemMenu ) =
             case msystem of
                 Nothing ->
-                    False
+                    ( False, [] )
 
-                Just _ ->
-                    True
+                Just system ->
+                    ( True
+                    , [ menuItem ("/map/" ++ system.id) (pageBase == Page.Route.HomeBase) "icon-map" "Карта"
+                      , menuItem ("/system/" ++ system.id) (pageBase == Page.Route.SystemInfoBase) "icon-manage" "Управление"
+                      , menuItem ("/system/" ++ system.id ++ "/config") (pageBase == Page.Route.HomeBase) "icon-manage" "Настройки"
+                      , menuItem ("/system/" ++ system.id ++ "/logs") (pageBase == Page.Route.SystemLogsBase) "icon-calendar" "События"
+                      ]
+                    )
+
+        menuItem : String -> Bool -> String -> String -> Html Msg
+        menuItem url active icon title_ =
+            li []
+                [ a [ classList [ ( "active", active ) ], href url ]
+                    [ span [ class (icon ++ " submenu-icon") ] []
+                    , span [ class "submenu-item-title" ] [ text <| t <| "menu." ++ title_ ]
+                    ]
+                ]
     in
     div [ classList [ ( "menu", True ), ( "menu-visibility", model.menuVisibility ) ] ]
         [ div [ class "menu-header" ]
@@ -108,12 +124,8 @@ view account ({ t } as appState) msystem ({ themePopup, languagePopup } as model
             , button [ classList [ ( "menu-toggle-btn", True ), ( "visibility", model.menuVisibility ) ], id "toggleBtn", onClick ToggleMenu ] []
             ]
         , ul [ class "menu-items" ]
-            [ li []
-                [ a [ class "active", href "/" ]
-                    [ span [ class "list-icon menu-icon" ] []
-                    , span [ class "menu-item-title" ] [ text <| t "Список Фениксов" ]
-                    ]
-                ]
+            [ li [] [ a [ class "active", href "/" ] [ span [ class "list-icon menu-icon" ] [], span [ class "menu-item-title" ] [ text <| t "Список Фениксов" ] ] ]
+            , menuItem "/" True "list-icon" "Список Фениксов"
             ]
         , div [ class "menu-options-wr" ]
             [ div [ class "menu-options" ]
@@ -139,32 +151,7 @@ view account ({ t } as appState) msystem ({ themePopup, languagePopup } as model
                         ]
                     ]
                 ]
-            , ul [ class "submenu-items" ]
-                [ li []
-                    [ a [ href "#" ]
-                        [ span [ class "icon-map submenu-icon" ] []
-                        , span [ class "submenu-item-title" ] [ text "Карта" ]
-                        ]
-                    ]
-                , li []
-                    [ a [ class "active", href "#" ]
-                        [ span [ class "icon-manage submenu-icon" ] []
-                        , span [ class "submenu-item-title" ] [ text "Управление" ]
-                        ]
-                    ]
-                , li []
-                    [ a [ href "#" ]
-                        [ span [ class "icon-settings submenu-icon" ] []
-                        , span [ class "submenu-item-title" ] [ text "Настройки" ]
-                        ]
-                    ]
-                , li []
-                    [ a [ href "#" ]
-                        [ span [ class "icon-calendar submenu-icon" ] []
-                        , span [ class "submenu-item-title" ] [ text "События" ]
-                        ]
-                    ]
-                ]
+            , ul [ class "submenu-items" ] systemMenu
             ]
         , modal model.showLogoutModal appState
         ]

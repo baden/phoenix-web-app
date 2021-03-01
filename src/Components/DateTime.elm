@@ -3,8 +3,8 @@ module Components.DateTime exposing (..)
 import Time
 
 
-dateTimeFormat : Time.Zone -> Time.Posix -> String
-dateTimeFormat timeZone time =
+dateFormat : Time.Zone -> Time.Posix -> String
+dateFormat timeZone time =
     let
         -- year =
         --     Time.toYear timeZone time |> String.fromInt
@@ -13,18 +13,48 @@ dateTimeFormat timeZone time =
 
         day =
             Time.toDay timeZone time |> String.fromInt |> String.padLeft 2 '0'
+    in
+    day ++ "/" ++ month
 
+
+timeFormat : Time.Zone -> Time.Posix -> String
+timeFormat timeZone time =
+    let
         hour =
             Time.toHour timeZone time |> String.fromInt |> String.padLeft 2 '0'
 
         minute =
             Time.toMinute timeZone time |> String.fromInt |> String.padLeft 2 '0'
-
-        -- second =
-        --     Time.toSecond timeZone time |> String.fromInt |> String.padLeft 2 '0'
     in
-        -- day ++ "/" ++ month ++ "/" ++ year ++ " " ++ hour ++ ":" ++ minute ++ ":" ++ second
-        day ++ "/" ++ month ++ " " ++ hour ++ ":" ++ minute
+    hour ++ ":" ++ minute
+
+
+dateTimeFormat : Time.Zone -> Time.Posix -> String
+dateTimeFormat timeZone time =
+    dateFormat timeZone time ++ " " ++ timeFormat timeZone time
+
+
+
+-- let
+--     -- year =
+--     --     Time.toYear timeZone time |> String.fromInt
+--     month =
+--         Time.toMonth timeZone time |> toNumMonth
+--
+--     day =
+--         Time.toDay timeZone time |> String.fromInt |> String.padLeft 2 '0'
+--
+--     hour =
+--         Time.toHour timeZone time |> String.fromInt |> String.padLeft 2 '0'
+--
+--     minute =
+--         Time.toMinute timeZone time |> String.fromInt |> String.padLeft 2 '0'
+--
+--     -- second =
+--     --     Time.toSecond timeZone time |> String.fromInt |> String.padLeft 2 '0'
+-- in
+-- -- day ++ "/" ++ month ++ "/" ++ year ++ " " ++ hour ++ ":" ++ minute ++ ":" ++ second
+-- day ++ "/" ++ month ++ " " ++ hour ++ ":" ++ minute
 
 
 toNumMonth : Time.Month -> String

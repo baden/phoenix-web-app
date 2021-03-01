@@ -176,6 +176,14 @@
 		background: transparent
 		border: none
 		cursor: pointer
+		position: relative
+		&:after
+			content: ""
+			position: absolute
+			left: -20px
+			right: -20px
+			top: -10px
+			bottom: -10px
 		.icon-edit
 			color: #fff
 			font-size: 16px
@@ -349,3 +357,12 @@
 .setting-det-phone
 	width: 100%
 	display: flex
+
+.details-power
+	.content-item-group
+		flex-wrap: nowrap
+		
+
+.details-title-flat.details-item 
+	.content-item .name
+		width: 180px

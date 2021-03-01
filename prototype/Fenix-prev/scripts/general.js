@@ -36,8 +36,9 @@ function selectLanguage(theme) {
 }
 
 $('#toggleBtn').click(function() {
-	$(this).closest('.menu').toggleClass('menu-visibility')
-	$(this).toggleClass('visibility')
+	$(this).closest('.menu').toggleClass('menu-visibility');
+	$(this).toggleClass('visibility');
+	$(this).closest('.layout').find('.closeMenuBg').toggleClass('show');
 })
 
 $('.closeAddFenix').click(function() {
@@ -60,19 +61,24 @@ $('.submenu-back').click(function() {
 	$(this).closest('.submenu').removeClass('submenu-active')
 });
 
+// cloe menu when click to bg
+
+$('.closeMenuBg').click(function() {
+	$(this).removeClass('show');
+	$(this).closest('.layout').find('.menu').removeClass('menu-visibility');
+	$(this).closest('.layout').find('#toggleBtn').removeClass('visibility');
+})
+
 //submenu settings
 
 $('.submenu-settings-item').click(function() {
-	$('.submenu-settings-item').removeClass('active')
-	$(this).addClass('active')
+	$('.submenu-settings-item').removeClass('active');
+	$(this).addClass('active');
 })
-
 
 $('.open-maps').click(function() {
 	$(this).closest('body').find('.submenu').addClass('submenu-active')
 });
-
-
 
 //modal
 
@@ -93,11 +99,35 @@ $('.extend-mode-btn').click(function() {
 
 //show/hidden number phone
 
-$('.number-account').click(function() {
-	$(this).toggleClass('number-account-actions')
-	$(this).closest('.content').find('.number-phone').toggleClass('hidden')
+$('.topUpAccount').click(function() {
+
+	var $phone = $('.accountPhone');
+	$phone.addClass("showAnimate")
+	setTimeout(function(){
+	    $phone.removeClass("showAnimate");
+	}, 7000);
+
+	var $title = $('.topUpText');
+	$title.addClass("hidden")
+	setTimeout(function(){
+	    $title.removeClass("hidden");
+	}, 7000);
 })
 
+$('#phoneForCopy').click(function() {
+  var $temp = $("<input>");
+  $("body").append($temp);
+  $temp.val($(this).text()).select();
+  document.execCommand("copy");
+  $temp.remove();
+
+	var $title = $('.copiedMess');
+	$title.addClass("showAnimate")
+	setTimeout(function(){
+	    $title.removeClass("showAnimate");
+	}, 7000);
+
+})
 
 // select active item
 
@@ -110,10 +140,22 @@ $('.config-select-item').click(function() {
 
 $('#bindingPhone').on('click', function () {
     if ( $(this).is(':checked') ) {
-    	$(this).closest('.config-security-item').find('.bindingPhoneShowed').addClass('show')
+    	$(this).closest('.security-wr').find('.bindingPhoneShowed').addClass('show')
+    	$(this).closest('.security-wr').find('.withoutPhoneText').addClass('hidden')
+    	$(this).closest('.security-wr').find('.phoneText').addClass('show')
+    } else {
+    	$(this).closest('.security-wr').find('.bindingPhoneShowed').removeClass('show')
+    	$(this).closest('.security-wr').find('.withoutPhoneText').removeClass('hidden')
+    	$(this).closest('.security-wr').find('.phoneText').removeClass('show')
     }
 })
 
+$('#bindingPhoneText').on('keyup', function() {
+	var phone = $(this).val();
+  $('#phoneText').text(phone);
+});
+
+//password
 
 $('#setPassword').on('click', function () {
     if ( $(this).is(':checked') ) {
@@ -121,14 +163,23 @@ $('#setPassword').on('click', function () {
     }
 })
 
-//slim scroll
-$(function(){
-	$('#scroll-wr').slimScroll({
-		height: '80vh',
-		color: '#8F90A3',
-		size: '5px',
-		railOpacity: 1,
-		borderRadius: '10px',
-		right: '15px'
-	});
+$('#setPasswordText').on('keyup', function() {
+	var password = $(this).val();
+  $('#passwordText').text(password);
 });
+
+
+if (window.matchMedia("(min-width: 768px)").matches) {
+	$(function(){
+		if($('#scroll-wr').length) {
+			$('#scroll-wr').slimScroll({
+				height: '80vh',
+				color: '#8F90A3',
+				size: '5px',
+				railOpacity: 1,
+				borderRadius: '10px',
+				right: '15px'
+			});
+		}
+	});
+}

@@ -651,5 +651,8 @@ grayLinkButton label_ url_ =
 
 
 div_ : List (Html a) -> Html a
-div_ =
-    Html.div [ class "content-wr" ]
+div_ clilds =
+    Html.div [ class "container" ]
+        [ Html.div [ class "wrapper-content wrapper-page" ]
+            [ Html.div [ class "wrapper-bg" ] clilds ]
+        ]

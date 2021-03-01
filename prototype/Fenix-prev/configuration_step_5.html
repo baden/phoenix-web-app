@@ -138,40 +138,52 @@
 
 					<div class="title-st">Безопасность</div>
 
-					<span class="page-subtext">
-						Чтобы никто посторонний не смог получить управление Вашим Фениксом, установите дополнительную защиту.
-					</span>
-					<span class="page-subtext">
-						По умолчанию управление возможно с любого телефона и SMS-коды управления имеют вид: link. Но для безопасности вы можете привязать управление к конкретному телефону и установить свой код доступа
-					</span>
+					<div class="security-wr">
 
+						<span class="page-subtext">
+							Чтобы никто посторонний не смог получить управление Вашим Фениксом, вы можете привязать управление к конкретному телефону и установить свой код доступа.
+						</span>
 
-					<div class="config-security-item">
-						<div class="toggler toggler-show-data">
-							<span class="toggler-title">Привязать к телефону</span>
-							<label class="toggler-wr">
-								<input type="checkbox" id="bindingPhone">
-								<span class="toggler-icon"></span>
-							</label>
+						<span class="page-subtext withoutPhoneText">
+							По умолчанию управление возможно с любого телефона. 
+						</span>
+
+						<span class="page-subtext phoneText">
+							Управление возможно только с телефона:
+							<div>+380 <span id="phoneText"></span></div>
+						</span>
+
+						<span class="page-subtext">
+							SMS-коды управления имеют вид: <span id="passwordText"></span> link. 
+						</span>
+
+						<div class="config-security-item">
+							<div class="toggler toggler-show-data">
+								<span class="toggler-title">Привязать к телефону</span>
+								<label class="toggler-wr">
+									<input type="checkbox" id="bindingPhone">
+									<span class="toggler-icon"></span>
+								</label>
+							</div>
+							<div class="config-set-phone input-st bindingPhoneShowed">
+								<span class="phone-prefix">+380</span>
+								<input autocomplete="off" id="bindingPhoneText" maxlength="9">
+							</div>
 						</div>
-						<div class="config-set-phone input-st bindingPhoneShowed">
-							<span class="phone-prefix">+380</span>
-							<input autocomplete="off">
-						</div>
-					</div>
 
-					<div class="config-security-item">
-						<div class="toggler toggler-show-data">
-							<span class="toggler-title">Установить пароль доступа</span>
-							<label class="toggler-wr">
-								<input type="checkbox" id="setPassword">
-								<span class="toggler-icon"></span>
-							</label>
-						</div>
+						<div class="config-security-item">
+							<div class="toggler toggler-show-data">
+								<span class="toggler-title">Установить пароль доступа</span>
+								<label class="toggler-wr">
+									<input type="checkbox" id="setPassword">
+									<span class="toggler-icon"></span>
+								</label>
+							</div>
 
-						<div class="input-st setPasswordShowed">
-							<span class="input-sm-label">Вводите только латинские буквы и цифры</span>
-							<input autocomplete="off" value="*111#">
+							<div class="input-st setPasswordShowed">
+								<span class="input-sm-label">Вводите только латинские буквы и цифры</span>
+								<input autocomplete="off" value="" id="setPasswordText">
+							</div>
 						</div>
 					</div>
 

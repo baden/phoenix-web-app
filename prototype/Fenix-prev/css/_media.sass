@@ -1,0 +1,194 @@
+@media screen and (max-width: 1200px)
+	.fenix
+		flex: 0 0 25%
+		&-list
+			gap: 20px
+
+@media screen and (max-width: 960px)
+	.container
+		width: 100%
+	.menu
+		position: fixed
+		flex: 0 0 0
+		width: 90px
+		height: 90px
+		background: transparent
+		z-index: 101
+		.menu-toggle-btn
+			background: $bgDark url(../images/menu_burger.svg) no-repeat center/24px 24px
+			filter: drop-shadow(0px 3px 15px rgba(0, 0, 0, 0.5))
+			flex: 0 0 48px
+			height: 48px
+			border-radius: 6px
+			&.visibility
+				width: 22px
+				height: 22px
+				background: url(../images/toggle_menu.svg) no-repeat center/22px 22px
+				cursor: pointer
+				border: none
+				margin-top: 20px
+				margin-right: -10px
+		.logo, .menu-items, .menu-options-wr, .submenu
+			display: none
+		.menu-header
+			padding: 0 12px
+			border-bottom: none
+			min-height: auto
+	.menu-visibility
+		flex: auto
+		width: 334px
+		background: $bgDark
+		height: 100vh
+		.menu-options-wr
+			padding: 0 30px
+		.logo, .menu-items, .menu-options-wr, .menu-item-title, 
+		#selectedTheme, #selectedLanguage, .accaunt-title,
+		.submenu-back .title, .submenu-item-title, .status, .submenu-type, .submenu
+			display: block
+		.menu-header
+			border-bottom: 1px solid $bgLight
+			padding: 20px 12px
+			min-height: 99px
+
+	.menu-close-bg
+		position: fixed
+		z-index: 100
+		top: 0
+		bottom: 0
+		right: 0
+		left: 0
+		background-color: rgba(0,0,0,0.6)
+		transition: opacity .15s linear
+
+@media screen and (max-width: 768px)
+	.container
+		background: $bgDark
+		padding: 88px 16px 20px
+	.container.container-login
+		padding-top: 50px
+		.wrapper-bg
+			min-height: 90%
+	.wrapper-page
+		margin: 0
+	.wrapper-content
+		margin: 0
+		width: 100%
+		max-width: 100%
+		min-height: 100%
+		&-footer
+			justify-content: center
+			.dropdown
+				margin: 0 10px
+	.wrapper-bg
+		padding: 0
+		min-height: 100%
+		.close
+			margin: 0 0 0
+			position: relative
+			top: -50px
+	.wrapper-content-btn, .btn.mt-40, .btn.mt-30
+		margin-top: auto
+	.led-indicator-wr
+		margin: 4px -16px 0
+		position: relative
+		bottom: -20px
+	.form-list
+		padding-left: 0
+	.details-wrapper-bg
+		padding: 0
+		min-height: 100%
+	.details-item
+		flex-direction: column
+		justify-content: flex-start
+		.content
+			padding-left: 0
+			flex: 0 0 auto
+		.title
+			flex: 0 0 auto
+			margin-bottom: 12px
+			br
+				display: none
+	.details-footer
+		margin: auto -16px 0
+		position: relative
+		bottom: -20px
+		flex-wrap: wrap
+		flex-direction: row-reverse
+	.details
+		&-items
+			padding: 20px 0 0
+		&-item:not(:last-child)
+			padding-bottom: 20px
+		&-item
+			.content-item-group
+				.details-blue-title
+					width: auto
+					margin-bottom: 5px
+	.revert-btn
+		position: relative
+		top: -60px
+	.fenix
+		flex: 0 0 100%
+		max-width: 450px
+		&-footer
+			gap: 0 7px
+			.btn-md
+				padding: 2px 15px
+		&-bg
+			padding: 15px 20px 15px
+	.locations-notifications
+		width: auto
+		min-width: 300px
+		&-close
+			flex: 0 0 14px
+
+	.mob-hidde
+		display: none
+
+	.setting-item-wr
+		padding-left: 0
+
+	.accaunt-link
+		display: flex
+		flex-direction: column
+		align-items: center
+		.link
+			margin: 15px 0 0
+
+	.dropdown-list
+		right: -15px
+		padding: 10px 0
+
+	.modal
+		&-sm
+			max-width: 100%
+		&-content
+			margin: auto 0 0
+			padding-top: 20px
+			position: relative
+			max-width: 100%
+		&-close
+			top: -40px
+			position: absolute
+		&-title
+			padding: 0 10px 20px
+		&-btn-group
+			padding: 0 15px 20px
+			justify-content: space-between
+			gap: 10px
+			.btn
+				width: 45%
+		&-img-mob
+			display: flex
+		&-body
+			padding: 0 15px 20px
+			.list
+				margin-top: 0
+			.extend-mode
+				flex-direction: column
+				gap: 6px 0
+	.modal-btn-group .btn
+		min-width: 130px
+		
+	.details-title
+		font-size: 2rem

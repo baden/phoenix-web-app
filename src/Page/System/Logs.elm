@@ -3,10 +3,11 @@ module Page.System.Logs exposing (Model, Msg(..), init, update, view)
 import API
 import API.System as System exposing (State(..), SystemDocumentInfo, SystemDocumentLog)
 import AppState
-import Components.DateTime exposing (dateTimeFormat)
-import Components.UI as UI exposing (..)
-import Html exposing (Html, a, div)
-import Html.Attributes as HA exposing (class, href)
+import Components.DateTime exposing (dateFormat, timeFormat)
+import Components.UI as UI
+import Html exposing (Html, a, button, div, li, span, text, ul)
+import Html.Attributes as HA exposing (class, href, id)
+import Html.Events as HE exposing (onClick)
 import Json.Encode as Encode
 import Msg as GMsg
 import Types.Dt as DT
@@ -47,39 +48,80 @@ getLogs sysId offset =
     API.websocketOut <| System.getLogs sysId offset
 
 
-view : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe (List SystemDocumentLog) -> UI Msg
-view appState model system logs =
-    UI.div_ <|
-        [ header_expander
-        , row
-            [ iconButton "arrow-left" ("/system/" ++ system.id)
-            , stitle system.title
+view : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe (List SystemDocumentLog) -> Html Msg
+view ({ t } as appState) model system mlogs =
+    let
+        logsBody =
+            case mlogs of
+                Nothing ->
+                    [ li [] [ text "Не загружено. Нажимте кнопку Обновить." ] ]
+
+                Just logs ->
+                    let
+                        logLine itm =
+                            let
+                                date =
+                                    itm.dt |> DT.toPosix |> dateFormat appState.timeZone
+
+                                time =
+                                    itm.dt |> DT.toPosix |> timeFormat appState.timeZone
+                            in
+                            li []
+                                [ span [ class "action-date" ]
+                                    [ span [] [ text date ], span [] [ text time ] ]
+
+                                -- , span [ HA.property "innerHTML" (Encode.string itm.text) ] []
+                                , text itm.text
+                                ]
+                    in
+                    logs
+                        |> List.map logLine
+    in
+    div [ class "container" ]
+        [ div [ class "wrapper-content" ]
+            [ div [ class "details-wrapper-bg scroll-wr" ]
+                [ div [ class "details-header" ]
+                    [ div [ class "details-title" ] [ text "События\t\t\t\t\t\t" ]
+                    , button [ class "revert-btn", onClick (OnToday system.id 100000000000) ] [ span [ class "icon-revert" ] [] ]
+                    ]
+                , ul [ class "list action-list", id "scroll-wr" ] logsBody
+                ]
             ]
-        , row_item [ text "События" ]
-        , row
-            [ UI.cmdTextIconButton "sync" "Обновить" (OnToday system.id 100000000000) ]
         ]
-            ++ viewLogs appState logs
 
 
-viewLogs : AppState.AppState -> Maybe (List SystemDocumentLog) -> List (UI Msg)
-viewLogs appState mlogs =
-    case mlogs of
-        Nothing ->
-            [ UI.row_item [ text "Не загружено. Нажимте кнопку Обновить." ] ]
 
-        Just logs ->
-            let
-                i =
-                    \itm ->
-                        let
-                            dt =
-                                itm.dt |> DT.toPosix |> dateTimeFormat appState.timeZone
-                        in
-                        -- Html.tr [] [ Html.td [] [ text dt ], Html.td [] [ text itm.text ] ]
-                        -- Html.tr [] [ Html.td [] [ text dt ], Html.td [] [ Html.node "baden-log-line" [ HA.property "data-html" (Encode.string itm.text) ] [] ] ]
-                        Html.tr [ class "log-line" ] [ Html.td [] [ text dt ], Html.td [] [ Html.node "baden-log-line" [ HA.attribute "data-html" itm.text ] [] ] ]
-
-                -- Html.tr [] [ Html.td [] [ text dt ], Html.td [ HA.property "innerHTML" (Encode.string itm.text) ] [] ]
-            in
-            [ Html.table [] (logs |> List.map i) ]
+-- viewOld : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe (List SystemDocumentLog) -> Html Msg
+-- viewOld appState model system logs =
+--     UI.div_ <|
+--         [ UI.header_expander
+--         , UI.row
+--             [ UI.iconButton "arrow-left" ("/system/" ++ system.id)
+--             , stitle system.title
+--             ]
+--         , UI.row_item [ text "События" ]
+--         , row
+--             [ UI.cmdTextIconButton "sync" "Обновить" (OnToday system.id 100000000000) ]
+--         ]
+--             ++ viewLogs appState logs
+-- viewLogs : AppState.AppState -> Maybe (List SystemDocumentLog) -> List (Html Msg)
+-- viewLogs appState mlogs =
+--     case mlogs of
+--         Nothing ->
+--             [ UI.row_item [ text "Не загружено. Нажимте кнопку Обновить." ] ]
+--
+--         Just logs ->
+--             let
+--                 i =
+--                     \itm ->
+--                         let
+--                             dt =
+--                                 itm.dt |> DT.toPosix |> dateTimeFormat appState.timeZone
+--                         in
+--                         -- Html.tr [] [ Html.td [] [ text dt ], Html.td [] [ text itm.text ] ]
+--                         -- Html.tr [] [ Html.td [] [ text dt ], Html.td [] [ Html.node "baden-log-line" [ HA.property "data-html" (Encode.string itm.text) ] [] ] ]
+--                         Html.tr [ class "log-line" ] [ Html.td [] [ text dt ], Html.td [] [ Html.node "baden-log-line" [ HA.attribute "data-html" itm.text ] [] ] ]
+--
+--                 -- Html.tr [] [ Html.td [] [ text dt ], Html.td [ HA.property "innerHTML" (Encode.string itm.text) ] [] ]
+--             in
+--             [ Html.table [] (logs |> List.map i) ]
