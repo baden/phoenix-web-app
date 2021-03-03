@@ -467,9 +467,9 @@ span.params_waited {
     margin-bottom: 1px;
 }
 
-.progress {
+/* .progress {
     position: absolute !important;
-}
+} */
 
 .cmdWaitLabel {
     margin-top: 10px;

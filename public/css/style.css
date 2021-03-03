@@ -2187,10 +2187,13 @@ button, select, input {
   font-weight: 600;
   font-size: 1rem;
   color: #fff;
-  margin-right: 55px;
   display: -webkit-box;
   display: -ms-flexbox;
-  display: flex; }
+  display: flex;
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 120px;
+          flex: 0 0 120px;
+  width: 120px; }
   .action-date span:first-child {
     margin-right: 5px; }
 .action-list {
@@ -3245,4 +3248,26 @@ button, select, input {
 
   .details-mode {
     padding-left: 5px;
-    padding-top: 3px; } }
+    padding-top: 3px; }
+
+  .list li {
+    margin-bottom: 10px; }
+
+  .action-date {
+    width: 100px;
+    -webkit-box-flex: 0;
+        -ms-flex: 0 0 100px;
+            flex: 0 0 100px; }
+
+  .scroll-wr .details-header {
+    margin-bottom: 15px; } }
+@media screen and (max-width: 500px) {
+  .action-list.list li {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column; }
+  .action-list.list .action-date {
+    -webkit-box-flex: 0;
+        -ms-flex: 0 0 auto;
+            flex: 0 0 auto; } }

@@ -189,12 +189,12 @@ paramsSetQueue sysId newQueue =
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> UI Msg
 view appState model system mparams =
     UI.div_ <|
-        [ header_expander
-        , row
-            [ iconButton "arrow-left" ("/system/" ++ system.id)
-            , stitle system.title
-            , UI.cmdIconButton "edit" (OnTitleChangeStart system.title)
-            ]
+        [-- header_expander
+         -- row
+         --   [ iconButton "arrow-left" ("/system/" ++ system.id)
+         --   , stitle system.title
+         --   , UI.cmdIconButton "edit" (OnTitleChangeStart system.title)
+         --   ]
         ]
             ++ viewContainer appState model system mparams
             -- ++ (viewContainer appState model system Nothing)
@@ -215,7 +215,7 @@ viewContainer appState model system mparams =
             ]
 
         SS_Master ->
-            masterDialogView model system.id mparams
+            masterDialogView appState model system.id mparams
 
         SS_Custom ->
             configCustomView model system.id mparams
