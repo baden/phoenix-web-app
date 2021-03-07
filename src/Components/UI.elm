@@ -96,7 +96,7 @@ cmdIconButtonR label cmd =
 
 cmdTextIconButton : String -> String -> m -> Html m
 cmdTextIconButton icon label cmd =
-    Html.button [ class "btn btn-sm blue-btn", onClick cmd ]
+    Html.button [ class "btn btn-md btn-primary blue-btn", onClick cmd ]
         [ Html.i [ HA.class ("left fas fa-" ++ icon) ] [], Html.text label ]
 
 
@@ -370,7 +370,7 @@ linkIconButton icon link_ref =
 linkIconTextButton : String -> String -> String -> Html a
 linkIconTextButton icon text_title link_ref =
     Html.a
-        [ class "btn blue-btn", href link_ref ]
+        [ class "btn blue-btn btn-primary", href link_ref ]
         [ Html.i [ HA.class ("left fas fa-" ++ icon) ] [], text text_title ]
 
 

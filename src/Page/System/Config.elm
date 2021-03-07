@@ -229,9 +229,9 @@ viewContainer ({ t } as appState) model system mparams =
             , Html.div [ HA.class "title-st" ]
                 [ Html.text <| t "config.Поздравляем!"
                 , Html.br [] []
-                , Html.text "Основные настройки применены\t\t\t\t\t"
+                , Html.text <| t "config.Основные настройки применены"
                 ]
-            , Html.button [ HA.class "btn btn-md btn-primary btn-next mt-40" ] [ Html.text "Перейти к Фениксу\t\t\t\t\t" ]
+            , Html.a [ HA.class "btn btn-md btn-primary btn-next mt-40", HA.href <| "/system/" ++ system.id ] [ Html.text <| t "config.Перейти к Фениксу" ]
             ]
 
 
