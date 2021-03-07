@@ -694,6 +694,14 @@ viewMenu model =
                         Just system ->
                             [ Menu.view Route.SystemLogsBase account model.appState (Just system) model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
 
+                Route.SystemConfig sysId ->
+                    case Dict.get sysId model.systems of
+                        Nothing ->
+                            [ Menu.view Route.SystemConfigBase account model.appState Nothing model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+
+                        Just system ->
+                            [ Menu.view Route.SystemConfigBase account model.appState (Just system) model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+
                 _ ->
                     []
 

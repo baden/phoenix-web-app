@@ -13,6 +13,7 @@ type ShowState
     | SS_Master
     | SS_Custom
     | SS_Congrat
+    | SS_Details
 
 
 type alias Model =
@@ -64,6 +65,7 @@ type Msg
     | OnMasterPrev
     | OnMasterCustom
     | OnConfirmMaster String (Dict String String)
+    | OnOpenDetails String
     | OnShowChanges
     | OnNoCmd
     | OnRemove String

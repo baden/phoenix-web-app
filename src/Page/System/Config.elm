@@ -5,10 +5,12 @@ import API.System as System exposing (State(..), SystemDocumentInfo, SystemDocum
 import AppState
 import Components.UI as UI exposing (..)
 import Dict exposing (Dict)
-import Html
-import Html.Attributes as HA
+import Html exposing (Html, a, div, input, label, span)
+import Html.Attributes as HA exposing (attribute, class, name, type_, value)
+import Html.Events as HE
 import Msg as GMsg
 import Page.System.Config.Custom exposing (..)
+import Page.System.Config.Details as Details
 import Page.System.Config.Dialogs as Dialogs exposing (..)
 import Page.System.Config.Master exposing (..)
 import Page.System.Config.Master.Types exposing (..)
@@ -119,6 +121,9 @@ update msg model =
             -- ( { model | showState = SS_Congrat }, paramsSetQueue sysId queue, Nothing )
             ( { model | showState = SS_Congrat }, Cmd.none, Nothing )
 
+        OnOpenDetails s ->
+            ( { model | showState = SS_Details }, Cmd.none, Nothing )
+
         OnShowChanges ->
             ( { model | showChanges = not model.showChanges }, Cmd.none, Nothing )
 
@@ -192,47 +197,48 @@ paramsSetQueue sysId newQueue =
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> UI Msg
 view appState model system mparams =
-    UI.div_ <|
-        [-- header_expander
-         -- row
-         --   [ iconButton "arrow-left" ("/system/" ++ system.id)
-         --   , stitle system.title
-         --   , UI.cmdIconButton "edit" (OnTitleChangeStart system.title)
-         --   ]
+    -- UI.div_ <|
+    Html.div [ class "container" ] <|
+        [ Html.div [ class "wrapper-content wrapper-page" ]
+            [ viewContainer appState model system mparams
+            ]
         ]
-            ++ viewContainer appState model system mparams
-            -- ++ (viewContainer appState model system Nothing)
             ++ titleChangeDialogView model system.id
             ++ viewRemoveWidget model
             ++ Dialogs.paramChangeDialogView model mparams
 
 
-viewContainer : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> List (UI Msg)
+viewContainer : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> Html Msg
 viewContainer ({ t } as appState) model system mparams =
     case model.showState of
         SS_Root ->
-            [ --  row [ cmdTextIconButton "edit" "Изменить название" (OnTitleChangeStart system.title) ]
-              row [ cmdTextIconButton "cogs" "Конфигурация" (OnStartMaster system.id) ]
-            , row [ linkIconTextButton "clone" "Выбрать другой Феникс" "/" ]
-            , row [ linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
-            , row [ cmdTextIconButton "trash" "Удалить" (OnRemove system.id) ]
-            ]
+            Html.div [ class "wrapper-bg" ]
+                [ row [ cmdTextIconButton "edit" (t "menu.Иконка и название Феникса") (OnTitleChangeStart system.title) ]
+                , row [ cmdTextIconButton "cogs" "Мастер Конфигурации (TBD)" (OnStartMaster system.id) ]
+                , row [ cmdTextIconButton "cogs" (t "menu.Детали о Фениксе") (OnOpenDetails system.id) ]
+
+                -- , row [ cmdTextIconButton "trash" "Удалить" (OnRemove system.id) ]
+                ]
 
         SS_Master ->
-            masterDialogView appState model system.id mparams
+            Html.div [ class "wrapper-bg" ] <| masterDialogView appState model system.id mparams
 
         SS_Custom ->
-            configCustomView model system.id mparams
+            Html.div [ class "wrapper-bg" ] <| configCustomView model system.id mparams
 
         SS_Congrat ->
-            [ Html.div [ HA.class "config-img" ] [ Html.img [ HA.alt "", HA.src "/images/setting_done.svg" ] [] ]
-            , Html.div [ HA.class "title-st" ]
-                [ Html.text <| t "config.Поздравляем!"
-                , Html.br [] []
-                , Html.text <| t "config.Основные настройки применены"
+            Html.div [ class "wrapper-bg" ]
+                [ Html.div [ HA.class "config-img" ] [ Html.img [ HA.alt "", HA.src "/images/setting_done.svg" ] [] ]
+                , Html.div [ HA.class "title-st" ]
+                    [ Html.text <| t "config.Поздравляем!"
+                    , Html.br [] []
+                    , Html.text <| t "config.Основные настройки применены"
+                    ]
+                , Html.a [ HA.class "btn btn-md btn-primary btn-next mt-40", HA.href <| "/system/" ++ system.id ] [ Html.text <| t "config.Перейти к Фениксу" ]
                 ]
-            , Html.a [ HA.class "btn btn-md btn-primary btn-next mt-40", HA.href <| "/system/" ++ system.id ] [ Html.text <| t "config.Перейти к Фениксу" ]
-            ]
+
+        SS_Details ->
+            Details.view appState model system mparams
 
 
 

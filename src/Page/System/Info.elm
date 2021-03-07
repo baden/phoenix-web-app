@@ -290,24 +290,22 @@ view appState model system =
         ]
 
 
-viewOld : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
-viewOld appState model system =
-    UI.div_ <|
-        [ header_expander
-        , viewWidget <|
-            viewHeader appState model system
-                ++ viewInfo appState model system
-                ++ [ chartView appState model system ]
-                ++ viewInfoEntended appState model system
-                ++ [ UI.row [ UI.linkIconTextButton "clone" "Выбрать другой объект" "/" ] ]
-                ++ prolongSleepDialogView model system.id
-        ]
-            ++ cmdPanel appState system.id system.dynamic
-            ++ viewModalDialogs model
-            ++ confirmDialog model system.id
 
-
-
+-- viewOld : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
+-- viewOld appState model system =
+--     UI.div_ <|
+--         [ header_expander
+--         , viewWidget <|
+--             viewHeader appState model system
+--                 ++ viewInfo appState model system
+--                 ++ [ chartView appState model system ]
+--                 ++ viewInfoEntended appState model system
+--                 ++ [ UI.row [ UI.linkIconTextButton "clone" "Выбрать другой объект" "/" ] ]
+--                 ++ prolongSleepDialogView model system.id
+--         ]
+--             ++ cmdPanel appState system.id system.dynamic
+--             ++ viewModalDialogs model
+--             ++ confirmDialog model system.id
 -- view : AppState.AppState -> Model -> Page.ViewInfo -> Html Msg
 -- view appState model pvi =
 --     case pvi of

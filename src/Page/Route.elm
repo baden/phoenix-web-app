@@ -27,6 +27,7 @@ type PageBase
     = HomeBase
     | SystemInfoBase
     | SystemLogsBase
+    | SystemConfigBase
 
 
 routeParser : Parser (Page -> a) a

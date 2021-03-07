@@ -104,7 +104,7 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
                     ( True
                     , [ menuItem ("/map/" ++ system.id) (pageBase == Page.Route.HomeBase) "icon-map" "Карта"
                       , menuItem ("/system/" ++ system.id) (pageBase == Page.Route.SystemInfoBase) "icon-manage" "Управление"
-                      , menuItem ("/system/" ++ system.id ++ "/config") (pageBase == Page.Route.HomeBase) "icon-manage" "Настройки"
+                      , menuItemWithSubmenu ("/system/" ++ system.id ++ "/config") (pageBase == Page.Route.SystemConfigBase) "icon-manage" "Настройки"
                       , menuItem ("/system/" ++ system.id ++ "/logs") (pageBase == Page.Route.SystemLogsBase) "icon-calendar" "События"
                       ]
                     )
@@ -115,6 +115,27 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
                 [ a [ classList [ ( "active", active ) ], href url ]
                     [ span [ class (icon ++ " submenu-icon") ] []
                     , span [ class "submenu-item-title" ] [ text <| t <| "menu." ++ title_ ]
+                    ]
+                ]
+
+        menuItemWithSubmenu : String -> Bool -> String -> String -> Html Msg
+        menuItemWithSubmenu url active icon title_ =
+            let
+                submenu suburl subtitle subactive =
+                    span [ class "submenu-settings-item", classList [ ( "active", subactive ) ] ] [ a [ href suburl ] [ text <| t <| "menu." ++ subtitle ] ]
+            in
+            li []
+                [ a [ class "menu-settings", classList [ ( "active", active ) ], href url ]
+                    [ span [ class "icon-settings submenu-icon" ] []
+                    , span [ class "submenu-item-title" ] [ text <| t <| "menu." ++ title_ ]
+                    , span [ class "icon-arrow-menu" ] []
+                    ]
+                , div [ class "submenu-settings" ]
+                    [ submenu "#" "Иконка и название Феникса" False
+                    , submenu "#" "Основные настройки" False
+                    , submenu "#" "Расширенные настройки" False
+                    , submenu "#" "Обслуживание батареи" False
+                    , submenu "#" "Детали о Фениксе" False
                     ]
                 ]
     in
@@ -142,7 +163,15 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
             [ span [ class "icon-car submenu-type" ] []
             , div [ class "submenu-header" ]
                 [ a [ class "submenu-back", href "/" ] [ span [ class "arrow" ] [], span [ class "title" ] [ text <| t "Список Фениксов" ] ]
-                , span [ class "submenu-name" ] [ text "АА 1234 АС" ]
+                , span [ class "submenu-name" ]
+                    [ text <|
+                        case msystem of
+                            Nothing ->
+                                ""
+
+                            Just system ->
+                                system.title
+                    ]
                 , span [ class "submenu-status" ]
                     [ div [ class "fenix-status" ]
                         [ span [ class "status-icon wait-status" ] []
