@@ -4,6 +4,7 @@ import Dict exposing (Dict)
 import Page.System.Config.Master.Types exposing (..)
 
 
+
 -- import API.System as System exposing (SystemDocumentParams)
 
 
@@ -11,6 +12,7 @@ type ShowState
     = SS_Root
     | SS_Master
     | SS_Custom
+    | SS_Congrat
 
 
 type alias Model =
@@ -54,8 +56,8 @@ type Msg
     | OnTitleCancel
     | OnStartMaster String
     | OnCancelMaster
-    | OnMasterEco1 MasterDataEco Bool
-    | OnMasterTrack1 MasterDataTrack Bool
+    | OnMasterEco1 MasterDataEco
+    | OnMasterTrack1 MasterDataTrack
     | OnMasterSecur1 Int Bool
     | OnMasterSMSEvent (Bool -> MasterDataSMS -> MasterDataSMS) Bool
     | OnMasterNext

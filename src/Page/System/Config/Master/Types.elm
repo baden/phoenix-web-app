@@ -9,6 +9,25 @@ type MasterPage
     | MasterPage5
 
 
+masterPageNumber : MasterPage -> Int
+masterPageNumber mp =
+    case mp of
+        MasterPage1 ->
+            1
+
+        MasterPage2 ->
+            2
+
+        MasterPage3 ->
+            3
+
+        MasterPage4 ->
+            4
+
+        MasterPage5 ->
+            5
+
+
 type alias MasterData =
     { masterEcoValue : MasterDataEco
     , masterTrackValue : MasterDataTrack
@@ -87,12 +106,12 @@ setMasterDataSecur val s m =
         ( s1, s2 ) =
             m.masterSecurValue
     in
-        case val of
-            1 ->
-                { m | masterSecurValue = ( s, s2 ) }
+    case val of
+        1 ->
+            { m | masterSecurValue = ( s, s2 ) }
 
-            _ ->
-                { m | masterSecurValue = ( s1, s ) }
+        _ ->
+            { m | masterSecurValue = ( s1, s ) }
 
 
 setMasterDataSmsEvent updater s m =

@@ -5,6 +5,8 @@ import API.System as System exposing (State(..), SystemDocumentInfo, SystemDocum
 import AppState
 import Components.UI as UI exposing (..)
 import Dict exposing (Dict)
+import Html
+import Html.Attributes as HA
 import Msg as GMsg
 import Page.System.Config.Custom exposing (..)
 import Page.System.Config.Dialogs as Dialogs exposing (..)
@@ -63,10 +65,10 @@ update msg model =
             ( { model | showTitleChangeDialog = False }, Cmd.none, Nothing )
 
         -- TODO: Move all Master updates to .Master.Types or elsewhere
-        OnMasterEco1 val _ ->
+        OnMasterEco1 val ->
             ( { model | masterData = setMasterDataEco val model.masterData }, Cmd.none, Nothing )
 
-        OnMasterTrack1 val _ ->
+        OnMasterTrack1 val ->
             ( { model | masterData = setMasterDataTrack val model.masterData }, Cmd.none, Nothing )
 
         OnMasterSecur1 val s ->
@@ -111,9 +113,11 @@ update msg model =
             ( { model | showState = SS_Root }, Cmd.none, Nothing )
 
         OnConfirmMaster sysId queue ->
-            -- paramsSetQueue : String -> Dict String String -> Cmd Msg
-            -- ( { model | showState = SS_Root }, paramsSetQueue sysId (changesList model), Nothing )
-            ( { model | showState = SS_Root }, paramsSetQueue sysId queue, Nothing )
+            --
+            -- TODO: Временно отключено применение настроек (для отладки)
+            --
+            -- ( { model | showState = SS_Congrat }, paramsSetQueue sysId queue, Nothing )
+            ( { model | showState = SS_Congrat }, Cmd.none, Nothing )
 
         OnShowChanges ->
             ( { model | showChanges = not model.showChanges }, Cmd.none, Nothing )
@@ -204,7 +208,7 @@ view appState model system mparams =
 
 
 viewContainer : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> List (UI Msg)
-viewContainer appState model system mparams =
+viewContainer ({ t } as appState) model system mparams =
     case model.showState of
         SS_Root ->
             [ --  row [ cmdTextIconButton "edit" "Изменить название" (OnTitleChangeStart system.title) ]
@@ -219,6 +223,16 @@ viewContainer appState model system mparams =
 
         SS_Custom ->
             configCustomView model system.id mparams
+
+        SS_Congrat ->
+            [ Html.div [ HA.class "config-img" ] [ Html.img [ HA.alt "", HA.src "/images/setting_done.svg" ] [] ]
+            , Html.div [ HA.class "title-st" ]
+                [ Html.text <| t "config.Поздравляем!"
+                , Html.br [] []
+                , Html.text "Основные настройки применены\t\t\t\t\t"
+                ]
+            , Html.button [ HA.class "btn btn-md btn-primary btn-next mt-40" ] [ Html.text "Перейти к Фениксу\t\t\t\t\t" ]
+            ]
 
 
 

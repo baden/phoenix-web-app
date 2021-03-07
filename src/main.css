@@ -718,3 +718,8 @@ button[disabled] {
     color: #DFE0F3;
     font-size: 1.14rem;
 }
+
+
+span#passwordText {
+    margin-left: 4px;
+}
