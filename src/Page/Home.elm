@@ -43,7 +43,7 @@ view appState model acc systems =
     -- TODO: Remove one level - transfer function to List (Html Msg)
     Html.div [ HA.class "container" ] <|
         auth_info appState acc systems
-            ++ viewRemoveWidget model
+            ++ viewRemoveWidget appState model
 
 
 auth_info : AppState -> Maybe AccountDocumentInfo -> Dict String SystemDocumentInfo -> List (Html Msg)
@@ -88,8 +88,8 @@ auth_info ({ t } as appState) macc systems =
 --     DT.toInt v * 1000 |> Time.millisToPosix |> DT.dateTimeFormat timeZone
 
 
-viewRemoveWidget : Model -> List (Html Msg)
-viewRemoveWidget model =
+viewRemoveWidget : AppState -> Model -> List (Html Msg)
+viewRemoveWidget { t } model =
     if model.showRemodeDialog then
         [ UI.modal
             "Удаление"

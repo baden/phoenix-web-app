@@ -18,7 +18,7 @@ import Types.Dt as DT
 
 card : SystemDocumentInfo -> AppState -> List (Html Msg)
 card system ({ t } as appState) =
-    [ span [ class "icon-truck fenix-type" ] []
+    [ span [ class <| "icon-" ++ system.icon ++ " fenix-type" ] []
     , div [ class "fenix-header" ]
         [ div [ class "fenix-status" ]
             [ status_icon system.dynamic

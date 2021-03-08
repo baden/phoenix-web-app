@@ -1,7 +1,7 @@
 module Page.System.Config.Details exposing (..)
 
 import API.System as System exposing (State(..), SystemDocumentInfo, SystemDocumentParams)
-import AppState
+import AppState exposing (AppState)
 import Html exposing (Html, a, div, input, label, span, text)
 import Html.Attributes as HA exposing (attribute, class, name, type_, value)
 import Html.Events as HE

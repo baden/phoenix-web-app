@@ -1,41 +1,45 @@
-module API.System
-    exposing
-        ( SystemDocumentInfo
-        , systemDocumentDecoder
-        , dynamicDecoder
-          -- , LastPosition
-          -- , LastSession
-        , Dynamic
-          -- , SysState
-          -- , State
-        , State(..)
-          -- , SysId
-        , stateAsString
-        , stateAsCmdString
-        , iconForCmdString
-        , setSystemTitle
-        , setSystemState
-        , setBatteryCapacity
-        , resetBattery
-        , prolongSleep
-        , cancelSystemState
-        , getLogs
-        , getParams
-        , paramQueue
-        , SystemDocumentLog
-        , SystemDocumentParams
-        , systemDocumentLogDecoder
-        , systemDocumentParamsDecoder
-        )
+module API.System exposing
+    (  Dynamic
+       -- , SysState
+       -- , State
 
+    ,  State(..)
+       -- , SysId
+
+    , SystemDocumentInfo
+    , SystemDocumentLog
+    , SystemDocumentParams
+    , cancelSystemState
+    ,  dynamicDecoder
+       -- , LastPosition
+       -- , LastSession
+
+    , getLogs
+    , getParams
+    , iconForCmdString
+    , paramQueue
+    , prolongSleep
+    , resetBattery
+    , setBatteryCapacity
+    , setSystemIcon
+    , setSystemState
+    , setSystemTitle
+    , stateAsCmdString
+    , stateAsString
+    , systemDocumentDecoder
+    , systemDocumentLogDecoder
+    , systemDocumentParamsDecoder
+    )
+
+import API.Document as Document
+import API.System.Battery as Battery exposing (Battery)
+import Dict exposing (Dict)
 import Json.Decode as JD
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Json.Encode as Encode
-import API.Document as Document
-import API.System.Battery as Battery exposing (Battery)
-import Types.Dt as DT
-import Dict exposing (Dict)
 import Page.System.Config.ParamDesc as ParamDesc
+import Types.Dt as DT
+
 
 
 -- type alias SysId =
@@ -69,6 +73,7 @@ type alias SystemDocumentInfo =
     , swid : Maybe String
     , battery : Maybe Battery
     , params : SystemParams
+    , icon : String
     }
 
 
@@ -98,6 +103,7 @@ systemDocumentDecoder =
         |> optional "swid" (JD.maybe JD.string) Nothing
         |> optional "battery" (JD.maybe Battery.batteryDecoder) Nothing
         |> required "params" systemParamsDecoder
+        |> required "icon" JD.string
 
 
 type alias Dynamic =
@@ -304,7 +310,7 @@ stateAsString state =
             "Разблокировка"
 
         ProlongSleep hours ->
-            ("Отложить засыпание на " ++ (String.fromInt hours) ++ " ч")
+            "Отложить засыпание на " ++ String.fromInt hours ++ " ч"
 
         Unknown c ->
             "Неизвестно:" ++ c
@@ -350,10 +356,10 @@ stateAsCmdString state =
             "РАЗБЛОКИРОВАТЬ"
 
         ProlongSleep hours ->
-            ("Отложить засыпание на " ++ (String.fromInt hours) ++ " ч")
+            "Отложить засыпание на " ++ String.fromInt hours ++ " ч"
 
         Unknown s ->
-            ("В разработке..." ++ s)
+            "В разработке..." ++ s
 
 
 iconForCmdString : State -> String
@@ -432,7 +438,7 @@ sortParamList =
             \( name, _ ) ->
                 ParamDesc.disabled name
     in
-        JD.succeed << List.sortBy Tuple.first << List.filter ffilter
+    JD.succeed << List.sortBy Tuple.first << List.filter ffilter
 
 
 
@@ -500,6 +506,16 @@ setSystemTitle sysId newTitle =
             [ ( "key", Encode.string sysId )
             , ( "path", Encode.string "title" )
             , ( "value", Encode.string newTitle )
+            ]
+
+
+setSystemIcon : String -> String -> Encode.Value
+setSystemIcon sysId newIcon =
+    Document.updateDocumentRequest "system" <|
+        Encode.object
+            [ ( "key", Encode.string sysId )
+            , ( "path", Encode.string "icon" )
+            , ( "value", Encode.string newIcon )
             ]
 
 
@@ -571,7 +587,7 @@ setSystemState sysId newState =
                         "unlock"
 
                     ProlongSleep hours ->
-                        ("prolong_" ++ (String.fromInt hours))
+                        "prolong_" ++ String.fromInt hours
 
                     Unknown c ->
                         c

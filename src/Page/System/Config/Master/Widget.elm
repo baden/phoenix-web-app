@@ -22,12 +22,14 @@ masterPageForm c =
         ]
 
 
-masterFooterFirst : List (UI Msg)
-masterFooterFirst =
-    [ UI.cmdTextIconButton "times-circle" "Отмена" OnCancelMaster
-    , UI.cmdTextIconButton "cogs" "Подробно" OnMasterCustom
-    , UI.cmdTextIconButton "arrow-right" "Далее" OnMasterNext
-    ]
+
+-- masterFooterFirst : List (UI Msg)
+-- masterFooterFirst =
+--     [ UI.cmdTextIconButton "times-circle" "Отмена" OnCancelMaster
+--     , UI.cmdTextIconButton "cogs" "Подробно" OnMasterCustom
+--     , UI.cmdTextIconButton "arrow-right" "Далее" OnMasterNext
+--     ]
+--
 
 
 masterFooterMiddle : List (UI Msg)

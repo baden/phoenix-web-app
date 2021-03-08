@@ -84,6 +84,11 @@ update msg model =
             ( { model | menuVisibility = not model.menuVisibility }, Cmd.none, Nothing )
 
 
+hideMenu : Model -> Model
+hideMenu model =
+    { model | menuVisibility = False }
+
+
 view : Page.Route.PageBase -> AccountDocumentInfo -> AppState -> Maybe SystemDocumentInfo -> Model -> Html Msg
 view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup } as model) =
     let
@@ -138,6 +143,14 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
                     , submenu "#" "Детали о Фениксе" False
                     ]
                 ]
+
+        sicon =
+            case msystem of
+                Nothing ->
+                    "car"
+
+                Just system ->
+                    system.icon
     in
     div [ classList [ ( "menu", True ), ( "menu-visibility", model.menuVisibility ) ] ]
         [ div [ class "menu-header" ]
@@ -145,8 +158,7 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
             , button [ classList [ ( "menu-toggle-btn", True ), ( "visibility", model.menuVisibility ) ], id "toggleBtn", onClick ToggleMenu ] []
             ]
         , ul [ class "menu-items" ]
-            [ li [] [ a [ class "active", href "/" ] [ span [ class "list-icon menu-icon" ] [], span [ class "menu-item-title" ] [ text <| t "Список Фениксов" ] ] ]
-            , menuItem "/" True "list-icon" "Список Фениксов"
+            [ menuItem "/" True "list-icon" "Список Фениксов"
             ]
         , div [ class "menu-options-wr" ]
             [ div [ class "menu-options" ]
@@ -160,7 +172,7 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
                 ]
             ]
         , div [ classList [ ( "submenu", True ), ( "submenu-active", systemSelected ) ] ]
-            [ span [ class "icon-car submenu-type" ] []
+            [ span [ class <| "icon-" ++ sicon ++ " submenu-type" ] []
             , div [ class "submenu-header" ]
                 [ a [ class "submenu-back", href "/" ] [ span [ class "arrow" ] [], span [ class "title" ] [ text <| t "Список Фениксов" ] ]
                 , span [ class "submenu-name" ]

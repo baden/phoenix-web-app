@@ -14,6 +14,7 @@ import Page.System.Config.Details as Details
 import Page.System.Config.Dialogs as Dialogs exposing (..)
 import Page.System.Config.Master exposing (..)
 import Page.System.Config.Master.Types exposing (..)
+import Page.System.Config.NameAndIcon as NameAndIcon
 import Page.System.Config.Types exposing (..)
 
 
@@ -24,6 +25,8 @@ init sysId =
       , offId = ""
       , showTitleChangeDialog = False
       , newTitle = ""
+      , showIconChangeDialog = False
+      , newIcon = ""
       , showState = SS_Root
       , showMasterDialog = MasterPage1
       , masterData = initMasterData
@@ -65,6 +68,18 @@ update msg model =
 
         OnTitleCancel ->
             ( { model | showTitleChangeDialog = False }, Cmd.none, Nothing )
+
+        OnIconChangeStart oldIcon ->
+            ( { model | showIconChangeDialog = True, newIcon = oldIcon }, Cmd.none, Nothing )
+
+        OnIconConfirm sysId newIcon ->
+            ( { model | showIconChangeDialog = False }, Cmd.batch [ API.websocketOut <| System.setSystemIcon sysId newIcon ], Nothing )
+
+        OnIconCancel ->
+            ( { model | showIconChangeDialog = False }, Cmd.none, Nothing )
+
+        OnIconChange selectedIcon ->
+            ( { model | newIcon = selectedIcon }, Cmd.none, Nothing )
 
         -- TODO: Move all Master updates to .Master.Types or elsewhere
         OnMasterEco1 val ->
@@ -124,11 +139,15 @@ update msg model =
         OnOpenDetails s ->
             ( { model | showState = SS_Details }, Cmd.none, Nothing )
 
+        OnOpenNameAndIcon s ->
+            ( { model | showState = SS_NameAndIcon }, Cmd.none, Nothing )
+
         OnShowChanges ->
             ( { model | showChanges = not model.showChanges }, Cmd.none, Nothing )
 
-        OnMasterCustom ->
-            ( { model | showState = SS_Custom, showQueue = False }, Cmd.none, Nothing )
+        OnMasterCustom s ->
+            -- ( { model | showState = SS_Custom, showQueue = False }, Cmd.none, Nothing )
+            ( { model | showState = SS_Custom, showQueue = False }, loadParams s, Nothing )
 
         OnStartEditParam sysId name value description ->
             let
@@ -203,8 +222,9 @@ view appState model system mparams =
             [ viewContainer appState model system mparams
             ]
         ]
-            ++ titleChangeDialogView model system.id
-            ++ viewRemoveWidget model
+            ++ titleChangeDialogView appState model system.id
+            ++ iconChangeDialogView appState model system.id
+            ++ viewRemoveWidget appState model system
             ++ Dialogs.paramChangeDialogView model mparams
 
 
@@ -213,8 +233,9 @@ viewContainer ({ t } as appState) model system mparams =
     case model.showState of
         SS_Root ->
             Html.div [ class "wrapper-bg" ]
-                [ row [ cmdTextIconButton "edit" (t "menu.Иконка и название Феникса") (OnTitleChangeStart system.title) ]
+                [ row [ cmdTextIconButton "edit" (t "menu.Иконка и название Феникса") (OnOpenNameAndIcon system.id) ]
                 , row [ cmdTextIconButton "cogs" "Мастер Конфигурации (TBD)" (OnStartMaster system.id) ]
+                , row [ cmdTextIconButton "cogs" (t "menu.Расширенные настройки") (OnMasterCustom system.id) ]
                 , row [ cmdTextIconButton "cogs" (t "menu.Детали о Фениксе") (OnOpenDetails system.id) ]
 
                 -- , row [ cmdTextIconButton "trash" "Удалить" (OnRemove system.id) ]
@@ -239,6 +260,9 @@ viewContainer ({ t } as appState) model system mparams =
 
         SS_Details ->
             Details.view appState model system mparams
+
+        SS_NameAndIcon ->
+            NameAndIcon.view appState model system mparams
 
 
 
