@@ -229,7 +229,7 @@ view appState model system mparams =
             ++ titleChangeDialogView appState model system.id
             ++ iconChangeDialogView appState model system.id
             ++ viewRemoveWidget appState model system
-            ++ Dialogs.paramChangeDialogView model mparams
+            ++ Dialogs.paramChangeDialogView appState model mparams
 
 
 viewContainer : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> Html Msg
@@ -250,7 +250,7 @@ viewContainer ({ t } as appState) model system mparams =
             Html.div [ class "wrapper-bg" ] <| masterDialogView appState model system.id mparams
 
         SS_Custom ->
-            Html.div [ class "wrapper-bg" ] <| configCustomView model system.id mparams
+            Html.div [ class "wrapper-bg" ] <| configCustomView appState model system.id mparams
 
         SS_Congrat ->
             Html.div [ class "wrapper-bg" ]

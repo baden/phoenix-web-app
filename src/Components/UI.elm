@@ -49,7 +49,8 @@ module Components.UI exposing (..)
 import AppState exposing (AppState)
 import Html exposing (Html, a, div, h1, h5, i, img, input, span, text)
 import Html.Attributes as HA exposing (alt, class, href, placeholder, src, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (onClick, onInput, preventDefaultOn)
+import Json.Decode as Decode
 import Svg exposing (path, svg, text_)
 import Svg.Attributes exposing (d, preserveAspectRatio, strokeDasharray, viewBox, x, y)
 
@@ -656,3 +657,8 @@ div_ clilds =
         [ Html.div [ class "wrapper-content wrapper-page" ]
             [ Html.div [ class "wrapper-bg" ] clilds ]
         ]
+
+
+onLinkClick : msg -> Html.Attribute msg
+onLinkClick message =
+    preventDefaultOn "click" (Decode.succeed ( message, True ))

@@ -5,7 +5,7 @@ import AppState exposing (AppState)
 import Components.UI as UI exposing (UI)
 import Dict exposing (Dict)
 import Html exposing (Html, a, button, div, form, input, label, p, span, text)
-import Html.Attributes as HA exposing (attribute, checked, class, classList, href, type_, value)
+import Html.Attributes as HA exposing (attribute, checked, class, classList, href, type_)
 import Html.Events as HE exposing (onClick, onInput)
 import Page.System.Config.Types exposing (..)
 
@@ -31,7 +31,7 @@ titleChangeDialogView { t } model sysId =
                         [ span [ class "modal-text" ] [ text <| t "config.Ведите новое либо измените старое название" ]
                         , div [ class "input-st modal-input" ]
                             [ span [ class "input-sm-label" ] [ text <| t "config.Введите название" ]
-                            , input [ attribute "autocomplete" "off", value model.newTitle, onInput OnTitleChange ] []
+                            , input [ attribute "autocomplete" "off", HA.value model.newTitle, onInput OnTitleChange ] []
                             ]
                         ]
                     , div [ class "modal-btn-group" ]
@@ -124,8 +124,8 @@ viewRemoveWidget { t, tr } model system =
         []
 
 
-paramChangeDialogView : Model -> Maybe SystemDocumentParams -> List (UI Msg)
-paramChangeDialogView model mparams =
+paramChangeDialogView : AppState -> Model -> Maybe SystemDocumentParams -> List (UI Msg)
+paramChangeDialogView { t } model mparams =
     let
         oldQueue =
             case mparams of
@@ -140,13 +140,80 @@ paramChangeDialogView model mparams =
             []
 
         Just { sysId, name, value, description } ->
-            [ UI.modal
-                name
-                [ UI.ModalText description
-                , UI.ModalHtml <| UI.formInput "" value OnChangeParamValue
+            -- [ UI.modal
+            --     name
+            --     [ UI.ModalText description
+            --     , UI.ModalHtml <| UI.formInput "" value OnChangeParamValue
+            --     ]
+            --     [ UI.cmdButton "Применить" (OnConfirmParam sysId oldQueue name value)
+            --     , UI.cmdButton "Отменить" OnCancelParam
+            --     ]
+            -- , UI.modal_overlay OnTitleCancel
+            -- ]
+            [ div [ class "modal-bg modal-axelerometr show" ]
+                [ div [ class "modal-wr" ]
+                    [ div [ class "modal-content modal-md" ]
+                        [ div [ class "modal-close close modal-close-btn", onClick OnCancelParam ] []
+                        , div [ class "modal-title" ] [ text description ]
+                        , div [ class "modal-body" ]
+                            [ div [ class "input-st modal-input" ]
+                                [ input [ attribute "autocomplete" "off", HA.value value, onInput OnChangeParamValue ] []
+                                ]
+                            ]
+                        , div [ class "modal-btn-group" ]
+                            [ button [ class "btn btn-md btn-secondary modal-close-btn", onClick OnCancelParam ] [ text <| t "config.Отмена" ]
+                            , button [ class "btn btn-md btn-primary", onClick (OnConfirmParam sysId oldQueue name value) ] [ text <| t "config.Применить" ]
+                            ]
+                        ]
+                    ]
                 ]
-                [ UI.cmdButton "Применить" (OnConfirmParam sysId oldQueue name value)
-                , UI.cmdButton "Отменить" OnCancelParam
-                ]
-            , UI.modal_overlay OnTitleCancel
             ]
+
+
+batteryReplaceDialogView : AppState -> Model -> String -> List (UI Msg)
+batteryReplaceDialogView { t } model sysId =
+    [ div [ class "modal-bg modal-change-battery show" ]
+        [ div [ class "modal-wr" ]
+            [ div [ class "modal-content modal-md" ]
+                [ div [ class "modal-close close modal-close-btn" ] []
+                , div [ class "modal-title" ] [ text <| t "config.Замена батареи" ]
+                , div [ class "modal-body" ]
+                    [ span [ class "modal-text" ]
+                        [ text <| t "config.bat_replace_text" ]
+                    , div [ class "input-st modal-input" ]
+                        [ span [ class "input-sm-label" ] [ text <| t "config.Укажите начальную емкость батареи (мАч)" ]
+                        , input [ attribute "autocomplete" "off", HA.value "5580" ] []
+                        ]
+                    ]
+                , div [ class "modal-btn-group" ]
+                    [ button [ class "btn btn-md btn-secondary modal-close-btn" ] [ text <| t "config.Отмена" ]
+                    , button [ class "btn btn-md btn-primary" ] [ text <| "config.Применить" ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+
+
+batteryChangeCapacityDialogView : AppState -> Model -> String -> List (UI Msg)
+batteryChangeCapacityDialogView { t } model sysId =
+    [ div [ class "modal-bg modal-change-capacity show" ]
+        [ div [ class "modal-wr" ]
+            [ div [ class "modal-content modal-md" ]
+                [ div [ class "modal-close close modal-close-btn" ] []
+                , div [ class "modal-title" ] [ text <| t "config.Емкость батареи" ]
+                , div [ class "modal-body" ]
+                    [ span [ class "modal-text" ] [ text <| t "config.bat_ch_capacity" ]
+                    , div [ class "input-st modal-input" ]
+                        [ span [ class "input-sm-label" ] [ text <| t "config.Укажите начальную емкость батареи (мАч)" ]
+                        , input [ attribute "autocomplete" "off", HA.value "5580" ] []
+                        ]
+                    ]
+                , div [ class "modal-btn-group" ]
+                    [ button [ class "btn btn-md btn-secondary modal-close-btn" ] [ text <| t "config.Отмена" ]
+                    , button [ class "btn btn-md btn-primary" ] [ text <| t "config.Применить" ]
+                    ]
+                ]
+            ]
+        ]
+    ]
