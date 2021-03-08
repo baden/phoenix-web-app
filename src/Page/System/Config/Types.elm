@@ -15,6 +15,7 @@ type ShowState
     | SS_Congrat
     | SS_Details
     | SS_NameAndIcon
+    | SS_Battery
 
 
 type alias Model =
@@ -90,6 +91,7 @@ type Msg
     | OnShowQueue
     | OnCancelParam
     | OnOpenNameAndIcon String
+    | OnOpenBattery String
 
 
 

@@ -9,6 +9,7 @@ import Html exposing (Html, a, div, input, label, span)
 import Html.Attributes as HA exposing (attribute, class, name, type_, value)
 import Html.Events as HE
 import Msg as GMsg
+import Page.System.Config.Battery as Battery
 import Page.System.Config.Custom exposing (..)
 import Page.System.Config.Details as Details
 import Page.System.Config.Dialogs as Dialogs exposing (..)
@@ -142,6 +143,9 @@ update msg model =
         OnOpenNameAndIcon s ->
             ( { model | showState = SS_NameAndIcon }, Cmd.none, Nothing )
 
+        OnOpenBattery s ->
+            ( { model | showState = SS_Battery }, Cmd.none, Nothing )
+
         OnShowChanges ->
             ( { model | showChanges = not model.showChanges }, Cmd.none, Nothing )
 
@@ -236,6 +240,7 @@ viewContainer ({ t } as appState) model system mparams =
                 [ row [ cmdTextIconButton "edit" (t "menu.Иконка и название Феникса") (OnOpenNameAndIcon system.id) ]
                 , row [ cmdTextIconButton "cogs" "Мастер Конфигурации (TBD)" (OnStartMaster system.id) ]
                 , row [ cmdTextIconButton "cogs" (t "menu.Расширенные настройки") (OnMasterCustom system.id) ]
+                , row [ cmdTextIconButton "cogs" (t "menu.Обслуживание батареи") (OnOpenBattery system.id) ]
                 , row [ cmdTextIconButton "cogs" (t "menu.Детали о Фениксе") (OnOpenDetails system.id) ]
 
                 -- , row [ cmdTextIconButton "trash" "Удалить" (OnRemove system.id) ]
@@ -263,6 +268,9 @@ viewContainer ({ t } as appState) model system mparams =
 
         SS_NameAndIcon ->
             NameAndIcon.view appState model system mparams
+
+        SS_Battery ->
+            Battery.view appState model system mparams
 
 
 
