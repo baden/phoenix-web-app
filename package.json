@@ -11,11 +11,14 @@
     "leaflet": "^1.5.1",
     "leaflet-extra-markers": "^1.2.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "node-sass-chokidar": "^1.5.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-css": "node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/",
-    "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src --include-path ./node_modules src/ -o src/ --watch --recursive"
+    "build-css-dark-prod": "node-sass-chokidar --output-style compressed --include-path ./src/style --include-path ./src/style/dark --include-path ./node_modules src/style/style.sass public/css/style-dark.css",
+    "build-css-dark": "node-sass-chokidar --output-style nested --include-path ./src/style --include-path ./src/style/dark --include-path ./node_modules src/style/style.sass public/css/style-dark.css",
+    "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src/style --include-path ./node_modules src/style/style.sass -o public/css/ --watch --recursive"
   },
   "repository": {
     "type": "git",

@@ -723,3 +723,12 @@ button[disabled] {
 span#passwordText {
     margin-left: 4px;
 }
+
+button {
+    background: none;
+    padding: 16px 0 16px 0;
+}
+
+.details-footer {
+    padding: 0 16px 0 16px;
+}

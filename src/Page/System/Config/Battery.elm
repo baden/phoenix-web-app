@@ -71,11 +71,11 @@ view ({ t } as appState) model system mparams =
                     ]
                 ]
             , div [ class "details-footer setting-footer" ]
-                [ a [ class "orange-gradient-text cursor-pointer details-footer-btn modal-change-battery-btn", href "#" ]
+                [ button [ class "orange-gradient-text cursor-pointer details-footer-btn modal-change-battery-btn", href "#" ]
                     [ span [ class "image icon-battery orange-gradient-text" ] []
                     , text <| t "config.Замена батареи"
                     ]
-                , a [ class "blue-text cursor-pointer details-footer-btn modal-change-capacity-btn", href "#" ]
+                , button [ class "blue-text cursor-pointer details-footer-btn modal-change-capacity-btn", href "#" ]
                     [ span [ class "image icon-change_battery" ] []
                     , text <| t "config.Изменить начальную емкость"
                     ]
