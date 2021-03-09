@@ -1,14 +1,15 @@
 module Components.Dates exposing (..)
 
-import Html exposing (Html, div, text, a)
-import Html.Attributes as HA
-import Components.UI as UI
 import API.System as System
 import AppState
-import DateFormat
-import Time exposing (Zone, Posix)
-import Types.Dt as DT
 import Components.Dates.Russian exposing (russian)
+import Components.UI as UI
+import DateFormat
+import Html exposing (Html, a, div, text)
+import Html.Attributes as HA
+import Time exposing (Posix, Zone)
+import Types.Dt as DT
+
 
 
 -- import Date
@@ -48,15 +49,15 @@ nextSession appState maybeSystemDynamic =
                                 ]
                             ]
             in
-                [ Html.div [ HA.class "row sessions" ]
-                    [ Html.div [ HA.class "col s8 l6" ] [ Html.text "Последний сеанс связи: " ]
-                    , Html.div [ HA.class "col s4 l6" ] [ Html.text <| (last_session |> DT.toPosix |> dateTimeFormat tz) ]
-                    ]
+            [ Html.div [ HA.class "row sessions" ]
+                [ Html.div [ HA.class "col s8 l6" ] [ Html.text "Последний сеанс связи: " ]
+                , Html.div [ HA.class "col s4 l6" ] [ Html.text <| (last_session |> DT.toPosix |> dateTimeFormat tz) ]
                 ]
-                    ++ nextSessionTextRow
+            ]
+                ++ nextSessionTextRow
 
 
-expectSleepIn : AppState.AppState -> System.Dynamic -> List (Html msg) -> List (Html msg)
+expectSleepIn : AppState.AppState -> System.Dynamic -> List (Html msg) -> Html msg
 expectSleepIn appState dynamic prolongCmd =
     let
         now =
@@ -82,19 +83,19 @@ expectSleepIn appState dynamic prolongCmd =
                     -- offset
                     if offset == DT.fromMinutes 6000 then
                         "никогда"
+
                     else
-                        (DT.addSecs last_session offset |> DT.toPosix |> dateTimeFormat tz)
+                        DT.addSecs last_session offset |> DT.toPosix |> dateTimeFormat tz
 
         tz =
             appState.timeZone
     in
-        [ Html.div [ HA.class "row sessions" ]
-            ([ Html.div [ HA.class "col s8 l6" ] [ text "Переход в режим Ожидание:" ]
-             , Html.div [ HA.class "col s4 l3" ] [ text <| (autosleep) ]
-             ]
-                ++ prolongCmd
-            )
-        ]
+    Html.div [ HA.class "row sessions" ]
+        ([ Html.div [ HA.class "col s8 l6" ] [ text "Переход в режим Ожидание:" ]
+         , Html.div [ HA.class "col s4 l3" ] [ text <| autosleep ]
+         ]
+            ++ prolongCmd
+        )
 
 
 nextSessionText : DT.Dt -> Maybe DT.Offset -> Zone -> String
@@ -132,7 +133,7 @@ sysPosition appState sid maybe_dynamic =
 
 humanOffsetP : Int -> Int -> String
 humanOffsetP before current =
-    " (" ++ (humanOffset before current) ++ ")"
+    " (" ++ humanOffset before current ++ ")"
 
 
 humanOffset : Int -> Int -> String
@@ -146,22 +147,26 @@ humanOffset before current =
         inRange a b x =
             if (x >= a) && (x <= b) then
                 True
+
             else
                 False
     in
-        if (inRange -40 40 offset) then
-            "только что"
-        else if (inRange -100 -40 offset) then
-            "около минуты назад"
-        else if offset < -100 then
-            "давно"
-        else
-            "неизвестно"
+    if inRange -40 40 offset then
+        "только что"
+
+    else if inRange -100 -40 offset then
+        "около минуты назад"
+
+    else if offset < -100 then
+        "давно"
+
+    else
+        "неизвестно"
 
 
 dateTimeFormat : Zone -> Posix -> String
 dateTimeFormat zone time =
-    (dateFormat zone time) ++ " " ++ (timeFormat zone time)
+    dateFormat zone time ++ " " ++ timeFormat zone time
 
 
 
@@ -183,7 +188,7 @@ dateFormat =
 
 dateTimeFormatFull : Zone -> Posix -> String
 dateTimeFormatFull zone time =
-    (dateFormatFull zone time) ++ " " ++ (timeFormat zone time)
+    dateFormatFull zone time ++ " " ++ timeFormat zone time
 
 
 dateFormatFull : Zone -> Posix -> String

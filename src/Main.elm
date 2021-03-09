@@ -12,6 +12,7 @@ import Browser.Navigation as Nav
 import Components.ChartSvg as ChartSvg
 import Components.UI as UI
 import Components.UI.Menu as Menu
+import Components.UI.Theme as Theme
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes as HA
@@ -84,7 +85,7 @@ init flags url key =
             , logs = Dict.empty
             , params = Dict.empty
             , errorMessage = Nothing
-            , appState = AppState.initModel flags.language
+            , appState = AppState.initModel flags.language flags.theme
             , connectionState = NotConnected
             , showQrCode = False
             }
@@ -265,6 +266,9 @@ updatePage pageMsg model =
 
                 Just (Menu.ChangeLanguage langCode) ->
                     ( newModel, newCmd ) |> I18N.replaceTranslator langCode
+
+                Just (Menu.ChangeTheme themeName) ->
+                    ( newModel, newCmd ) |> Theme.replaceTheme themeName
 
                 Just Menu.Logout ->
                     -- ( newModel, Cmd.batch [ newCmd, saveToken "", Nav.pushUrl model.key "/login" ] )

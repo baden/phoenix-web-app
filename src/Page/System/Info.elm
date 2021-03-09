@@ -7,8 +7,8 @@ import API.System as System exposing (State(..), SystemDocumentInfo)
 import AppState
 import Components.DateTime exposing (dateTimeFormat)
 import Components.Dates as Dates
-import Components.UI as UI exposing (..)
-import Html exposing (Html, a, div, span)
+import Components.UI as UI exposing (UI)
+import Html exposing (Html, a, button, div, span, text)
 import Html.Attributes as HA exposing (attribute, class, href, id)
 import Html.Events as HE
 import Msg as GMsg
@@ -127,118 +127,78 @@ viewWidget child =
 
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
-view appState model system =
+view ({ t } as appState) model system =
     div [ class "container" ]
         [ div [ class "wrapper-content" ]
             [ div [ class "details-wrapper-bg" ]
-                [ div [ class "details-title" ]
-                    [ text "АА 1234 АС\t\t\t\t\t" ]
+                [ div [ class "details-title" ] [ text system.title ]
                 , div [ class "details-items" ]
-                    [ div [ class "details-item" ]
-                        [ div [ class "title" ]
-                            [ text "Текущий режим\t\t\t\t\t\t\t" ]
+                    [ sysState_of appState system.dynamic
+                    , div [ class "details-item" ]
+                        [ div [ class "title" ] [ text <| t "control.Связь" ]
                         , div [ class "content" ]
-                            [ div [ class "content-item fenix-status fenix-big-status" ]
-                                [ span [ class "status-big-icon wait-status status-icon" ]
-                                    []
-                                , span [ class "status" ]
-                                    [ text "Ожидание" ]
-                                , span [ class "icon sleep" ]
-                                    []
+                            [ div [ class "content-item" ]
+                                [ span [ class "name" ] [ text <| t "control.Последний сеанс связи:" ]
+                                , span [ class "text" ] [ text "(TDP)23 Июн 18:17" ]
                                 ]
                             , div [ class "content-item" ]
-                                [ div [ class "details-blue-title blue-gradient-text" ]
-                                    [ span [ class "details-icon icon-search" ]
-                                        []
-                                    , text "Включить режим Поиск\t\t\t\t\t\t\t\t\t"
-                                    ]
+                                [ span [ class "name" ] [ text <| t "control.Следующий сеанс связи:" ]
+                                , span [ class "text" ] [ text "(TDP)23 Июн 18:47" ]
                                 ]
                             ]
                         ]
                     , div [ class "details-item" ]
-                        [ div [ class "title" ]
-                            [ text "Связь\t\t\t\t\t\t\t" ]
+                        [ div [ class "title" ] [ text <| t "control.Положение" ]
                         , div [ class "content" ]
                             [ div [ class "content-item" ]
-                                [ span [ class "name" ]
-                                    [ text "Последний сеанс связи:" ]
-                                , span [ class "text" ]
-                                    [ text "23 Июн 18:17" ]
-                                ]
-                            , div [ class "content-item" ]
-                                [ span [ class "name" ]
-                                    [ text "Следующий сеанс связи:" ]
-                                , span [ class "text" ]
-                                    [ text "23 Июн 18:47" ]
-                                ]
-                            ]
-                        ]
-                    , div [ class "details-item" ]
-                        [ div [ class "title" ]
-                            [ text "Положение\t\t\t\t\t\t\t" ]
-                        , div [ class "content" ]
-                            [ div [ class "content-item" ]
-                                [ span [ class "name" ]
-                                    [ text "Положение определено:" ]
-                                , span [ class "text" ]
-                                    [ text "14 Июн 18:23" ]
+                                [ span [ class "name" ] [ text <| t "control.Положение определено:" ]
+                                , span [ class "text" ] [ text "(TDP)14 Июн 18:23" ]
                                 ]
                             , div [ class "content-item content-item-group" ]
                                 [ a [ class "details-blue-title blue-gradient-text", href "#" ]
-                                    [ span [ class "details-icon icon-map" ]
-                                        []
-                                    , text "Показать\t\t\t\t\t\t\t\t\t"
-                                    ]
+                                    [ span [ class "details-icon icon-map" ] [], text <| t "control.Показать" ]
                                 , div [ class "details-blue-title blue-gradient-text" ]
-                                    [ span [ class "details-icon icon-refresh" ]
-                                        []
-                                    , text "Обновить\t\t\t\t\t\t\t\t\t"
-                                    ]
+                                    [ span [ class "details-icon icon-refresh" ] [], text <| t "control.Обновить" ]
                                 ]
                             ]
                         ]
                     , div [ class "details-item" ]
-                        [ div [ class "title" ]
-                            [ text "Предполагаемое время работы батареи\t\t\t\t\t\t\t" ]
+                        [ div [ class "title" ] [ text <| t "control.Предполагаемое время работы батареи" ]
                         , div [ class "content" ]
                             [ div [ class "content-item" ]
                                 [ div [ class "content-item-group" ]
                                     [ div [ class "power-status" ]
                                         [ span [ class "power" ]
-                                            [ span [ class "power-top" ]
-                                                []
+                                            [ span [ class "power-top" ] []
                                             , span [ class "power-wr" ]
                                                 [ span [ class "power-bg high", attribute "style" "height: 80%" ]
                                                     [ svg [ attribute "preserveAspectRatio" "xMinYMin meet", viewBox "0 0 500 500" ]
-                                                        [ path [ d "M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z", attribute "style" "stroke:none; fill: #323343;" ]
-                                                            []
-                                                        ]
+                                                        [ path [ d "M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z", attribute "style" "stroke:none; fill: #323343;" ] [] ]
                                                     ]
                                                 ]
                                             ]
-                                        , div [ class "power-status-title high" ]
-                                            [ text "85%\t\t\t\t\t\t\t\t\t\t\t" ]
+                                        , div [ class "power-status-title high" ] [ text "(TDP)85%" ]
                                         ]
                                     , span [ class "details-mode" ]
                                         [ div [ class "wait-mode" ]
                                             [ span [ class "mode-title" ]
-                                                [ text "Режим "
+                                                [ text <| t "control.Режим"
+                                                , text " "
                                                 , span [ class "uppercase-txt" ]
-                                                    [ text "Ожидание" ]
+                                                    [ text <| t "Ожидание" ]
                                                 , text ":"
                                                 ]
-                                            , span []
-                                                [ text "8 месяцев 17 дней\t\t\t\t\t\t\t\t\t\t\t\t" ]
+                                            , span [] [ text "(TDP)8 месяцев 17 дней" ]
                                             ]
                                         , div [ class "search-mode" ]
                                             [ span [ class "mode-title" ]
-                                                [ text "Режим "
+                                                [ text <| t "control.Режим"
+                                                , text " "
                                                 , span [ class "uppercase-txt" ]
-                                                    [ text "Поиск" ]
+                                                    [ text <| t "Поиск" ]
                                                 , text ":"
                                                 ]
-                                            , span []
-                                                [ text "8 месяцев 17 дней\t\t\t\t\t\t\t\t\t\t\t\t" ]
+                                            , span [] [ text "(TDP)8 месяцев 17 дней" ]
                                             ]
                                         ]
                                     ]
@@ -246,40 +206,29 @@ view appState model system =
                             ]
                         ]
                     , div [ class "details-item" ]
-                        [ div [ class "title" ]
-                            [ text "SIM-карта\t\t\t\t\t\t\t" ]
+                        [ div [ class "title" ] [ text <| t "control.SIM-карта" ]
                         , div [ class "content" ]
                             [ div [ class "content-item" ]
-                                [ span [ class "icon-sim" ]
-                                    []
-                                , span [ class "name" ]
-                                    [ text "Баланс:" ]
-                                , span [ class "text" ]
-                                    [ text "93" ]
+                                [ span [ class "icon-sim" ] []
+                                , span [ class "name" ] [ text <| t "control.Баланс:" ]
+                                , span [ class "text" ] [ text "(TDP)93" ]
                                 ]
                             , div [ class "content-item topUpAccount" ]
                                 [ div [ class "number-phone accountPhone" ]
-                                    [ span [ class "details-icon icon-phone" ]
-                                        []
-                                    , span [ class "text", id "phoneForCopy" ]
-                                        [ text "+38 098 502 67 13" ]
+                                    [ span [ class "details-icon icon-phone" ] []
+                                    , span [ class "text", id "phoneForCopy" ] [ text "(TDP)" ]
                                     ]
                                 , div [ class "details-blue-title blue-gradient-text topUpText" ]
-                                    [ span [ class "details-icon icon-card" ]
-                                        []
-                                    , span [ class "top-account" ]
-                                        [ text "Пополнить счет" ]
+                                    [ span [ class "details-icon icon-card" ] []
+                                    , span [ class "top-account" ] [ text <| t "control.Пополнить счет" ]
                                     ]
                                 ]
                             ]
                         ]
                     ]
                 , div [ class "details-footer" ]
-                    [ a [ class "orange-gradient-text block-engine-btn modal-open cursor-pointer", href "#" ]
-                        [ span [ class "icon-block" ]
-                            []
-                        , text "Заблокировать двигатель\t\t\t\t\t\t"
-                        ]
+                    [ button [ class "orange-gradient-text block-engine-btn modal-open cursor-pointer", href "#" ]
+                        [ span [ class "icon-block" ] [], text <| t "control.Заблокировать двигатель" ]
                     ]
                 ]
             ]
@@ -290,7 +239,131 @@ view appState model system =
         ]
 
 
+sysState_of : AppState.AppState -> Maybe System.Dynamic -> Html Msg
+sysState_of ({ t } as appState) maybe_dynamic =
+    let
+        ( stateText, _ ) =
+            case maybe_dynamic of
+                Nothing ->
+                    ( "Данные о состоянии еще не получены", text "" )
 
+                Just dynamic ->
+                    case dynamic.state of
+                        Nothing ->
+                            ( "идет определение...", text "" )
+
+                        Just Off ->
+                            ( "Феникс выключен."
+                            , UI.row_item [ text <| "Для включения - откройте крышку Феникса и нажмите кнопку ON/OFF." ]
+                            )
+
+                        Just Point ->
+                            ( "Идет определение местоположения..."
+                            , UI.row_item [ text <| "Это может занять до 15 минут." ]
+                            )
+
+                        Just Tracking ->
+                            let
+                                -- autosleep =
+                                --     dynamic.autosleep |> Maybe.withDefault 0 |> String.fromInt
+                                last_session =
+                                    case dynamic.lastping of
+                                        Nothing ->
+                                            DT.fromInt 0
+
+                                        Just lastping ->
+                                            lastping
+
+                                -- autosleepText =
+                                --     DT.addSecs last_session (DT.fromMinutes (Maybe.withDefault 0 dynamic.autosleep)) |> DT.toPosix |> dateTimeFormat appState.timeZone
+                                prolongCmd =
+                                    case dynamic.waitState of
+                                        Nothing ->
+                                            -- [ Html.div [ HA.class "row" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
+                                            [ Html.div [ HA.class "col s12 l3" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
+
+                                        _ ->
+                                            []
+                            in
+                            ( "Поиск"
+                            , Dates.expectSleepIn appState dynamic prolongCmd
+                            )
+
+                        -- ++ prolongCmd
+                        Just state ->
+                            -- [ UI.row_item [ text <| "Текущий режим: " ++ (System.stateAsString state) ] ]
+                            ( System.stateAsString state, text "" )
+    in
+    div [ class "details-item" ]
+        [ div [ class "title" ] [ text <| t "control.Текущий режим" ]
+        , div [ class "content" ]
+            [ div [ class "content-item fenix-status fenix-big-status" ]
+                [ span [ class "status-big-icon wait-status status-icon" ] []
+                , span [ class "status" ] [ text <| t "Ожидание" ]
+                , span [ class "icon sleep" ] []
+                ]
+            , div [ class "content-item" ]
+                [ div [ class "details-blue-title blue-gradient-text" ]
+                    [ span [ class "details-icon icon-search" ] []
+                    , text <| t "control.Включить режим Поиск"
+                    ]
+                ]
+            ]
+        ]
+
+
+
+-- sysState_ofOld : AppState.AppState -> Maybe System.Dynamic -> List (Html Msg)
+-- sysState_ofOld appState maybe_dynamic =
+--     case maybe_dynamic of
+--         Nothing ->
+--             [ UI.row_item [ text <| "Данные о состоянии еще не получены" ] ]
+--
+--         Just dynamic ->
+--             case dynamic.state of
+--                 Nothing ->
+--                     [ curState "Текущий режим: идет определение.." ]
+--
+--                 Just Off ->
+--                     [ curState "Феникс выключен."
+--                     , UI.row_item [ text <| "Для включения - откройте крышку Феникса и нажмите кнопку ON/OFF." ]
+--                     ]
+--
+--                 Just Point ->
+--                     [ curState "Идет определение местоположения..."
+--                     , UI.row_item [ text <| "Это может занять до 15 минут." ]
+--                     ]
+--
+--                 Just Tracking ->
+--                     let
+--                         -- autosleep =
+--                         --     dynamic.autosleep |> Maybe.withDefault 0 |> String.fromInt
+--                         last_session =
+--                             case dynamic.lastping of
+--                                 Nothing ->
+--                                     DT.fromInt 0
+--
+--                                 Just lastping ->
+--                                     lastping
+--
+--                         -- autosleepText =
+--                         --     DT.addSecs last_session (DT.fromMinutes (Maybe.withDefault 0 dynamic.autosleep)) |> DT.toPosix |> dateTimeFormat appState.timeZone
+--                         prolongCmd =
+--                             case dynamic.waitState of
+--                                 Nothing ->
+--                                     -- [ Html.div [ HA.class "row" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
+--                                     [ Html.div [ HA.class "col s12 l3" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
+--
+--                                 _ ->
+--                                     []
+--                     in
+--                     [ curState "Текущий режим: Поиск" ]
+--                         ++ Dates.expectSleepIn appState dynamic prolongCmd
+--
+--                 -- ++ prolongCmd
+--                 Just state ->
+--                     -- [ UI.row_item [ text <| "Текущий режим: " ++ (System.stateAsString state) ] ]
+--                     [ curState <| "Текущий режим: " ++ System.stateAsString state ]
 -- viewOld : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 -- viewOld appState model system =
 --     UI.div_ <|
@@ -324,31 +397,24 @@ view appState model system =
 --         _ ->
 --             UI.container [ text "404" ]
 --
-
-
-viewHeader : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
-viewHeader appState model system =
-    [ UI.row_item
-        [ text system.title
-        , text " "
-
-        -- , UI.cmdButton "…" (OnTitleChangeStart system.title)
-        , UI.iconButton "cog" ("/system/" ++ system.id ++ "/config")
-
-        -- , UI.cmdIconButton "cog" (OnSysCmd system.id Config)
-        ]
-    ]
-
-
-viewInfo : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
-viewInfo appState model system =
-    sysState_of appState system.dynamic
-        ++ Dates.nextSession appState system.dynamic
-        ++ Dates.sysPosition appState system.id system.dynamic
-        ++ [ UI.row [ UI.linkIconTextButton "eye" "Cобытия" ("/system/" ++ system.id ++ "/logs") ] ]
-
-
-
+-- viewHeader : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
+-- viewHeader appState model system =
+--     [ UI.row_item
+--         [ text system.title
+--         , text " "
+--
+--         -- , UI.cmdButton "…" (OnTitleChangeStart system.title)
+--         , UI.iconButton "cog" ("/system/" ++ system.id ++ "/config")
+--
+--         -- , UI.cmdIconButton "cog" (OnSysCmd system.id Config)
+--         ]
+--     ]
+-- viewInfo : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)
+-- viewInfo appState model system =
+--     sysState_of appState system.dynamic
+--         ++ Dates.nextSession appState system.dynamic
+--         ++ Dates.sysPosition appState system.id system.dynamic
+--         ++ [ UI.row [ UI.linkIconTextButton "eye" "Cобытия" ("/system/" ++ system.id ++ "/logs") ] ]
 -- sysPosition : AppState.AppState -> String -> Maybe System.Dynamic -> List (Html Msg)
 -- sysPosition appState sid maybe_dynamic =
 --     case maybe_dynamic of
@@ -366,71 +432,16 @@ viewInfo appState model system =
 --
 --                 ( _, _, _ ) ->
 --                     [ UI.row_item [ text <| "Положение неизвестно" ] ]
-
-
-sysState_of : AppState.AppState -> Maybe System.Dynamic -> List (Html Msg)
-sysState_of appState maybe_dynamic =
-    case maybe_dynamic of
-        Nothing ->
-            [ UI.row_item [ text <| "Данные о состоянии еще не получены" ] ]
-
-        Just dynamic ->
-            case dynamic.state of
-                Nothing ->
-                    [ curState "Текущий режим: идет определение.." ]
-
-                Just Off ->
-                    [ curState "Феникс выключен."
-                    , UI.row_item [ text <| "Для включения - откройте крышку Феникса и нажмите кнопку ON/OFF." ]
-                    ]
-
-                Just Point ->
-                    [ curState "Идет определение местоположения..."
-                    , UI.row_item [ text <| "Это может занять до 15 минут." ]
-                    ]
-
-                Just Tracking ->
-                    let
-                        -- autosleep =
-                        --     dynamic.autosleep |> Maybe.withDefault 0 |> String.fromInt
-                        last_session =
-                            case dynamic.lastping of
-                                Nothing ->
-                                    DT.fromInt 0
-
-                                Just lastping ->
-                                    lastping
-
-                        -- autosleepText =
-                        --     DT.addSecs last_session (DT.fromMinutes (Maybe.withDefault 0 dynamic.autosleep)) |> DT.toPosix |> dateTimeFormat appState.timeZone
-                        prolongCmd =
-                            case dynamic.waitState of
-                                Nothing ->
-                                    -- [ Html.div [ HA.class "row" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
-                                    [ Html.div [ HA.class "col s12 l3" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
-
-                                _ ->
-                                    []
-                    in
-                    [ curState "Текущий режим: Поиск" ]
-                        ++ Dates.expectSleepIn appState dynamic prolongCmd
-
-                -- ++ prolongCmd
-                Just state ->
-                    -- [ UI.row_item [ text <| "Текущий режим: " ++ (System.stateAsString state) ] ]
-                    [ curState <| "Текущий режим: " ++ System.stateAsString state ]
-
-
-curState : String -> Html Msg
-curState t =
-    UI.row_item
-        [ Html.span
-            [ class "blue-text text-darken-2"
-            , HA.style "font-size" "1.2em"
-            , HA.style "font-weight" "bold"
-            ]
-            [ text t ]
-        ]
+-- curState : String -> Html Msg
+-- curState t =
+--     UI.row_item
+--         [ Html.span
+--             [ class "blue-text text-darken-2"
+--             , HA.style "font-size" "1.2em"
+--             , HA.style "font-weight" "bold"
+--             ]
+--             [ text t ]
+--         ]
 
 
 viewNextSession : Maybe System.Dynamic -> Html Msg
@@ -453,7 +464,7 @@ maybeRow label field foo =
             []
 
         Just v ->
-            [ UI.row_item [ text <| label ++ ": " ++ foo v ] ]
+            [ UI.row_item [ UI.text <| label ++ ": " ++ foo v ] ]
 
 
 viewInfoEntended : AppState.AppState -> Model -> SystemDocumentInfo -> List (Html Msg)

@@ -6,6 +6,7 @@ import './Page/System/Logs/port.js';
 import registerServiceWorker from './registerServiceWorker';
 
 const LANGUAGE_KEY = 'fenix.language';
+const THEME_KEY = 'fenix.theme';
 
 // process.env.NODE_ENV == "development" || "production"
 const env = process.env.NODE_ENV || 'development';
@@ -32,6 +33,8 @@ const fx_api_endpoint = protocol + "//fx.navi.cc"  + api_path;
 // const choosed_endpoint = fx_api_endpoint;
 const choosed_endpoint = (hostname=="localhost") ? fx_api_endpoint : global_api_endpoint;
 
+const theme_style = document.querySelector("#theme");
+
 console.log("API endpoint: ", choosed_endpoint);
 
 function devLog (name, arg) {
@@ -54,6 +57,7 @@ function getUserLanguage () {
   )
 }
 
+
 // Translations. Just for simple start. Maybe need refactoring later.
 
 // const translations = await fetch('translations/en-US.json');
@@ -63,7 +67,8 @@ function getUserLanguage () {
 const flags = {
     token: localStorage.getItem(tokenKey),
     api_url: choosed_endpoint,
-    language: getUserLanguage()
+    language: getUserLanguage(),
+    theme: getUserTheme()
 }
 
 console.log("Start app with flags:", flags);
@@ -137,6 +142,27 @@ app.ports.saveLanguage.subscribe(langCode => {
 
 // TODO: Не удалять следующие коментарии. Он в скором времени пригодятся.
 
+
+function getUserTheme() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const themeName = urlParams.get('theme') ||
+        window.localStorage.getItem(THEME_KEY) ||
+        defaultTheme();
+
+    theme_style.href = "/css/style-" + themeName + ".css";
+
+    return (themeName);
+}
+
+function defaultTheme() {
+    if(preferredColorScheme().matches) {
+        return "dark";
+    } else {
+        return "light"
+    }
+}
+
 // ---------
 // Dark mode
 // ---------
@@ -147,17 +173,25 @@ app.ports.saveLanguage.subscribe(langCode => {
 //     darkMode: preferredColorScheme().matches
 // }
 //
-// function preferredColorScheme() {
-//   const m =
-//     window.matchMedia &&
-//     window.matchMedia("(prefers-color-scheme: dark)")
-//
-//   m && m.addEventListener && m.addEventListener("change", e => {
-//     app.ports.preferredColorSchemaChanged.send({ dark: e.matches })
-//   })
-//
-//   return m
-// }
+function preferredColorScheme() {
+  const m =
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)");
+
+  // m && m.addEventListener && m.addEventListener("change", e => {
+  //     console.log("Theme changed");
+  //   app.ports.preferredColorSchemaChanged.send({ dark: e.matches })
+  // })
+
+  return m;
+}
+
+app.ports.saveTheme.subscribe(themeName => {
+    console.log("Save theme", themeName);
+    localStorage.setItem(THEME_KEY, themeName);
+    theme_style.href = "/css/style-" + themeName + ".css";
+});
+
 
 // In ELM:
 // port preferredColorSchemaChanged : ({ dark : Bool } -> msg) -> Sub msg

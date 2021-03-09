@@ -30,3 +30,15 @@ defaultThemes =
         [ ( ThemeID "dark", ThemeItem "dark" "dark" )
         , ( ThemeID "light", ThemeItem "light" "light" )
         ]
+
+
+replaceTheme themeName ( model, cmd ) =
+    -- TODO: Type it.
+    let
+        appState =
+            model.appState
+
+        newAppState =
+            { appState | themeName = themeName }
+    in
+    ( { model | appState = newAppState }, cmd )

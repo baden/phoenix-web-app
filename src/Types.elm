@@ -88,4 +88,5 @@ type alias Flags =
     { token : Maybe String
     , api_url : String
     , language : String
+    , theme : String
     }

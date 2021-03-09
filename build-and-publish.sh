@@ -1,6 +1,6 @@
 #!/bin/bash
 
-npm run build-css-dark
+npm run build-css
 elm-app build
 
 

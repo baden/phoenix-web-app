@@ -16,13 +16,14 @@ type alias AppState =
 
     -- , translations : Translations
     , langCode : String
+    , themeName : String
     , t : String -> String
     , tr : String -> Replacements -> String
     }
 
 
-initModel : String -> AppState
-initModel lang =
+initModel : String -> String -> AppState
+initModel lang themeName =
     { timeZone = Time.utc
 
     -- , date = Date.fromCalendarDate 2019 Jan 1
@@ -30,6 +31,7 @@ initModel lang =
 
     -- , translations = initialTranslations
     , langCode = lang
+    , themeName = themeName
     , t = t (I18N.translations lang)
     , tr = tr (I18N.translations lang) Curly
     }

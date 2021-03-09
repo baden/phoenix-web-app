@@ -37,6 +37,7 @@ type Msg
 
 type MenuMsg
     = ChangeLanguage String
+    | ChangeTheme String
     | Logout
 
 
@@ -56,8 +57,8 @@ update msg model =
         ShowThemesPopup ->
             ( { model | themePopup = True, languagePopup = False, showLogoutModal = False }, Cmd.none, Nothing )
 
-        SelectTheme tid ->
-            ( { model | themePopup = False }, Cmd.none, Nothing )
+        SelectTheme (Theme.ThemeID tid) ->
+            ( { model | themePopup = False }, saveTheme tid, Just <| ChangeTheme tid )
 
         ShowLanguagePopup ->
             ( { model | languagePopup = True, themePopup = False, showLogoutModal = False }, Cmd.none, Nothing )
@@ -203,7 +204,7 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
 
 
 menuTheme : AppState -> Model -> Html Msg
-menuTheme { t } { themePopup } =
+menuTheme { t, themeName } { themePopup } =
     let
         themes =
             Theme.defaultThemes
@@ -212,11 +213,22 @@ menuTheme { t } { themePopup } =
         theme_item ( tid, { name, class_name } ) =
             li [ onClick <| SelectTheme tid ]
                 [ span [ class "item" ] [ text <| t ("themes." ++ name) ] ]
+
+        cur_theme =
+            case themeName of
+                "dark" ->
+                    t "themes.Темная"
+
+                "light" ->
+                    t "themes.Светлая"
+
+                _ ->
+                    t "themes.Темная"
     in
     activableDropdown themePopup
         [ div [ class "dropdown-title", onClickStopPropagation ShowThemesPopup ]
             [ span [ class "mode-icon" ] []
-            , span [ id "selectedTheme" ] [ text "Темная" ]
+            , span [ id "selectedTheme" ] [ text <| t <| "themes." ++ themeName ]
             , span [ class "dropdown-icon" ] []
             ]
         , ul [ class "dropdown-list" ] <|
@@ -306,3 +318,6 @@ onClickStopPropagation msg =
 
 
 port saveLanguage : String -> Cmd msg
+
+
+port saveTheme : String -> Cmd msg

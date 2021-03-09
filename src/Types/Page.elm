@@ -5,6 +5,7 @@ import API.Account exposing (AccountDocumentInfo, fixSysListRequest)
 import API.System exposing (SystemDocumentInfo, SystemDocumentLog, SystemDocumentParams)
 import AppState exposing (AppState)
 import Components.UI.Menu as Menu
+import Components.UI.Theme as Theme
 import Dict exposing (Dict)
 import Html exposing (Html)
 import I18N
@@ -103,6 +104,9 @@ upmessageUpdate msg ( model, cmd ) =
                     -- in
                     -- ( { model | appState = newAppState }, cmd )
                     ( model, cmd ) |> I18N.replaceTranslator langCode
+
+                Menu.ChangeTheme themeName ->
+                    ( model, Cmd.none ) |> Theme.replaceTheme themeName
 
                 Menu.Logout ->
                     -- TODO:
