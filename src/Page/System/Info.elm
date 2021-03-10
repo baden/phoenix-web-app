@@ -2,20 +2,20 @@ port module Page.System.Info exposing (init, update, view)
 
 -- import Page.System.Info.СmdPanel1 exposing (cmdPanel)
 -- import Page.System.Info.Battery as Battery exposing (chartView)
+-- import Page.System.Info.CmdPanel exposing (..)
 
 import API
 import API.System as System exposing (State(..), SystemDocumentInfo)
-import AppState
+import AppState exposing (AppState)
 import Components.DateTime exposing (dateTimeFormat)
 import Components.Dates as Dates
 import Components.UI as UI exposing (UI)
 import Html exposing (Html, a, button, div, span, text)
 import Html.Attributes as HA exposing (attribute, class, classList, href, id)
-import Html.Events as HE
+import Html.Events exposing (onClick)
 import Msg as GMsg
 import Page
 import Page.System.Info.Battery as Battery
-import Page.System.Info.CmdPanel exposing (..)
 import Page.System.Info.Dialogs exposing (..)
 import Page.System.Info.Position as Position
 import Page.System.Info.Session as Session
@@ -155,7 +155,7 @@ viewWidget child =
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 view ({ t } as appState) model system =
-    div [ class "container" ]
+    div [ class "container" ] <|
         [ div [ class "wrapper-content" ]
             [ div [ class "details-wrapper-bg" ]
                 [ div [ class "details-title" ] [ text system.title ]
@@ -175,60 +175,11 @@ view ({ t } as appState) model system =
         , div [ class "copiedMess", classList [ ( "showAnimate", model.showCopyPhonePanel ) ] ]
             [ div [ class "phone-copied-message" ] [ text <| t "control.Номер телефона был скопирован" ] ]
         ]
+            ++ prolongSleepDialogView appState model system.id
+            ++ confirmDialogs appState model system.id
 
 
 
--- sysState_ofOld : AppState.AppState -> Maybe System.Dynamic -> List (Html Msg)
--- sysState_ofOld appState maybe_dynamic =
---     case maybe_dynamic of
---         Nothing ->
---             [ UI.row_item [ text <| "Данные о состоянии еще не получены" ] ]
---
---         Just dynamic ->
---             case dynamic.state of
---                 Nothing ->
---                     [ curState "Текущий режим: идет определение.." ]
---
---                 Just Off ->
---                     [ curState "Феникс выключен."
---                     , UI.row_item [ text <| "Для включения - откройте крышку Феникса и нажмите кнопку ON/OFF." ]
---                     ]
---
---                 Just Point ->
---                     [ curState "Идет определение местоположения..."
---                     , UI.row_item [ text <| "Это может занять до 15 минут." ]
---                     ]
---
---                 Just Tracking ->
---                     let
---                         -- autosleep =
---                         --     dynamic.autosleep |> Maybe.withDefault 0 |> String.fromInt
---                         last_session =
---                             case dynamic.lastping of
---                                 Nothing ->
---                                     DT.fromInt 0
---
---                                 Just lastping ->
---                                     lastping
---
---                         -- autosleepText =
---                         --     DT.addSecs last_session (DT.fromMinutes (Maybe.withDefault 0 dynamic.autosleep)) |> DT.toPosix |> dateTimeFormat appState.timeZone
---                         prolongCmd =
---                             case dynamic.waitState of
---                                 Nothing ->
---                                     -- [ Html.div [ HA.class "row" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
---                                     [ Html.div [ HA.class "col s12 l3" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
---
---                                 _ ->
---                                     []
---                     in
---                     [ curState "Текущий режим: Поиск" ]
---                         ++ Dates.expectSleepIn appState dynamic prolongCmd
---
---                 -- ++ prolongCmd
---                 Just state ->
---                     -- [ UI.row_item [ text <| "Текущий режим: " ++ (System.stateAsString state) ] ]
---                     [ curState <| "Текущий режим: " ++ System.stateAsString state ]
 -- viewOld : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 -- viewOld appState model system =
 --     UI.div_ <|
@@ -361,6 +312,41 @@ viewInfoEntended appState ({ extendInfo } as model) system =
 
     else
         [ UI.row [ UI.cmdTextIconButton "arrow-down" "Больше информации…" OnExtendInfo ] ]
+
+
+
+-- confirmDialogs model system.id
+
+
+confirmDialogs : AppState -> Model -> String -> List (Html Msg)
+confirmDialogs { t, tr } model sysId =
+    -- TODO: Вынести в модуль
+    let
+        pre =
+            "При следующем сеансе связи "
+    in
+    case model.showCommandConfirmDialog of
+        Nothing ->
+            []
+
+        Just state ->
+            [ div [ class "modal-bg show" ]
+                [ div [ class "modal-wr" ]
+                    [ div [ class "modal-content" ]
+                        [ div [ class "modal-close close modal-close-btn", onClick OnHideCmdConfirmDialog ] []
+                        , div [ class "modal-title" ] [ text <| t "control.Смена Режима" ]
+                        , div [ class "modal-body" ]
+                            [ span [ class "modal-text" ]
+                                [ text <| tr "control.change_state_dialog" [ ( "date", "(TBD)" ), ( "state", "(TBD)" ) ] ]
+                            ]
+                        , div [ class "modal-btn-group" ]
+                            [ button [ class "btn btn-md btn-secondary modal-close-btn", onClick OnHideCmdConfirmDialog ] [ text <| t "config.Отмена" ]
+                            , button [ class "btn btn-md btn-primary" ] [ text <| t "config.Хорошо" ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
 
 
 port copyToClipboard : String -> Cmd msg
