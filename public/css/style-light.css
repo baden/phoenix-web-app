@@ -235,10 +235,8 @@ button, select, input {
   display: flex;
   flex-direction: column;
   background: linear-gradient(162.44deg, #88898E 0%, #FAFAF2 100%); }
-  .container-login {
-    background: url("../images/background.png") no-repeat center/cover; }
-    .container-login .wrapper-bg {
-      align-items: center; }
+  .container-login .wrapper-bg {
+    align-items: center; }
   .container-map {
     width: 100%;
     min-height: 100%;

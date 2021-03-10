@@ -106,7 +106,7 @@ upmessageUpdate msg ( model, cmd ) =
                     ( model, cmd ) |> I18N.replaceTranslator langCode
 
                 Menu.ChangeTheme themeName ->
-                    ( model, Cmd.none ) |> Theme.replaceTheme themeName
+                    ( model, cmd ) |> Theme.replaceTheme themeName
 
                 Menu.Logout ->
                     -- TODO:
