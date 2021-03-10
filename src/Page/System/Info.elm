@@ -1,6 +1,7 @@
-module Page.System.Info exposing (init, update, view)
+port module Page.System.Info exposing (init, update, view)
 
 -- import Page.System.Info.СmdPanel1 exposing (cmdPanel)
+-- import Page.System.Info.Battery as Battery exposing (chartView)
 
 import API
 import API.System as System exposing (State(..), SystemDocumentInfo)
@@ -9,16 +10,22 @@ import Components.DateTime exposing (dateTimeFormat)
 import Components.Dates as Dates
 import Components.UI as UI exposing (UI)
 import Html exposing (Html, a, button, div, span, text)
-import Html.Attributes as HA exposing (attribute, class, href, id)
+import Html.Attributes as HA exposing (attribute, class, classList, href, id)
 import Html.Events as HE
 import Msg as GMsg
 import Page
-import Page.System.Info.Battery exposing (chartView)
+import Page.System.Info.Battery as Battery
 import Page.System.Info.CmdPanel exposing (..)
 import Page.System.Info.Dialogs exposing (..)
+import Page.System.Info.Position as Position
+import Page.System.Info.Session as Session
+import Page.System.Info.SimCard as SimCard
+import Page.System.Info.State as State
 import Page.System.Info.Types exposing (..)
+import Process
 import Svg exposing (path, svg, text_)
 import Svg.Attributes exposing (d, preserveAspectRatio, strokeDasharray, viewBox, x, y)
+import Task
 import Types.Dt as DT
 
 
@@ -31,6 +38,8 @@ init =
       , offId = ""
       , batteryExtendView = BVP1
       , newBatteryCapacity = BC_None
+      , showPhone = False
+      , showCopyPhonePanel = False
 
       -- , smartBlock = True
       }
@@ -118,6 +127,24 @@ update msg model =
         OnNoCmd ->
             ( model, Cmd.none, Nothing )
 
+        OnShowPhone ->
+            ( { model | showPhone = True }, Cmd.batch [ Process.sleep 6500 |> Task.perform (\_ -> OnHidePhone) ], Nothing )
+
+        OnHidePhone ->
+            ( { model | showPhone = False }, Cmd.none, Nothing )
+
+        OnCopyPhone phone ->
+            ( { model | showCopyPhonePanel = True }
+            , Cmd.batch
+                [ copyToClipboard phone
+                , Process.sleep 6500 |> Task.perform (\_ -> OnCopyPhoneDone)
+                ]
+            , Nothing
+            )
+
+        OnCopyPhoneDone ->
+            ( { model | showCopyPhonePanel = False }, Cmd.none, Nothing )
+
 
 viewWidget : List (Html Msg) -> Html Msg
 viewWidget child =
@@ -133,98 +160,11 @@ view ({ t } as appState) model system =
             [ div [ class "details-wrapper-bg" ]
                 [ div [ class "details-title" ] [ text system.title ]
                 , div [ class "details-items" ]
-                    [ sysState_of appState system.dynamic
-                    , div [ class "details-item" ]
-                        [ div [ class "title" ] [ text <| t "control.Связь" ]
-                        , div [ class "content" ]
-                            [ div [ class "content-item" ]
-                                [ span [ class "name" ] [ text <| t "control.Последний сеанс связи:" ]
-                                , span [ class "text" ] [ text "(TDP)23 Июн 18:17" ]
-                                ]
-                            , div [ class "content-item" ]
-                                [ span [ class "name" ] [ text <| t "control.Следующий сеанс связи:" ]
-                                , span [ class "text" ] [ text "(TDP)23 Июн 18:47" ]
-                                ]
-                            ]
-                        ]
-                    , div [ class "details-item" ]
-                        [ div [ class "title" ] [ text <| t "control.Положение" ]
-                        , div [ class "content" ]
-                            [ div [ class "content-item" ]
-                                [ span [ class "name" ] [ text <| t "control.Положение определено:" ]
-                                , span [ class "text" ] [ text "(TDP)14 Июн 18:23" ]
-                                ]
-                            , div [ class "content-item content-item-group" ]
-                                [ a [ class "details-blue-title blue-gradient-text", href "#" ]
-                                    [ span [ class "details-icon icon-map" ] [], text <| t "control.Показать" ]
-                                , div [ class "details-blue-title blue-gradient-text" ]
-                                    [ span [ class "details-icon icon-refresh" ] [], text <| t "control.Обновить" ]
-                                ]
-                            ]
-                        ]
-                    , div [ class "details-item" ]
-                        [ div [ class "title" ] [ text <| t "control.Предполагаемое время работы батареи" ]
-                        , div [ class "content" ]
-                            [ div [ class "content-item" ]
-                                [ div [ class "content-item-group" ]
-                                    [ div [ class "power-status" ]
-                                        [ span [ class "power" ]
-                                            [ span [ class "power-top" ] []
-                                            , span [ class "power-wr" ]
-                                                [ span [ class "power-bg high", attribute "style" "height: 80%" ]
-                                                    [ svg [ attribute "preserveAspectRatio" "xMinYMin meet", viewBox "0 0 500 500" ]
-                                                        [ path [ d "M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z", attribute "style" "stroke:none; fill: #323343;" ] [] ]
-                                                    ]
-                                                ]
-                                            ]
-                                        , div [ class "power-status-title high" ] [ text "(TDP)85%" ]
-                                        ]
-                                    , span [ class "details-mode" ]
-                                        [ div [ class "wait-mode" ]
-                                            [ span [ class "mode-title" ]
-                                                [ text <| t "control.Режим"
-                                                , text " "
-                                                , span [ class "uppercase-txt" ]
-                                                    [ text <| t "Ожидание" ]
-                                                , text ":"
-                                                ]
-                                            , span [] [ text "(TDP)8 месяцев 17 дней" ]
-                                            ]
-                                        , div [ class "search-mode" ]
-                                            [ span [ class "mode-title" ]
-                                                [ text <| t "control.Режим"
-                                                , text " "
-                                                , span [ class "uppercase-txt" ]
-                                                    [ text <| t "Поиск" ]
-                                                , text ":"
-                                                ]
-                                            , span [] [ text "(TDP)8 месяцев 17 дней" ]
-                                            ]
-                                        ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    , div [ class "details-item" ]
-                        [ div [ class "title" ] [ text <| t "control.SIM-карта" ]
-                        , div [ class "content" ]
-                            [ div [ class "content-item" ]
-                                [ span [ class "icon-sim" ] []
-                                , span [ class "name" ] [ text <| t "control.Баланс:" ]
-                                , span [ class "text" ] [ text "(TDP)93" ]
-                                ]
-                            , div [ class "content-item topUpAccount" ]
-                                [ div [ class "number-phone accountPhone" ]
-                                    [ span [ class "details-icon icon-phone" ] []
-                                    , span [ class "text", id "phoneForCopy" ] [ text "(TDP)" ]
-                                    ]
-                                , div [ class "details-blue-title blue-gradient-text topUpText" ]
-                                    [ span [ class "details-icon icon-card" ] []
-                                    , span [ class "top-account" ] [ text <| t "control.Пополнить счет" ]
-                                    ]
-                                ]
-                            ]
-                        ]
+                    [ State.view appState model system
+                    , Session.view appState model system
+                    , Position.view appState model system
+                    , Battery.view appState model system
+                    , SimCard.view appState model system
                     ]
                 , div [ class "details-footer" ]
                     [ button [ class "orange-gradient-text block-engine-btn modal-open cursor-pointer", href "#" ]
@@ -232,83 +172,8 @@ view ({ t } as appState) model system =
                     ]
                 ]
             ]
-        , div [ class "copiedMess" ]
-            [ div [ class "phone-copied-message" ]
-                [ text "Номер телефона был скопирован\t\t\t\t" ]
-            ]
-        ]
-
-
-sysState_of : AppState.AppState -> Maybe System.Dynamic -> Html Msg
-sysState_of ({ t } as appState) maybe_dynamic =
-    let
-        ( stateText, _ ) =
-            case maybe_dynamic of
-                Nothing ->
-                    ( "Данные о состоянии еще не получены", text "" )
-
-                Just dynamic ->
-                    case dynamic.state of
-                        Nothing ->
-                            ( "идет определение...", text "" )
-
-                        Just Off ->
-                            ( "Феникс выключен."
-                            , UI.row_item [ text <| "Для включения - откройте крышку Феникса и нажмите кнопку ON/OFF." ]
-                            )
-
-                        Just Point ->
-                            ( "Идет определение местоположения..."
-                            , UI.row_item [ text <| "Это может занять до 15 минут." ]
-                            )
-
-                        Just Tracking ->
-                            let
-                                -- autosleep =
-                                --     dynamic.autosleep |> Maybe.withDefault 0 |> String.fromInt
-                                last_session =
-                                    case dynamic.lastping of
-                                        Nothing ->
-                                            DT.fromInt 0
-
-                                        Just lastping ->
-                                            lastping
-
-                                -- autosleepText =
-                                --     DT.addSecs last_session (DT.fromMinutes (Maybe.withDefault 0 dynamic.autosleep)) |> DT.toPosix |> dateTimeFormat appState.timeZone
-                                prolongCmd =
-                                    case dynamic.waitState of
-                                        Nothing ->
-                                            -- [ Html.div [ HA.class "row" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
-                                            [ Html.div [ HA.class "col s12 l3" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
-
-                                        _ ->
-                                            []
-                            in
-                            ( "Поиск"
-                            , Dates.expectSleepIn appState dynamic prolongCmd
-                            )
-
-                        -- ++ prolongCmd
-                        Just state ->
-                            -- [ UI.row_item [ text <| "Текущий режим: " ++ (System.stateAsString state) ] ]
-                            ( System.stateAsString state, text "" )
-    in
-    div [ class "details-item" ]
-        [ div [ class "title" ] [ text <| t "control.Текущий режим" ]
-        , div [ class "content" ]
-            [ div [ class "content-item fenix-status fenix-big-status" ]
-                [ span [ class "status-big-icon wait-status status-icon" ] []
-                , span [ class "status" ] [ text <| t "Ожидание" ]
-                , span [ class "icon sleep" ] []
-                ]
-            , div [ class "content-item" ]
-                [ div [ class "details-blue-title blue-gradient-text" ]
-                    [ span [ class "details-icon icon-search" ] []
-                    , text <| t "control.Включить режим Поиск"
-                    ]
-                ]
-            ]
+        , div [ class "copiedMess", classList [ ( "showAnimate", model.showCopyPhonePanel ) ] ]
+            [ div [ class "phone-copied-message" ] [ text <| t "control.Номер телефона был скопирован" ] ]
         ]
 
 
@@ -496,3 +361,6 @@ viewInfoEntended appState ({ extendInfo } as model) system =
 
     else
         [ UI.row [ UI.cmdTextIconButton "arrow-down" "Больше информации…" OnExtendInfo ] ]
+
+
+port copyToClipboard : String -> Cmd msg

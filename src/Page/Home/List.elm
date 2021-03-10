@@ -22,7 +22,7 @@ card system ({ t } as appState) =
     , div [ class "fenix-header" ]
         [ div [ class "fenix-status" ]
             [ status_icon system.dynamic
-            , span [ class "status" ] [ text <| sysState_of system.dynamic ]
+            , span [ class "status" ] [ text <| t <| sysState_of system.dynamic ]
             , stateIcon appState system.dynamic
             ]
         , a [ href <| "/system/" ++ system.id ++ "/config", class "fenix-set-btn" ] []
@@ -32,8 +32,8 @@ card system ({ t } as appState) =
         , smallPowerWidget appState system.battery system.params.sleep system.dynamic
         ]
     , div [ class "fenix-footer" ]
-        [ a [ href <| "/map/" ++ system.id, class "btn btn-md btn-secondary open-maps" ] [ text "На карте" ]
-        , a [ href <| "/system/" ++ system.id, class "btn btn-md btn-primary" ] [ text "Управление" ]
+        [ a [ href <| "/map/" ++ system.id, class "btn btn-md btn-secondary open-maps" ] [ text <| t "list.На карте" ]
+        , a [ href <| "/system/" ++ system.id, class "btn btn-md btn-primary" ] [ text <| t "list.Управление" ]
         ]
     ]
 

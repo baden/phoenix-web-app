@@ -1,6 +1,6 @@
 module Page.System.Info.Types exposing (..)
 
-import API.System as System exposing (SystemDocumentInfo, State, State(..))
+import API.System as System exposing (State(..), SystemDocumentInfo)
 
 
 type alias Model =
@@ -11,6 +11,8 @@ type alias Model =
     , offId : String
     , batteryExtendView : BatteryViewPage
     , newBatteryCapacity : BatteryChange
+    , showPhone : Bool
+    , showCopyPhonePanel : Bool
 
     -- , smartBlock : Bool
     }
@@ -47,3 +49,7 @@ type Msg
     | OnBatteryCapacityConfirm String String
     | OnBatteryCapacityCancel
     | OnNoCmd
+    | OnShowPhone
+    | OnHidePhone
+    | OnCopyPhone String
+    | OnCopyPhoneDone
