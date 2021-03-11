@@ -1,5 +1,6 @@
 module Page.System.Info.Dialogs exposing (..)
 
+import API.System as System exposing (State(..))
 import AppState exposing (AppState)
 import Components.UI as UI
 import Html exposing (Html, a, br, button, div, img, span, text)
@@ -78,3 +79,46 @@ viewModalDialogs model =
 
     else
         []
+
+
+waitStateLabel : AppState -> State -> String
+waitStateLabel { t, tr } waitState =
+    case waitState of
+        Point ->
+            t "control.будет определено текущее местоположение"
+
+        ProlongSleep duration ->
+            let
+                durationText h =
+                    case h of
+                        4 ->
+                            t "control.На 4 часа"
+
+                        24 ->
+                            t "control.На сутки"
+
+                        100 ->
+                            t "control.Навсегда"
+
+                        _ ->
+                            tr "control.На ч" [ ( "h", String.fromInt h ) ]
+            in
+            t "control.будет продлена работа Феникса в режиме Поиск" ++ " " ++ String.toLower (durationText duration)
+
+        Lock ->
+            t "control.будет запущена отложенная блокировка двигателя"
+
+        SLock ->
+            t "control.будет запущена интеллектуальная блокировка двигателя"
+
+        Unlock ->
+            t "control.двигатель будет разблокирован"
+
+        Off ->
+            t "control.Феникс будет выключен"
+
+        CLock ->
+            t "control.блокировка будет сброшена"
+
+        wState ->
+            t "control.Феникс будет переведён в режим" ++ " " ++ System.stateAsString wState

@@ -7,6 +7,7 @@ import Components.UI as UI exposing (UI)
 import Html exposing (Html, a, br, button, div, span, text)
 import Html.Attributes as HA exposing (attribute, class, href, id)
 import Html.Events exposing (onClick)
+import Page.System.Info.Dialogs as Dialogs
 import Page.System.Info.Types exposing (..)
 import Types.Dt as DT
 
@@ -53,45 +54,7 @@ footerWait ({ t, tr } as appState) model system waitState dynamic =
             Html.div [ class "cmdWaitLabel" ] [ text t_ ]
 
         hint =
-            case waitState of
-                Point ->
-                    t "control.будет определено текущее местоположение"
-
-                ProlongSleep duration ->
-                    let
-                        durationText h =
-                            case h of
-                                4 ->
-                                    t "control.На 4 часа"
-
-                                24 ->
-                                    t "control.На сутки"
-
-                                100 ->
-                                    t "control.Навсегда"
-
-                                _ ->
-                                    tr "control.На ч" [ ( "h", String.fromInt h ) ]
-                    in
-                    t "control.будет продлена работа Феникса в режиме Поиск" ++ " " ++ String.toLower (durationText duration)
-
-                Lock ->
-                    t "control.будет запущена отложенная блокировка двигателя"
-
-                SLock ->
-                    t "control.будет запущена интеллектуальная блокировка двигателя"
-
-                Unlock ->
-                    t "control.двигатель будет разблокирован"
-
-                Off ->
-                    t "control.Феникс будет выключен"
-
-                CLock ->
-                    t "control.блокировка будет сброшена"
-
-                wState ->
-                    t "control.Феникс будет переведён в режим" ++ " " ++ System.stateAsString wState
+            Dialogs.waitStateLabel appState waitState
     in
     div [ class "processing-engeine" ]
         [ div [ class "processing-engeine-wr" ]

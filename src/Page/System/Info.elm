@@ -10,13 +10,13 @@ import AppState exposing (AppState)
 import Components.DateTime exposing (dateTimeFormat)
 import Components.Dates as Dates
 import Components.UI as UI exposing (UI)
-import Html exposing (Html, a, br, button, div, span, text)
-import Html.Attributes as HA exposing (attribute, class, classList, href, id)
-import Html.Events exposing (onClick)
+import Html exposing (Html, a, br, button, div, img, input, label, span, text)
+import Html.Attributes as HA exposing (alt, attribute, checked, class, classList, href, id, name, src, type_, value)
+import Html.Events exposing (onCheck, onClick)
 import Msg as GMsg
 import Page
 import Page.System.Info.Battery as Battery
-import Page.System.Info.Dialogs exposing (..)
+import Page.System.Info.Dialogs as Dialogs
 import Page.System.Info.Footer as Footer
 import Page.System.Info.Position as Position
 import Page.System.Info.Session as Session
@@ -173,8 +173,8 @@ view ({ t } as appState) model system =
         , div [ class "copiedMess", classList [ ( "showAnimate", model.showCopyPhonePanel ) ] ]
             [ div [ class "phone-copied-message" ] [ text <| t "control.Номер телефона был скопирован" ] ]
         ]
-            ++ prolongSleepDialogView appState model system.id
-            ++ confirmDialogs appState model system.id
+            ++ Dialogs.prolongSleepDialogView appState model system.id
+            ++ confirmDialogs appState model system.id system.dynamic
 
 
 
@@ -316,26 +316,47 @@ viewInfoEntended appState ({ extendInfo } as model) system =
 -- confirmDialogs model system.id
 
 
-confirmDialogs : AppState -> Model -> String -> List (Html Msg)
-confirmDialogs { t, tr } model sysId =
+confirmDialogs : AppState -> Model -> String -> Maybe System.Dynamic -> List (Html Msg)
+confirmDialogs ({ t, tr, timeZone } as appState) model sysId mdynamic =
     -- TODO: Вынести в модуль
     let
         pre =
-            "При следующем сеансе связи "
+            case mdynamic of
+                Nothing ->
+                    t "При следующем сеансе связи"
+
+                Just dynamic ->
+                    let
+                        last_session =
+                            dynamic.lastping |> Maybe.withDefault (DT.fromInt 0)
+
+                        pre_date =
+                            Dates.nextSessionText appState last_session dynamic.next timeZone
+                    in
+                    tr "control.wait_state" [ ( "datetime", pre_date ) ]
     in
     case model.showCommandConfirmDialog of
         Nothing ->
             []
 
+        Just SLock ->
+            [ block appState True pre sysId ]
+
+        Just Lock ->
+            [ block appState False pre sysId ]
+
         Just state ->
+            --                 [ UI.ModalText <| pre ++ waitStateLabel state
+            --                 ]
+            -- in
             [ div [ class "modal-bg show" ]
                 [ div [ class "modal-wr" ]
                     [ div [ class "modal-content" ]
                         [ div [ class "modal-close close modal-close-btn", onClick OnHideCmdConfirmDialog ] []
-                        , div [ class "modal-title" ] [ text <| t "control.Смена Режима" ]
+                        , div [ class "modal-title" ] [ text <| t "control.Внимание" ]
                         , div [ class "modal-body" ]
                             [ span [ class "modal-text" ]
-                                [ text <| tr "control.change_state_dialog" [ ( "date", "(TBD)" ), ( "state", "(TBD)" ) ] ]
+                                [ text pre, text " ", text <| Dialogs.waitStateLabel appState state ]
                             ]
                         , div [ class "modal-btn-group" ]
                             [ button [ class "btn btn-md btn-secondary modal-close-btn", onClick OnHideCmdConfirmDialog ] [ text <| t "config.Отмена" ]
@@ -345,6 +366,50 @@ confirmDialogs { t, tr } model sysId =
                     ]
                 ]
             ]
+
+
+block : AppState -> Bool -> String -> String -> Html Msg
+block { t } slock pre sysId =
+    let
+        ( text_, state, comment_ ) =
+            case slock of
+                True ->
+                    ( "control.block_smart_text"
+                    , Lock
+                    , "control.block_smart_comment"
+                    )
+
+                False ->
+                    ( "control.block_lazy_text"
+                    , SLock
+                    , "control.block_lazy_comment"
+                    )
+    in
+    div [ class "modal-bg show" ]
+        [ div [ class "modal-wr" ]
+            [ div [ class "modal-content" ]
+                [ div [ class "modal-img-mob" ] [ img [ alt "", src "/images/engaine_blocking.svg" ] [] ]
+                , div [ class "modal-title" ] [ text <| t "control.Блокировка двигателя" ]
+                , div [ class "modal-body" ]
+                    [ span [ class "modal-text" ] [ text pre, text " ", text <| t text_ ]
+                    , span [ class "checkmark-wrap" ]
+                        [ label [ class "checkboxContainer" ]
+                            [ input [ checked slock, name "", type_ "checkbox", onCheck (always <| OnSysCmdPre sysId state) ] []
+                            , span [ class "checkmark" ] []
+                            ]
+                        , span [ class "checkmark-text" ]
+                            [ span [ class "checkmark-title" ] [ text <| t "control.Интеллектуальная блокировка" ]
+                            , text <| t comment_
+                            ]
+                        ]
+                    ]
+                , div [ class "modal-btn-group" ]
+                    [ button [ class "btn btn-md btn-secondary modal-close-btn", onClick OnHideCmdConfirmDialog ] [ text <| t "config.Отмена" ]
+                    , button [ class "btn btn-md btn-primary", onClick (OnSysCmd sysId state) ] [ text <| t "control.Заблокировать" ]
+                    ]
+                ]
+            ]
+        ]
 
 
 port copyToClipboard : String -> Cmd msg
