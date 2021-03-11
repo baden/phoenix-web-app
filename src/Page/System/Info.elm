@@ -10,13 +10,14 @@ import AppState exposing (AppState)
 import Components.DateTime exposing (dateTimeFormat)
 import Components.Dates as Dates
 import Components.UI as UI exposing (UI)
-import Html exposing (Html, a, button, div, span, text)
+import Html exposing (Html, a, br, button, div, span, text)
 import Html.Attributes as HA exposing (attribute, class, classList, href, id)
 import Html.Events exposing (onClick)
 import Msg as GMsg
 import Page
 import Page.System.Info.Battery as Battery
 import Page.System.Info.Dialogs exposing (..)
+import Page.System.Info.Footer as Footer
 import Page.System.Info.Position as Position
 import Page.System.Info.Session as Session
 import Page.System.Info.SimCard as SimCard
@@ -166,10 +167,7 @@ view ({ t } as appState) model system =
                     , Battery.view appState model system
                     , SimCard.view appState model system
                     ]
-                , div [ class "details-footer" ]
-                    [ button [ class "orange-gradient-text block-engine-btn modal-open cursor-pointer", href "#" ]
-                        [ span [ class "icon-block" ] [], text <| t "control.Заблокировать двигатель" ]
-                    ]
+                , div [ class "details-footer" ] [ Footer.view appState model system ]
                 ]
             ]
         , div [ class "copiedMess", classList [ ( "showAnimate", model.showCopyPhonePanel ) ] ]
@@ -341,7 +339,7 @@ confirmDialogs { t, tr } model sysId =
                             ]
                         , div [ class "modal-btn-group" ]
                             [ button [ class "btn btn-md btn-secondary modal-close-btn", onClick OnHideCmdConfirmDialog ] [ text <| t "config.Отмена" ]
-                            , button [ class "btn btn-md btn-primary" ] [ text <| t "config.Хорошо" ]
+                            , button [ class "btn btn-md btn-primary", onClick (OnSysCmd sysId state) ] [ text <| t "config.Хорошо" ]
                             ]
                         ]
                     ]
