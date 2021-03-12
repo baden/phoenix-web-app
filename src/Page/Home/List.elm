@@ -4,6 +4,7 @@ import API.System as System exposing (SystemDocumentInfo)
 import API.System.Battery as Battery exposing (Battery)
 import AppState exposing (AppState)
 import Components.UI as UI
+import Components.UI.Battery exposing (powerLevelClass)
 import Dict exposing (Dict)
 import Html exposing (Html, a, button, div, img, li, span, text, ul)
 import Html.Attributes as HA exposing (alt, attribute, class, classList, href, id, src, style)
@@ -285,69 +286,64 @@ stateIcon { t } mdynamic =
         ]
 
 
-powerStatus100 : Html Msg
-powerStatus100 =
-    div [ class "power-status" ]
-        [ span [ class "power" ]
-            [ span [ class "power-top" ] []
-            , span [ class "power-wr" ]
-                [ span [ class "power-bg full", attribute "style" "height: 80%" ]
-                    [ svg [ attribute "preserveAspectRatio" "xMinYMin meet", viewBox "0 0 500 500" ]
-                        [ path [ d "M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z", attribute "style" "stroke:none; fill: #323343;" ] []
-                        ]
-                    ]
-                ]
-            ]
-        , div [ class "power-status-title full" ] [ text "100%" ]
-        ]
 
-
-powerStatus85 =
-    div [ class "power-status" ]
-        [ span [ class "power" ]
-            [ span [ class "power-top" ] []
-            , span [ class "power-wr" ]
-                [ span [ class "power-bg high", attribute "style" "height: 90%" ]
-                    [ svg [ attribute "preserveAspectRatio" "xMinYMin meet", viewBox "0 0 500 500" ]
-                        [ path [ d "M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z", attribute "style" "stroke:none; fill: #323343;" ] []
-                        ]
-                    ]
-                ]
-            ]
-        , div [ class "power-status-title high" ] [ text "85%" ]
-        ]
-
-
-powerStatus50 =
-    div [ class "power-status" ]
-        [ span [ class "power" ]
-            [ span [ class "power-top" ] []
-            , span [ class "power-wr" ]
-                [ span [ class "power-bg medium", attribute "style" "height: 70%" ]
-                    [ svg [ attribute "preserveAspectRatio" "xMinYMin meet", viewBox "0 0 500 500" ]
-                        [ path [ d "M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z", attribute "style" "stroke:none; fill: #323343;" ] []
-                        ]
-                    ]
-                ]
-            ]
-        , div [ class "power-status-title medium" ] [ text "50%" ]
-        ]
-
-
-powerStatus15 =
-    div [ class "power-status" ]
-        [ span [ class "power" ]
-            [ span [ class "power-top" ] []
-            , span [ class "power-wr" ]
-                [ span [ class "power-bg low", attribute "style" "height: 30%" ]
-                    [ svg [ attribute "preserveAspectRatio" "xMinYMin meet", viewBox "0 0 500 500" ]
-                        [ path [ d "M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z", attribute "style" "stroke:none; fill: #323343;" ] []
-                        ]
-                    ]
-                ]
-            ]
-        , div [ class "power-status-title low" ] [ text "15%" ]
-        ]
+-- powerStatus100 : Html Msg
+-- powerStatus100 =
+--     div [ class "power-status" ]
+--         [ span [ class "power" ]
+--             [ span [ class "power-top" ] []
+--             , span [ class "power-wr" ]
+--                 [ span [ class "power-bg full", attribute "style" "height: 80%" ]
+--                     [ svg [ attribute "preserveAspectRatio" "xMinYMin meet", viewBox "0 0 500 500" ]
+--                         [ path [ d "M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z", attribute "style" "stroke:none; fill: #323343;" ] []
+--                         ]
+--                     ]
+--                 ]
+--             ]
+--         , div [ class "power-status-title full" ] [ text "100%" ]
+--         ]
+-- powerStatus85 =
+--     div [ class "power-status" ]
+--         [ span [ class "power" ]
+--             [ span [ class "power-top" ] []
+--             , span [ class "power-wr" ]
+--                 [ span [ class "power-bg high", attribute "style" "height: 90%" ]
+--                     [ svg [ attribute "preserveAspectRatio" "xMinYMin meet", viewBox "0 0 500 500" ]
+--                         [ path [ d "M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z", attribute "style" "stroke:none; fill: #323343;" ] []
+--                         ]
+--                     ]
+--                 ]
+--             ]
+--         , div [ class "power-status-title high" ] [ text "85%" ]
+--         ]
+-- powerStatus50 =
+--     div [ class "power-status" ]
+--         [ span [ class "power" ]
+--             [ span [ class "power-top" ] []
+--             , span [ class "power-wr" ]
+--                 [ span [ class "power-bg medium", attribute "style" "height: 70%" ]
+--                     [ svg [ attribute "preserveAspectRatio" "xMinYMin meet", viewBox "0 0 500 500" ]
+--                         [ path [ d "M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z", attribute "style" "stroke:none; fill: #323343;" ] []
+--                         ]
+--                     ]
+--                 ]
+--             ]
+--         , div [ class "power-status-title medium" ] [ text "50%" ]
+--         ]
+-- powerStatus15 =
+--     div [ class "power-status" ]
+--         [ span [ class "power" ]
+--             [ span [ class "power-top" ] []
+--             , span [ class "power-wr" ]
+--                 [ span [ class "power-bg low", attribute "style" "height: 30%" ]
+--                     [ svg [ attribute "preserveAspectRatio" "xMinYMin meet", viewBox "0 0 500 500" ]
+--                         [ path [ d "M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z", attribute "style" "stroke:none; fill: #323343;" ] []
+--                         ]
+--                     ]
+--                 ]
+--             ]
+--         , div [ class "power-status-title low" ] [ text "15%" ]
+--         ]
 
 
 smallPowerWidget : AppState -> Maybe Battery -> Maybe Int -> Maybe System.Dynamic -> Html Msg
@@ -371,7 +367,7 @@ smallPowerWidget appState mbattery msleep mdynamic =
                     (percentage |> Round.round 1) ++ "%"
 
                 colour =
-                    powerLevel percentage
+                    powerLevelClass percentage
 
                 sleep =
                     case msleep of
@@ -431,21 +427,6 @@ batText { t } battery used sleep mdynamic =
                 , span [] [ text (Battery.expect_at_sleep capacity sleep) ]
                 ]
     ]
-
-
-powerLevel : Float -> String
-powerLevel v =
-    if v > 90 then
-        "full"
-
-    else if v > 60 then
-        "high"
-
-    else if v > 30 then
-        "medium"
-
-    else
-        "low"
 
 
 height : Float -> String

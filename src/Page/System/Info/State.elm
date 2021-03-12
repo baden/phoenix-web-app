@@ -59,12 +59,15 @@ view ({ t } as appState) model system =
                             in
                             ( "Поиск"
                             , [ expectSleepIn appState dynamic prolongCmd
-                              , startNewState appState "Ожидание" system.id System.Sleep
+                              , startNewState appState "Ожидание" system.id System.Hidden
                               ]
                             )
 
                         -- Just Tracking ->
                         -- ++ prolongCmd
+                        Just Hidden ->
+                            ( System.stateAsString Hidden, [ startNewState appState "Поиск" system.id System.Tracking ] )
+
                         Just state ->
                             -- [ UI.row_item [ text <| "Текущий режим: " ++ (System.stateAsString state) ] ]
                             ( System.stateAsString state, [] )

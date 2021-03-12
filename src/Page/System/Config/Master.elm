@@ -239,9 +239,9 @@ masterDialogView5 { t } model sysId params =
         ]
     , div [ class "wrapper-content-btn btn-group" ]
         [ button [ class "btn btn-md btn-secondary btn-prev", onClick OnMasterPrev ] [ text <| t "config.Назад" ]
+        , span [ class "text", onClick OnShowChanges ] [ text "(?)" ]
 
         -- , button [ class "btn btn-md btn-primary btn-next", onClick (OnConfirmMaster sysId mixedQueue) ] [ text "Применить" ]
-        , span [ class "text", onClick OnShowChanges ] [ text "(?)" ]
         , button [ class "btn btn-md btn-primary btn-next", onClick (OnConfirmMaster sysId mixedQueue) ] [ text <| t "config.Применить" ]
 
         -- , masterFooterLast sysId params.queue (changesList model)

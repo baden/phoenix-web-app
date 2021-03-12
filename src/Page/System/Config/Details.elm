@@ -53,8 +53,6 @@ view ({ t } as appState) model system mparams =
             ]
         , div [ class "details-footer setting-footer" ]
             [ Html.button [ HA.href "#", attribute "role" "button", class "red-text cursor-pointer details-footer-btn modal-open", HE.onClick (OnRemove system.id) ]
-                [ span [ class "icon-remove" ] []
-                , text <| t "config.Удалить Феникс"
-                ]
+                [ span [ class "icon-remove" ] [], text <| t "config.Удалить Феникс" ]
             ]
         ]

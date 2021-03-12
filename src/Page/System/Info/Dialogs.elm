@@ -121,4 +121,4 @@ waitStateLabel { t, tr } waitState =
             t "control.блокировка будет сброшена"
 
         wState ->
-            t "control.Феникс будет переведён в режим" ++ " " ++ System.stateAsString wState
+            t "control.Феникс будет переведён в режим" ++ " " ++ (System.stateAsString wState |> String.toUpper)

@@ -134,8 +134,8 @@ update msg model =
             --
             -- TODO: Временно отключено применение настроек (для отладки)
             --
-            -- ( { model | showState = SS_Congrat }, paramsSetQueue sysId queue, Nothing )
-            ( { model | showState = SS_Congrat }, Cmd.none, Nothing )
+            -- ( { model | showState = SS_Congrat }, Cmd.none, Nothing )
+            ( { model | showState = SS_Congrat }, paramsSetQueue sysId queue, Nothing )
 
         OnOpenDetails s ->
             ( { model | showState = SS_Details }, Cmd.none, Nothing )

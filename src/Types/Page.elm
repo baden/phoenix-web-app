@@ -84,7 +84,9 @@ upmessageUpdate msg ( model, cmd ) =
                         newSysList =
                             account.systems |> ListExtra.remove sid
                     in
-                    ( model, Cmd.batch [ cmd, API.websocketOut <| fixSysListRequest newSysList ] )
+                    -- ( model, Cmd.batch [ cmd, API.websocketOut <| fixSysListRequest newSysList ] )
+                    -- TODO: Временно убрал функцию удаления Феникса
+                    ( model, Cmd.batch [ cmd ] )
 
         Just (MsgT.MenuMsg menuMsg) ->
             case menuMsg of
