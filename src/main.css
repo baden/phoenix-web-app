@@ -679,17 +679,17 @@ button[disabled] {
     cursor: not-allowed;
 }
 
-.btn {
+/* .btn { */
     /* padding: 5px 10px 5px 10px; */
-    white-space: nowrap;
-}
+    /* white-space: nowrap;
+} */
 
-.btn-lg {
+/* .btn-lg {
     padding: 2px 43px 2px 18px;
-}
+} */
 
 
-.fenix {
+/* .fenix {
       -ms-flex: 1 0 30%;
           flex: 1 0 30%;
 }
@@ -705,30 +705,29 @@ button[disabled] {
   .fenix {
           -ms-flex: 1 0 100%;
               flex: 1 0 100%;
-              /* min-width: 286px; */
   }
-}
+} */
 
-.fenix-status .off-status {
+/* .fenix-status .off-status {
   background: -webkit-gradient(linear, left bottom, left top, from(#101010), to(#000000));
   background: linear-gradient(0deg, #101010 0%, #000000 100%);
-}
+} */
 
-.modal-body {
+/* .modal-body {
     color: #DFE0F3;
     font-size: 1.14rem;
-}
+} */
 
 
 span#passwordText {
     margin-left: 4px;
 }
 
-button {
+/* button {
     background: none;
     padding: 16px 0 16px 0;
-}
+} */
 
-.details-footer {
+/* .details-footer {
     padding: 0 16px 0 16px;
-}
+} */

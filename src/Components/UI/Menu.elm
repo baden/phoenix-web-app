@@ -90,7 +90,7 @@ hideMenu model =
     { model | menuVisibility = False }
 
 
-view : Page.Route.PageBase -> AccountDocumentInfo -> AppState -> Maybe SystemDocumentInfo -> Model -> Html Msg
+view : Page.Route.PageBase -> AccountDocumentInfo -> AppState -> Maybe SystemDocumentInfo -> Model -> List (Html Msg)
 view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup } as model) =
     let
         popupShow i =
@@ -153,50 +153,54 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
                 Just system ->
                     system.icon
     in
-    div [ classList [ ( "menu", True ), ( "menu-visibility", model.menuVisibility ) ] ]
+    [ div [ classList [ ( "menu", True ), ( "menu-visibility", model.menuVisibility ) ] ]
         [ div [ class "menu-header" ]
-            [ div [ class "logo" ] [ img [ alt "Logo", src "/images/logo.svg" ] [] ]
+            [ div [ class "logo" ] []
             , button [ classList [ ( "menu-toggle-btn", True ), ( "visibility", model.menuVisibility ) ], id "toggleBtn", onClick ToggleMenu ] []
             ]
-        , ul [ class "menu-items" ]
-            [ menuItem "/" True "list-icon" "Список Фениксов"
-            ]
-        , div [ class "menu-options-wr" ]
-            [ div [ class "menu-options" ]
-                [ span [ class "menu-options-title" ] [ text <| t "menu.Системные опции" ]
-                , menuTheme appState model
-                , menuLanguage appState model
+        , div [ class "menu-body scroll" ]
+            [ ul [ class "menu-items" ]
+                [ menuItem "/" True "list-icon" "Список Фениксов"
                 ]
-            , div [ class "menu-options" ]
-                [ span [ class "menu-options-title" ] [ text <| t "menu.Аккаунт" ]
-                , menuAccount account appState model
-                ]
-            ]
-        , div [ classList [ ( "submenu", True ), ( "submenu-active", systemSelected ) ] ]
-            [ span [ class <| "icon-" ++ sicon ++ " submenu-type" ] []
-            , div [ class "submenu-header" ]
-                [ a [ class "submenu-back", href "/" ] [ span [ class "arrow" ] [], span [ class "title" ] [ text <| t "Список Фениксов" ] ]
-                , span [ class "submenu-name" ]
-                    [ text <|
-                        case msystem of
-                            Nothing ->
-                                ""
-
-                            Just system ->
-                                system.title
+            , div [ class "menu-options-wr" ]
+                [ div [ class "menu-options" ]
+                    [ span [ class "menu-options-title" ] [ text <| t "menu.Системные опции" ]
+                    , menuTheme appState model
+                    , menuLanguage appState model
                     ]
-                , span [ class "submenu-status" ]
-                    [ div [ class "fenix-status" ]
-                        [ span [ class "status-icon wait-status" ] []
-                        , span [ class "status" ] [ text "Ожидание" ]
-                        , span [ class "icon sleep" ] []
+                , div [ class "menu-options" ]
+                    [ span [ class "menu-options-title" ] [ text <| t "menu.Аккаунт" ]
+                    , menuAccount account appState model
+                    ]
+                ]
+            , div [ classList [ ( "submenu scroll", True ), ( "submenu-active", systemSelected ) ] ]
+                [ span [ class <| "icon-" ++ sicon ++ " submenu-type" ] []
+                , div [ class "submenu-header" ]
+                    [ a [ class "submenu-back", href "/" ] [ span [ class "arrow" ] [], span [ class "title" ] [ text <| t "Список Фениксов" ] ]
+                    , span [ class "submenu-name" ]
+                        [ text <|
+                            case msystem of
+                                Nothing ->
+                                    ""
+
+                                Just system ->
+                                    system.title
+                        ]
+                    , span [ class "submenu-status" ]
+                        [ div [ class "fenix-status" ]
+                            [ span [ class "status-icon wait-status" ] []
+                            , span [ class "status" ] [ text "Ожидание" ]
+                            , span [ class "icon sleep" ] []
+                            ]
                         ]
                     ]
+                , ul [ class "submenu-items" ] systemMenu
                 ]
-            , ul [ class "submenu-items" ] systemMenu
+            , modal model.showLogoutModal appState
             ]
-        , modal model.showLogoutModal appState
         ]
+    , div [ class "menu-close-bg closeMenuBg", classList [ ( "show", model.menuVisibility ) ] ] []
+    ]
 
 
 

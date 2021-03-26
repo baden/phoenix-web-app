@@ -81,7 +81,7 @@ view ({ t } as appState) model system mlogs =
         [ div [ class "wrapper-content" ]
             [ div [ class "details-wrapper-bg scroll-wr" ]
                 [ div [ class "details-header" ]
-                    [ div [ class "details-title" ] [ text "События\t\t\t\t\t\t" ]
+                    [ div [ class "details-title" ] [ text <| t "menu.События" ]
                     , button [ class "revert-btn", onClick (OnToday system.id 100000000000) ] [ span [ class "icon-revert" ] [] ]
                     ]
                 , ul [ class "list action-list", id "scroll-wr" ] logsBody

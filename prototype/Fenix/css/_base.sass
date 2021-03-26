@@ -45,10 +45,12 @@ body
 
 button, select, input
 	font-family: $fontFamilyExo, sans-serif
+	background: transparent
 
 .layout
 	display: flex
 	min-height: 100%
+	overflow-x: hidden
 
 .container
 	position: relative
@@ -57,7 +59,7 @@ button, select, input
 	min-height: 100%
 	display: flex
 	flex-direction: column
-	background: $bgckGradient
+	background: $bgBasic
 	&-login
 		background:	url('../images/background.png') no-repeat center / cover
 		.wrapper-bg
@@ -105,6 +107,9 @@ button, select, input
 	justify-content: center
 	display: flex
 	align-items: center
+	background: url('../images/logo.svg') no-repeat center / 108px 48px
+	height: 64px
+	width: 108px
 	&-wr
 		width: 100%
 
@@ -429,7 +434,7 @@ button, select, input
 .list
 	display: flex
 	flex-direction: column
-	margin: 20px 0 0
+	margin: 0
 	padding: 0
 	list-style: none
 	li
@@ -634,6 +639,7 @@ button, select, input
 	&-title
 		font-size: 1.14rem
 		color: $defaultTxt
+		max-width: 80%
 	&-wr
 		position: relative
 		width: 42px 
@@ -662,7 +668,21 @@ button, select, input
 	&-show-data
 		.toggler-title
 			font-weight: 700
-			color: #fff
+			color: $titles
+
+.scroll
+	overflow-y: auto !important
+	overflow-x: hidden !important
+	&::-webkit-scrollbar
+		width: 5px
+	&::-webkit-scrollbar-thumb
+		background-color: $scroll
+		border-radius: 10px
+
+	&-height
+		height: 80vh
+		margin-right: -15px !important
+		padding-right: 15px !important
 
 //tooltip
 

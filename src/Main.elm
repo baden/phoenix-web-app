@@ -670,13 +670,13 @@ viewMenu model =
         Just account ->
             let
                 commonMenu =
-                    [ Menu.view Route.HomeBase account model.appState Nothing model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+                    Menu.view Route.HomeBase account model.appState Nothing model.menuModel |> List.map (Html.map (OnPageMsg << Types.MenuMsg))
             in
             -- Хрень с этим меню, нужно решить как его прокинуть в страницы без авторизации
             case model.page of
                 Route.Home ->
                     -- UI.header model.showQrCode ShowQrCode HideQrCode
-                    -- [ Menu.view account model.appState Nothing model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+                    --  Menu.view account model.appState Nothing model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg)
                     commonMenu
 
                 Route.LinkSys ->
@@ -685,26 +685,26 @@ viewMenu model =
                 Route.SystemInfo sysId ->
                     case Dict.get sysId model.systems of
                         Nothing ->
-                            [ Menu.view Route.SystemInfoBase account model.appState Nothing model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+                            Menu.view Route.SystemInfoBase account model.appState Nothing model.menuModel |> List.map (Html.map (OnPageMsg << Types.MenuMsg))
 
                         Just system ->
-                            [ Menu.view Route.SystemInfoBase account model.appState (Just system) model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+                            Menu.view Route.SystemInfoBase account model.appState (Just system) model.menuModel |> List.map (Html.map (OnPageMsg << Types.MenuMsg))
 
                 Route.SystemLogs sysId ->
                     case Dict.get sysId model.systems of
                         Nothing ->
-                            [ Menu.view Route.SystemLogsBase account model.appState Nothing model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+                            Menu.view Route.SystemLogsBase account model.appState Nothing model.menuModel |> List.map (Html.map (OnPageMsg << Types.MenuMsg))
 
                         Just system ->
-                            [ Menu.view Route.SystemLogsBase account model.appState (Just system) model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+                            Menu.view Route.SystemLogsBase account model.appState (Just system) model.menuModel |> List.map (Html.map (OnPageMsg << Types.MenuMsg))
 
                 Route.SystemConfig sysId ->
                     case Dict.get sysId model.systems of
                         Nothing ->
-                            [ Menu.view Route.SystemConfigBase account model.appState Nothing model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+                            Menu.view Route.SystemConfigBase account model.appState Nothing model.menuModel |> List.map (Html.map (OnPageMsg << Types.MenuMsg))
 
                         Just system ->
-                            [ Menu.view Route.SystemConfigBase account model.appState (Just system) model.menuModel |> Html.map (OnPageMsg << Types.MenuMsg) ]
+                            Menu.view Route.SystemConfigBase account model.appState (Just system) model.menuModel |> List.map (Html.map (OnPageMsg << Types.MenuMsg))
 
                 _ ->
                     []

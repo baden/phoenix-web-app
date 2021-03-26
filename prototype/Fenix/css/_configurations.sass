@@ -5,7 +5,7 @@
 	&-sm-title
 		font-size: 1.14rem
 		font-weight: 700
-		color: #fff
+		color: $titles
 		margin-top: 20px
 	&-select
 		display: flex
@@ -63,7 +63,7 @@
 					background: #292B44 !important
 			.item-title
 				font-size: 1.57rem
-				color: #fff
+				color: $titles
 				margin-bottom: 8px
 				letter-spacing: 0.05em
 			.item-text
@@ -118,7 +118,7 @@
 			flex: 0 0 11px
 			border-radius: 50%
 			display: flex
-			color: #fff
+			color: $titles
 		&.done
 			&:after
 				background: $greenGradient
@@ -158,7 +158,7 @@
 		.name
 			font-size: 1.07rem
 			font-weight: 700
-			color: #fff
+			color: $titles
 			display: inline-flex
 			flex-wrap: wrap
 			line-height: 1.5
@@ -185,7 +185,7 @@
 			top: -10px
 			bottom: -10px
 		.icon-edit
-			color: #fff
+			color: $titles
 			font-size: 16px
 		&:hover
 			.icon-edit
@@ -258,7 +258,7 @@
 		.checkmark-text
 			font-size: 1rem
 			color: $defaultTxt
-			padding-top: 5px
+			padding-top: 1px
 			font-weight: 700
 
 .modal-config-select
@@ -323,10 +323,6 @@
 
 // warning
 
-.scroll-wr
-	.warning
-		margin-right: 25px
-
 .warning
 	background: $secondary
 	padding: 10px
@@ -346,7 +342,7 @@
 		font-weight: 700
 	&-text
 		line-height: 1.5
-		color: #fff
+		color: $titles
 		font-size: 0.85rem
 		display: block
 		margin-left: 25px

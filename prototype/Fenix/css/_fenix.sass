@@ -35,7 +35,7 @@
 		.status
 			font-size: 0.78rem
 			font-weight: 800
-			color: #fff
+			color: $titles
 			text-transform: uppercase
 			margin: 0 5px 0 7px
 			&-icon
@@ -59,7 +59,7 @@
 	&-title
 		font-weight: 700
 		font-size: 2.57rem
-		color: #FFF
+		color: $titles
 	&-set-btn
 		background: $secondary
 		transition: all .2s linear
@@ -103,7 +103,7 @@
 		position: relative
 		.text
 			font-weight: 600
-			color: #fff
+			color: $titles
 			padding-left: 16px
 			font-size: 1rem
 			display: flex
@@ -152,7 +152,7 @@
 			font-size: 18px
 			line-height: 22px
 			letter-spacing: 0.05em
-			color: #fff
+			color: $titles
 			display: flex
 			text-transform: uppercase
 			.image
@@ -179,7 +179,7 @@
 			.title
 				text-transform: uppercase
 			.txt
-				color: #fff
+				color: $titles
 			.mode-search
 				font-weight: 600
 				font-size: 14px
@@ -213,6 +213,7 @@
 		display: flex
 		align-items: flex-end
 		padding: 2px
+		background: #323343
 	&-bg
 		background: #38394E
 		width: 100%
@@ -317,11 +318,11 @@
 	&-title
 		font-weight: 600
 		font-size: 2.57rem
-		color: #fff
+		color: $titles
 	&-items
 		display: flex
 		flex-direction: column
-		padding: 40px 0
+		padding: 40px 0 60px
 	&-icon
 		display: inline-block
 		margin-right: 7px
@@ -339,12 +340,12 @@
 		display: flex
 		justify-content: space-between
 		&:not(:last-child)
-			padding-bottom: 30px
+			padding-bottom: 25px
 		.title
 			color: $secondaryTxt
 			flex: 0 0 40%
 			font-weight: 700
-			font-size: 0.86rem
+			font-size: 1rem
 			line-height: 1.3
 		.content
 			flex: 0 0 60%
@@ -409,7 +410,7 @@
 			color: $secondaryTxt
 
 	&-changed-mode
-		background: $bgLight
+		background: $bgBasic
 		padding: 12px
 		border-radius: 10px
 		line-height: 1.5
@@ -556,7 +557,7 @@
 	align-items: center
 	justify-content: center
 	.icon-revert
-		color: #fff
+		color: $titles
 	&:hover
 		background: $secondaryHover
 
@@ -575,21 +576,6 @@
 		li
 			font-size: 1rem
 
-//recent-list
-
-.scroll-wr
-	padding-right: 15px
-	padding-bottom: 30px
-	.details-header
-		padding-right: 15px
-		margin-bottom: 30px
-	.details-item
-		padding-right: 25px
-
-
-#scroll-wr
-	position: relative
-	margin-top: 0
 
 //maps
 
@@ -626,7 +612,7 @@
 		bottom: 0
 		.image
 			margin-right: 10px
-			color: #fff
+			color: #8F90A3
 			font-size: 22px
 		&-close
 			margin-left: auto
@@ -641,7 +627,7 @@
 			flex-direction: column
 			.title
 				font-weight: 700
-				color: #fff
+				color: $titles
 				font-size: 1rem
 				margin-bottom: 7px
 			.text

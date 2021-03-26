@@ -167,19 +167,3 @@ $('#setPasswordText').on('keyup', function() {
 	var password = $(this).val();
   $('#passwordText').text(password);
 });
-
-
-if (window.matchMedia("(min-width: 768px)").matches) {
-	$(function(){
-		if($('#scroll-wr').length) {
-			$('#scroll-wr').slimScroll({
-				height: '80vh',
-				color: '#8F90A3',
-				size: '5px',
-				railOpacity: 1,
-				borderRadius: '10px',
-				right: '15px'
-			});
-		}
-	});
-}

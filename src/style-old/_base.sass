@@ -1,0 +1,710 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700&display=swap')
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video
+	margin: 0
+	padding: 0
+	border: 0
+	font-size: 100%
+	font: inherit
+	vertical-align: baseline
+
+*
+	margin: 0
+	padding: 0
+	border: 0
+	vertical-align: baseline
+	box-sizing: border-box
+	&:focus, *:hover
+		outline: none
+a
+	text-decoration: none
+	&:hover
+		text-decoration: none
+
+html, body
+	height: 100%
+	font-size: $bodyFontSize
+
+body
+	font-weight: 400
+	line-height: 1
+	overflow-x: hidden
+	font-family: $fontFamilyExo
+
+button, select, input
+	font-family: $fontFamilyExo, sans-serif
+
+.layout
+	display: flex
+	min-height: 100%
+
+.container
+	position: relative
+	padding: 30px
+	flex: 1 0 calc(100% - 334px)
+	min-height: 100%
+	display: flex
+	flex-direction: column
+	background: $bgckGradient
+	&-login
+		// background:	url('../images/background.png') no-repeat center / cover
+		.wrapper-bg
+			align-items: center
+	&-map
+		width: 100%
+		min-height: 100%
+		display: flex
+		flex-direction: column
+		background: #c6c6c6
+
+
+.wrapper-content
+	display: flex
+	flex-direction: column
+	max-width: 600px
+	margin: auto
+	width: 100%
+	&-btn
+		margin-top: 40px
+
+.wrapper-page
+	margin: 50px auto auto
+
+.wrapper-bg
+	display: flex
+	flex-direction: column
+	background: $bgDark
+	padding: 40px 60px
+	border-radius: 20px
+	width: 100%
+	.close
+		margin: -10px -25px 10px
+
+.wrapper-content-footer
+	display: flex
+	max-width: 600px
+	margin: 15px auto 0
+	width: 100%
+	.dropdown
+		margin-right: 35px
+
+.logo
+	display: flex
+	justify-content: center
+	display: flex
+	align-items: center
+	&-wr
+		width: 100%
+
+.fw-700
+	font-weight: 700
+
+.mt-30
+	margin-top: 30px
+
+.mt-40
+	margin-top: 40px
+
+.displayNone
+	display: none
+
+//inputs
+
+.input-st
+	margin-top: 45px
+	width: 100%
+	position: relative
+	input
+		border: none
+		width: 100%
+		background-color: transparent
+		border-bottom: 1px solid $secondaryTxt
+		width: 100%
+		display: block
+		font-size: 1.14em
+		color: $titles
+		padding: 0 0 12px
+		&::placeholder
+			color: $defaultTxt
+		&:focus
+			border-bottom: 1px solid $primary
+		&:focus ~ .input-label,
+		&:not(:focus):valid ~ .input-label
+			top: -22px
+			left: 0
+			font-size: 0.85rem
+			opacity: 1
+
+.input-sm-label
+	color: $defaultTxt
+	font-size: 0.86rem
+	margin-bottom: 12px
+	display: block
+
+.input-label
+	position: absolute
+	pointer-events: none
+	left: 0
+	top: 3px
+	transition: 0.2s ease all
+	font-size: 1.14em
+	letter-spacing: 0.05em
+	color: $secondaryTxt
+
+.input-error
+	font-size: .85rem
+	color: $error
+	display: flex
+	margin-top: 7px
+	line-height: 1.5
+	display: none
+
+.error-icon
+	width: 15px
+	height: 15px
+	margin-right: 6px
+	display: inline-flex
+	background: url('../images/error.svg') no-repeat center / 13px 13px
+
+.input-errored
+	.input-error
+		display: flex
+	.input-label
+		color: $error
+	input
+		border-color: $error
+		&:focus
+			border-color: $error
+
+//checkmark
+
+.checkmark
+	&-wrap
+		width: 100%
+		position: relative
+		font-size: .86rem
+		color: $secondaryTxt
+		line-height: 1.3
+		display: flex
+		margin-top: 30px
+	&-title
+		font-size: 1.42rem
+		font-weight: 700
+		margin-bottom: 12px
+		display: block
+	&-text
+		padding-left: 20px
+		a
+			font-weight: bold
+			color: $secondaryTxt
+			border-bottom: 1px solid $secondaryTxt
+			&:hover
+				font-weight: normal
+		.title
+			font-weight: 600
+			font-size: 14px
+			line-height: 17px
+			letter-spacing: 0.05em
+			text-transform: uppercase
+			color: $secondaryTxt
+			margin-bottom: 10px
+			display: block
+
+.checkboxContainer
+	display: flex
+	position: relative
+	cursor: pointer
+	user-select: none
+	cursor: pointer
+	top: 3px
+	min-width: 20px
+	input
+		position: absolute
+		opacity: 0
+		cursor: pointer
+		height: 0
+		width: 0
+	.checkmark
+		position: relative
+		height: 20px
+		flex: 0 0 20px
+		border: 3px solid $secondaryTxt
+		cursor: pointer
+		z-index: 10
+		display: flex
+		&-text
+			white-space: nowrap
+	&:hover input ~ .checkmark
+		border: 3px solid
+		border-image-slice: 1
+		border-width: 3px
+		border-image-source: linear-gradient(to left, #FF8643, #FF6163)
+	input:checked ~ .checkmark
+		border: 3px solid
+		border-image-slice: 1
+		border-width: 3px
+		border-image-source: linear-gradient(to left, #FF8643, #FF6163)
+
+	.checkmark:after
+		content: ""
+		position: relative
+		display: none
+
+	input:checked ~ .checkmark:after
+		display: block
+
+	.checkmark:after
+		left: 4px
+		top: 1px
+		width: 3px
+		height: 8px
+		border-width: 0 3px 3px 0
+		transform: rotate(45deg)
+		border-style: solid
+		border-image-slice: 1
+		border-image-source: linear-gradient(to left, #FF8643, #FF6163)
+
+//icons
+
+.language-icon
+	background: url('../images/language.svg') no-repeat center / 24px 24px
+	width: 24px
+	height: 24px
+	display: block
+	margin-right: 7px
+
+.mode-icon
+	background: url('../images/mode.svg') no-repeat center / 24px 24px
+	width: 24px
+	height: 24px
+	display: block
+	margin-right: 7px
+
+.icon-calendar
+	background: url('../images/calendar.svg') no-repeat center / 18px 18px
+	width: 18px
+	height: 18px
+	display: block
+
+//dropdown
+.dropdown
+	position: relative
+	&-icon
+		width: 16px
+		height: 16px
+		background: url('../images/arrow.svg') no-repeat center / 16px 16px
+		display: block
+		margin-left: 7px
+	&-title
+		font-weight: 600
+		font-size: 1em
+		color: $titles
+		display: inline-flex
+		align-items: center
+		cursor: pointer
+		position: relative
+		&:after
+			content: ""
+			position: absolute
+			left: -10px
+			right: -10px
+			top: -10px
+			bottom: -10px
+	&-list
+		list-style: none
+		position: absolute
+		background-color: $dropdownBg
+		border-radius: 20px
+		padding: 20px 0
+		bottom: 0
+		box-shadow: 0px 3px 15px rgba(0, 0, 0, 0.5)
+		width: 160px
+		display: none
+		z-index: 10
+		li
+			display: flex
+			align-items: center
+			font-size: 1em
+			color: $titles
+			&:not(:first-child)
+				cursor: pointer
+			a, .item
+				color: $titles
+				padding: 12px 20px
+				width: 100%
+				&:hover
+					background-color: #40404B
+			.item
+				display: flex
+				align-items: center
+			.flag
+				margin-right: 8px
+			&.title
+				color: $secondaryTxt
+				font-weight: 600
+				padding: 12px 20px
+	&.active
+		.dropdown-list
+			display: block
+
+	.active
+		font-weight: 800
+
+.uk
+	width: 24px
+	height: 24px
+	background: url('../images/uk.svg') no-repeat center / 24px 24px
+.ru
+	width: 24px
+	height: 24px
+	background: url('../images/ru.svg') no-repeat center / 24px 24px
+.en
+	width: 24px
+	height: 24px
+	background: url('../images/en.svg') no-repeat center / 24px 24px
+
+.icon-remove
+	width: 24px
+	height: 24px
+	background: url('../images/remove.svg') no-repeat center / 24px 24px
+	display: inline-block
+
+//titles
+
+.title-sm-gr
+	color: $secondaryTxt
+	font-weight: 700
+	font-size: 1rem
+	line-height: 17px
+	text-transform: uppercase
+	margin-bottom: 15px
+
+.title-st
+	font-weight: 700
+	font-size: 2rem
+	line-height: 1.2
+	color: $titles
+	margin-bottom: 20px
+
+.list-numbered
+	counter-reset: my-awesome-counter
+	li
+		counter-increment: my-awesome-counter
+		margin-top: 7px
+		padding-left: 55px
+		line-height: 1.4
+		&:before
+			content: "" counter(my-awesome-counter)
+			font-weight: bold
+			line-height: 1
+			font-size: .92rem
+			color: $defaultTxt
+			position: absolute
+			z-index: 1
+			left: 9px
+			top: 7px
+		&:after
+			content: ''
+			width: 26px
+			height: 26px
+			background: #4C4D60
+			box-shadow: 0px 3px 5px #25252D
+			border-radius: 30px
+			position: absolute
+			left: -1px
+			top: 0
+
+.list
+	display: flex
+	flex-direction: column
+	margin: 20px 0 0
+	padding: 0
+	list-style: none
+	li
+		display: flex
+		color: $defaultTxt
+		font-size: 1.14rem
+		position: relative
+		margin-bottom: 20px
+		line-height: 1.3
+		.checkbox-bg
+			margin-right: 20px
+
+.led-indicator-wr
+	background-color: $darkColor
+	border-radius: 0 0 20px 20px
+	padding: 16px
+	display: flex
+	align-items: center
+	justify-content: center
+	margin: 40px -60px -40px
+	color: $secondaryTxt
+	font-size: 1rem
+	cursor: pointer
+
+.orange-gradient-text
+	color: #FF8643
+	&:after
+		content: ""
+		position: absolute
+		left: -10px
+		right: -10px
+		top: -10px
+		bottom: -10px
+
+.blue-gradient-text
+	color: $primary
+	&:after
+		content: ""
+		position: absolute
+		left: -10px
+		right: -10px
+		top: -10px
+		bottom: -10px
+
+.green-gradient-text
+	color: #25BDBB
+	&:after
+		content: ""
+		position: absolute
+		left: -10px
+		right: -10px
+		top: -10px
+		bottom: -10px
+
+@supports ((background-clip: text) or (-webkit-background-clip: text)) and ((text-fill-color: transparent) or (-webkit-text-fill-color: transparent))
+
+	.orange-gradient-text
+		background: -webkit-linear-gradient(0deg, #FF8643 0%, #FF6163 100%)
+		-webkit-background-clip: text
+		-webkit-text-fill-color: transparent
+		border-image-source: linear-gradient(to left, #FF8643, #FF6163)
+		display: flex
+		align-items: center
+		position: relative
+
+	.blue-gradient-text
+		background: -webkit-linear-gradient(0deg, #3A6DED 0%, #5582FF 100%)
+		-webkit-background-clip: text
+		-webkit-text-fill-color: transparent
+		border-image-source: $primaryGradient
+		display: flex
+		align-items: center
+		position: relative
+
+	.green-gradient-text
+		background: -webkit-linear-gradient(180deg, #25BDBB 0%, #0CE091 100%)
+		-webkit-background-clip: text
+		-webkit-text-fill-color: transparent
+		border-image-source: $greenGradient
+		display: flex
+		align-items: center
+		position: relative
+
+.red-text
+	color: $error
+	position: relative
+	&:after
+		content: ""
+		position: absolute
+		left: -10px
+		right: -10px
+		top: -10px
+		bottom: -10px
+
+.blue-text
+	color: $primary
+	position: relative
+	&:after
+		content: ""
+		position: absolute
+		left: -10px
+		right: -10px
+		top: -10px
+		bottom: -10px
+
+.led-title
+	font-weight: 600
+	font-size: 18px
+	letter-spacing: 0.05em
+	text-transform: uppercase
+	display: flex
+	align-items: center
+	position: relative
+	padding: 0 5px
+	&:after
+		content: ""
+		position: absolute
+		left: -10px
+		right: -10px
+		top: -10px
+		bottom: -10px
+	img
+		margin-right: 6px
+
+//binding-executors
+
+.binding
+	&-executors
+		background-color: $darkColor
+		padding: 15px 75px 15px 20px
+		font-weight: 600
+		font-size: 1rem
+		line-height: 1.3
+		color: $defaultTxt
+		display: flex
+		flex-direction: column
+		align-items: flex-start
+		justify-content: center
+		position: relative
+		border-radius: 10px
+		min-height: 94px
+		margin-top: 15px
+		&:after
+			content: ''
+			background: url('../images/link.svg') no-repeat center
+			position: absolute
+			right: 15px
+			top: 23px
+			width: 56px
+			height: 56px
+
+	&-title
+		font-weight: 600
+		font-size: 1rem
+		letter-spacing: 0.05em
+		text-decoration: underline
+		text-transform: uppercase
+		margin-top: 10px
+		cursor: pointer
+		&:hover
+			opacity: .8
+
+.checkmark-executors
+	margin-bottom: 20px
+	.checkmark-text
+		font-size: 1.14rem
+		font-weight: 700
+		color: $defaultTxt
+
+.page-subtext
+	font-size: 1.14rem
+	line-height: 24px
+	color: $defaultTxt
+	margin-bottom: 15px
+
+.form-list
+	padding-left: 55px
+
+.uppercase-txt
+	text-transform: uppercase
+
+.cursor-pointer
+	cursor: pointer
+
+.show
+	display: block !important
+
+.hidden
+	display: none !important
+
+//toggler
+
+.toggler-list
+	margin-top: 20px
+	.toggler
+		margin-bottom: 15px
+
+.toggler
+	display: flex
+	justify-content: space-between
+	align-items: center
+	&-title
+		font-size: 1.14rem
+		color: $defaultTxt
+	&-wr
+		position: relative
+		width: 42px
+		height: 10px
+		background: $secondaryTxt
+		border-radius: 15px
+		cursor: pointer
+		display: flex
+		align-items: center
+		input
+			position: absolute
+			opacity: 0
+			height: 0
+			width: 0
+			&:checked ~ .toggler-icon
+				background: $greenGradient
+				transform: translateX(100%)
+	&-icon
+		display: block
+		height: 23px
+		width: 23px
+		border-radius: 50%
+		background: $redGradient
+		transition: all .2s linear
+		border: 3px solid $bgDark
+	&-show-data
+		.toggler-title
+			font-weight: 700
+			color: #fff
+
+//tooltip
+
+.tooltip
+	position: relative
+	display: inline-flex
+	justify-content: center
+	&:hover
+		.tooltip-wr
+			opacity: 1
+			z-index: 2
+	&-wr
+		bottom: calc(100% + 15px)
+		opacity: 0
+		z-index: -10
+		position: absolute
+	&-content
+		background: $tooltipBg
+		border-radius: 6px
+		font-size: .71rem
+		font-weight: 600
+		color: #fff
+		padding: 8px
+		transition: all .2s linear
+		white-space: nowrap
+		line-height: 1.3
+		&:before
+			content: ''
+			width: 0
+			height: 0
+			border-left: 8px solid transparent
+			border-right: 8px solid transparent
+			border-top: 8px solid $tooltipBg
+			position: absolute
+			bottom: -8px
+			left: 50%
+			margin-left: -7px
+		&-big
+			white-space: normal
+			width: 200px
+	&-title
+		width: 100%
+
+.led-indicator-img
+	margin: 3px 20px 0 0

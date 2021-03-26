@@ -91,7 +91,7 @@
 		background: url('../images/block.svg') no-repeat center
 	&:hover
 		&:before
-			background: $primary
+			background: $primaryHover
 
 .btn-clock
 	position: relative
@@ -105,7 +105,7 @@
 		position: absolute
 		right: 12px
 		top: 9px
-		background: $primaryHover
+		background: linear-gradient(0deg, #4070F4 0%, #144DDE 100%)
 	&:after
 		content: ''
 		width: 30px
@@ -117,7 +117,7 @@
 		background: url('../images/clock_icon.svg') no-repeat center
 	&:hover
 		&:before
-			background: $primary
+			background: $primaryHover
 .btn-add
 	position: relative
 	&:before
@@ -128,7 +128,7 @@
 		position: absolute
 		right: 10px
 		top: 9px
-		background: $primaryHover
+		background: linear-gradient(0deg, #4070F4 0%, #144DDE 100%)
 	&:after
 		content: ''
 		width: 24px
@@ -138,6 +138,9 @@
 		right: 10px
 		top: 9px
 		background: url('../images/plus.svg') no-repeat center / 20px 20px
+	&:hover
+		&:before
+			background: $primaryHover
 
 .btn-prev
 	position: relative
@@ -171,7 +174,7 @@
 		position: absolute
 		right: 10px
 		top: 9px
-		background: $primaryHover
+		background: linear-gradient(0deg, #4070F4 0%, #144DDE 100%)
 	&:after
 		content: ''
 		width: 24px
@@ -183,4 +186,4 @@
 		background: url('../images/arrow_next.svg') no-repeat center / 13px 13px
 	&:hover
 		&:before
-			background: $primary
+			background: $primaryHover

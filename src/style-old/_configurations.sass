@@ -1,0 +1,368 @@
+
+.config
+	&-img
+		margin-bottom: 40px
+	&-sm-title
+		font-size: 1.14rem
+		font-weight: 700
+		color: #fff
+		margin-top: 20px
+	&-select
+		display: flex
+		flex-direction: column
+		&-content
+			position: relative
+			z-index: 3
+			display: flex
+			flex-direction: column
+		&-item
+			padding: 20px
+			display: flex
+			flex-direction: column
+			border-radius: 10px
+			position: relative
+			margin-bottom: 10px
+			cursor: pointer
+			&:after
+				content: ""
+				position: absolute
+				top: 0px
+				bottom: 0px
+				left: 0px
+				right: 0px
+				background: $bgDark
+				border-radius: 10px
+				z-index: 2
+				transition: all .2s linear
+			&:before
+				content: ""
+				position: absolute
+				top: -1px
+				bottom: -1px
+				left: -1px
+				right: -1px
+				border-radius: 10px
+				z-index: 1
+				background: $secondaryHover
+				transition: all .2s linear
+			&:hover
+				&:before
+					top: -2px
+					bottom: -2px
+					left: -2px
+					right: -2px
+					background: $greenGradient
+			&.active
+				&:before
+					top: -2px
+					bottom: -2px
+					left: -2px
+					right: -2px
+					background: $greenGradient
+				&:after
+					background: #292B44 !important
+			.item-title
+				font-size: 1.57rem
+				color: #fff
+				margin-bottom: 8px
+				letter-spacing: 0.05em
+			.item-text
+				font-size: 0.86rem
+				color: $defaultTxt
+				line-height: 1.4
+	&-set-phone
+		margin-top: 15px	
+		display: flex
+		position: relative
+		.phone-prefix
+			display: block
+			font-size: 1.14em
+			color: $secondaryTxt
+			padding: 2px 0 0	
+			position: absolute
+			left: 0
+		input
+			padding-left: 47px
+	&-set-ussd
+		margin-top: 15px
+	&-ussd-title
+		margin-top: 0
+	&-security-item
+		margin-top: 30px
+		.input-st
+			margin-top: 15px
+.progress
+	display: flex
+	justify-content: space-between
+	margin: 24px 0
+	width: 100%
+	&-icon
+		display: none
+	&-item
+		position: relative
+		display: inline-flex
+		align-items: center
+		&:not(:last-child)
+			width: 25%
+			&:after
+				content: ''
+				height: 3px
+				width: 100%
+				margin: 0 6px
+				background: $secondaryTxt
+				position: relative
+		.circle
+			background: $secondaryTxt
+			width: 11px
+			height: 11px
+			flex: 0 0 11px
+			border-radius: 50%
+			display: flex
+			color: #fff
+		&.done
+			&:after
+				background: $greenGradient
+			.circle
+				background: $greenGradient
+		&.active
+			.circle
+				background: $greenGradient
+				width: 32px
+				flex: 0 0 32px
+				height: 32px
+			.progress-icon
+				display: block
+				margin: auto
+
+.bindingPhoneShowed, .setPasswordShowed, .phoneText
+	display: none
+
+.security-wr
+	display: flex
+	flex-direction: column
+
+.setting
+	&-item
+		margin-bottom: 15px
+		width: 100%
+	&-item-wr
+		flex: 0 0 60%
+		display: flex
+		flex-direction: column
+		padding-left: 15px
+	&-item-header
+		display: flex
+		justify-content: space-between
+		position: relative
+		z-index: 2
+		.name
+			font-size: 1.07rem
+			font-weight: 700
+			color: #fff
+			display: inline-flex
+			flex-wrap: wrap
+			line-height: 1.5
+			span:first-child
+				margin-right: 10px
+	&-item-text
+		font-size: 0.86rem
+		color: $defaultTxt
+		line-height: 1.5
+		max-width: 85%
+		position: relative
+		z-index: 2
+		margin-top: 7px
+	&-edit
+		background: transparent
+		border: none
+		cursor: pointer
+		position: relative
+		&:after
+			content: ""
+			position: absolute
+			left: -20px
+			right: -20px
+			top: -10px
+			bottom: -10px
+		.icon-edit
+			color: #fff
+			font-size: 16px
+		&:hover
+			.icon-edit
+				color: $defaultTxt
+	&-cancel
+		&-header
+			display: flex
+			justify-content: space-between
+			margin-bottom: 10px
+		&-text
+			color: $defaultTxt
+			display: flex
+			flex-direction: column
+			font-size: 0.93rem
+	&-footer
+		position: absolute
+		bottom: 0
+		left: 0
+		right: 0
+		margin: 0
+		z-index: 100
+	&-selected-icon
+		display: flex
+		flex-direction: column
+		justify-content: center
+		align-items: center
+		background: #292B44
+		border: 1px solid $secondaryTxt
+		border-radius: 3px
+		padding: 12px 10px 10px
+		width: 60px
+		height: 60px
+		&:hover
+			transition: all .2s linear
+			cursor: pointer
+			opacity: .8
+		.image
+			color: $defaultTxt
+			font-size: 20px
+			margin-bottom: 10px
+		.image-logo
+			font-size: 8px
+			color: $secondaryTxt
+	&-changed
+		position: relative
+		&:before
+			content: ''
+			position: absolute
+			background: $secondary
+			border-radius: 10px
+			left: -15px
+			right: -15px
+			top: -8px
+			bottom: -8px
+			z-index: 1
+		&-data
+			top: -1px
+			.icon-arrow_next
+				display: inline-flex
+				margin: 3px 10px 0 0
+				font-size: 11px
+		.details-btn-title
+			line-height: 1.5
+	&-executors
+		width: 100%
+		position: relative
+		display: flex
+		margin-top: 0
+		margin-bottom: 40px
+		.checkmark-text
+			font-size: 1rem
+			color: $defaultTxt
+			padding-top: 5px
+			font-weight: 700
+
+.modal-config-select
+	.config-select-item:after
+		background: $modalBg
+
+.details-footer-btn
+	font-weight: 700
+	font-size: 1.14rem
+	margin: 0 10px
+	&:hover
+		opacity: .8
+	.icon-remove, .icon-eye_active, .icon-change_battery
+		top: 3px
+	.icon-remove, .icon-eye_active, .image
+		font-size: 20px
+		margin-right: 5px
+		position: relative
+
+// select icon
+
+.select-icon
+	&-content
+		display: flex
+		flex-direction: column
+		position: relative
+		align-items: center
+		justify-content: space-between
+		z-index: 10
+		.image-big
+			font-size: 65px
+			color: $defaultTxt
+			margin-bottom: 20px
+		.image-logo
+			color: $secondaryTxt
+			font-size: 25px
+	&-wr
+		display: flex
+		flex-wrap: wrap
+		gap: 20px
+		margin-top: 30px
+	&-item
+		width: 30%
+		min-height: 128px
+		&.config-select-item
+			margin-bottom: 0
+			border-radius: 3px
+			&:after
+				background: $modalBg
+				border-radius: 3px
+			&:before
+				border-radius: 3px
+			&.active
+				.image-big, .image-logo
+					background: -webkit-linear-gradient(180deg, #25BDBB 0%, #0CE091 100%)
+					-webkit-background-clip: text
+					-webkit-text-fill-color: transparent
+					border-image-source: $greenGradient
+					display: flex
+					align-items: center
+					position: relative
+
+// warning
+
+.scroll-wr
+	.warning
+		margin-right: 25px
+
+.warning
+	background: $secondary
+	padding: 10px
+	border-radius: 10px
+	border-left: 8px solid $warning
+	margin-bottom: 40px
+	img
+		display: inline-block
+		margin-right: 5px
+		position: relative
+		top: 2px
+	&-title
+		color: $warning
+		font-size: 1.07rem
+		display: block
+		margin-bottom: 5px
+		font-weight: 700
+	&-text
+		line-height: 1.5
+		color: #fff
+		font-size: 0.85rem
+		display: block
+		margin-left: 25px
+
+.details-edit-btn
+	margin-left: auto
+
+.setting-det-phone
+	width: 100%
+	display: flex
+
+.details-power
+	.content-item-group
+		flex-wrap: nowrap
+		
+
+.details-title-flat.details-item 
+	.content-item .name
+		width: 180px

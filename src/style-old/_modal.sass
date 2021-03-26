@@ -1,0 +1,95 @@
+.modal
+	&-bg
+		position: fixed
+		top: 0
+		bottom: 0
+		right: 0
+		left: 0
+		background-color: rgba(0,0,0,0.8)
+		opacity: 0
+		z-index: 1072
+		transition: opacity .15s linear
+		display: none
+		&.show
+			opacity: 1
+			display: block
+	&-wr
+		position: relative
+		display: flex
+		justify-content: center
+		min-height: 100%
+		width: 100%
+	&-content
+		display: flex
+		flex-direction: column
+		max-width: 600px
+		width: 100%
+		border-radius: 20px
+		margin: auto
+		background: $modalBg
+		padding-top: 25px
+	&-content-light
+		background: $bgLight
+	&-title
+		padding: 10px 48px 25px
+		letter-spacing: 0.05em
+		font-size: 1.57rem
+		color: $titles
+		font-weight: 700
+		line-height: 1.5
+	&-text
+		font-size: 1.08rem
+		line-height: 1.5rem
+		color: $defaultTxt
+	&-body
+		padding: 0 48px 25px
+	&-btn-group
+		padding: 0 48px 48px
+		width: 100%
+		display: flex
+		justify-content: flex-end
+		gap: 24px
+		.btn
+			min-width: 160px
+			width: auto
+	&-open
+		cursor: pointer
+		&:hover
+			opacity: .8
+	&-lg
+		max-width: 660px
+	&-md
+		max-width: 530px
+		margin: 20vh auto auto
+	&-sm
+		max-width: 424px
+		margin: 20vh auto auto
+		//todo
+	&-input
+		margin-top: 15px
+		.input-sm-label
+			color: $secondaryTxt
+	&-img-mob
+		display: none
+		justify-content: center
+		padding: 0 0 20px
+
+.close
+	width: 14px
+	height: 14px
+	background: url('../images/close.svg') no-repeat 0 100% / 14px 14px
+	display: flex
+	align-self: flex-end
+	cursor: pointer
+	margin-right: 25px
+	position: relative
+	&:after
+		content: ""
+		position: absolute
+		left: -20px
+		right: -20px
+		top: -20px
+		bottom: -20px
+	&:hover
+		opacity: .8
+

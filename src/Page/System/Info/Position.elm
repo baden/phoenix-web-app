@@ -13,7 +13,7 @@ import Types.Dt as DT
 
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 view ({ t } as appState) model system =
-    div [ class "details-item" ]
+    div [ class "details-item details-title-flat" ]
         [ div [ class "title" ] [ text <| t "control.Положение" ]
         , div [ class "content" ] <|
             case system.dynamic of

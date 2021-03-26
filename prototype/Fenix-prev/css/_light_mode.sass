@@ -1,0 +1,206 @@
+.container-login
+	background: $bgBasic
+	.wrapper-bg
+		background: #fff
+		padding: 0 15px
+
+
+//menu
+.logo
+	background: url('../images/logo_black.svg') no-repeat center / 108px 48px
+
+.mode-icon, .menu-options .mode-icon
+	background: url('../images/mode_light_log.svg') no-repeat center/24px 24px
+
+.language-icon, .menu-options .language-icon
+	background: url('../images/language_light_log.svg') no-repeat center/24px 24px
+
+.accaunt-icon
+	background: url('../images/account_light.svg') no-repeat center / 30px 30px
+
+.menu-options .dropdown-icon, .dropdown-icon 
+	background: url('../images/arrow_light_m.svg') no-repeat center/16px 16px
+
+.dropdown
+	&-title
+		color: #8F90A3
+	&-list
+		box-shadow: $lightShadow
+		background: #fff
+	&-list li
+		.item, a
+			color: #000
+			&:hover
+				background: #F6F7FA
+
+.menu
+	&-items
+		li
+			a
+				&.active, &:hover
+					color: #fff
+					.list-icon
+						background: url('../images/list_fenix.svg') no-repeat center/24px 24px
+
+.list-icon
+	background: url('../images/list_fenix_light_m.svg') no-repeat center/24px 24px
+
+.menu-toggle-btn
+	background: url('../images/toggle_menu_light.svg') no-repeat center / 22px 22px
+
+.menu-toggle-btn.visibility
+	background: url('../images/menu_burger_light.svg') no-repeat center/24px 24px
+
+.icon-calendar
+	background: url('../images/calendar_light.svg') no-repeat center/18px 18px
+
+.menu-header
+	border-bottom: 1px solid #D3D6DE
+
+.submenu-icon
+	color: $secondaryTxt
+
+.submenu-items > li > a
+	&.active, &:hover
+		.submenu-icon, .submenu-item-title
+			color: #fff
+		.icon-calendar
+			background: url('../images/calendar.svg') no-repeat center/18px 18px
+
+.submenu-type
+	color: rgba(196, 196, 196, .3)
+
+.revert-btn
+	background: #fff
+	box-shadow: $lightShadow
+	&:hover
+		background: $mutedTxt
+	.icon-revert
+		color: $secondaryTxt
+
+
+.list-numbered
+	li
+		&:after
+			background: $bgBasic
+			box-shadow: 0px 3px 15px #DCDCDC
+
+.led-indicator-wr
+	color: $titles
+
+.binding-executors
+	color: $secondaryTxt
+	&:after
+		opacity: .3
+
+//buttons
+
+.btn
+	&-secondary
+		color: #333 
+		filter: none
+		border: 1px solid #D3D6DE
+	&-prev
+		&:before
+			background: linear-gradient(180deg, #E7EDFF 0%, #FDFDFD 100%)
+		&:after
+			background: url('../images/arrow_next_light.svg') no-repeat center / 13px 13px
+
+
+//modal
+
+.modal-content
+	background: #fff
+//
+
+.config
+	&-select-item
+		&:before
+			background: #D3D6DE
+		&.active
+			&:after
+				background: $secondaryHover !important
+
+.extend-mode-btn
+	color: $titles
+	border: 2px solid #D3D6DE
+	&:after
+		background: #fff
+	&.active
+		&:after
+			background: $secondaryHover !important
+
+.progress
+	&-item
+		&:not(:last-child)
+			&:after
+				background: $mutedTxt
+		.circle
+			background: $mutedTxt
+			color: #fff
+
+.fenix
+	&-bg
+		box-shadow: $lightShadow
+	&-set-btn
+		box-shadow: $lightShadow
+		&:after
+			background: url('../images/settings_light.svg') no-repeat center
+	&-type
+		color: #c4c4c4
+		opacity: .3
+
+.power-wr
+	background: #fff
+	svg path
+		fill: #fff !important
+
+.tooltip
+	&-content
+		background: #fff
+		box-shadow: $lightShadow
+		color: #333
+		&:before
+			box-shadow: $lightShadow
+			border-top: 8px solid #fff
+
+
+.details-changed-mode
+	background: $secondaryPressed
+
+.details-revert-mode
+	color: $secondaryTxt
+
+.checkmark-wrap
+	color: #000
+
+.setting-edit .icon-edit
+	color: $secondaryTxt
+
+.setting-selected-icon
+	background: #fff
+	border: 1px solid #D3D6DE
+
+
+.select
+	&-icon-content .image-big
+		color: $secondaryTxt
+	&-icon-item.config-select-item:after
+		background: #fff
+
+.warning
+	background: $bgBasic
+
+.setting-changed:before
+	background: #EFF3FF
+
+
+//media
+
+@media screen and (max-width: 960px)
+	.menu .menu-toggle-btn
+		background: #fff url('../images/menu_burger_light.svg') no-repeat center/24px 24px
+		box-shadow: $lightShadow
+
+	.menu .menu-toggle-btn.visibility
+		background: url('../images/toggle_menu_light.svg') no-repeat center/22px 22px

@@ -1,44 +1,49 @@
 @media screen and (max-width: 1200px)
 	.fenix
-		flex: 0 0 25%
-		&-list
-			gap: 20px
+		margin: 10px
+		max-width: 340px
 
 @media screen and (max-width: 960px)
 	.container
 		width: 100%
+		padding-top: 80px
+	.wrapper-content
+		margin: 8vh auto auto
 	.menu
 		position: fixed
-		flex: 0 0 0
-		width: 90px
-		height: 90px
-		background: transparent
 		z-index: 101
+		width: 320px
+		flex: 0 0 320px
+		transform: translate(-320px, 0)
+		transition: all .2s linear 
 		.menu-toggle-btn
 			background: $bgDark url(../images/menu_burger.svg) no-repeat center/24px 24px
-			filter: drop-shadow(0px 3px 15px rgba(0, 0, 0, 0.5))
+			box-shadow: 0px 1px 4px rgb(0, 0, 0)
 			flex: 0 0 48px
 			height: 48px
 			border-radius: 6px
+			margin-top: 15px
+			transform: translate(76px, 0)
 			&.visibility
+				flex: 0 0 48px
+				height: 48px
 				width: 22px
-				height: 22px
 				background: url(../images/toggle_menu.svg) no-repeat center/22px 22px
 				cursor: pointer
 				border: none
-				margin-top: 20px
-				margin-right: -10px
-		.logo, .menu-items, .menu-options-wr, .submenu
-			display: none
+				margin-top: 15px
+				transform: translate(10px, 0)
+				box-shadow: 0px 0 0 rgb(0, 0, 0)
 		.menu-header
-			padding: 0 12px
 			border-bottom: none
-			min-height: auto
+			padding: 5px 12px
+			min-height: 75px
 	.menu-visibility
-		flex: auto
-		width: 334px
 		background: $bgDark
 		height: 100vh
+		transform: translate(0, 0)
+		width: 320px
+		flex: 0 0 320px
 		.menu-options-wr
 			padding: 0 30px
 		.logo, .menu-items, .menu-options-wr, .menu-item-title, 
@@ -46,9 +51,9 @@
 		.submenu-back .title, .submenu-item-title, .status, .submenu-type, .submenu
 			display: block
 		.menu-header
-			border-bottom: 1px solid $bgLight
-			padding: 20px 12px
-			min-height: 99px
+			border-bottom: 1px solid $bgBasic
+			padding: 5px 12px
+			min-height: 75px
 
 	.menu-close-bg
 		position: fixed
@@ -59,13 +64,31 @@
 		left: 0
 		background-color: rgba(0,0,0,0.6)
 		transition: opacity .15s linear
+	.submenu
+		padding: 17px 15px
+		top: 75px
+
+	.copiedMess
+		position: fixed
 
 @media screen and (max-width: 768px)
 	.container
 		background: $bgDark
-		padding: 88px 16px 20px
+		padding: 80px 16px 20px
+
+	.menu-visibility
+		width: 320px 
+		.menu-header
+			min-height: 65px
+	.submenu
+		top: 66px
+		padding: 20px 15px 40px
+
+	.menu-items
+		padding: 20px 15px
+
 	.container.container-login
-		padding-top: 50px
+		padding: 50px 10px 20px 
 		.wrapper-bg
 			min-height: 90%
 	.wrapper-page
@@ -84,14 +107,15 @@
 		min-height: 100%
 		.close
 			margin: 0 0 0
-			position: relative
-			top: -50px
+			position: fixed
+			top: 34px
 	.wrapper-content-btn, .btn.mt-40, .btn.mt-30
 		margin-top: auto
 	.led-indicator-wr
 		margin: 4px -16px 0
 		position: relative
 		bottom: -20px
+		border-radius: 0
 	.form-list
 		padding-left: 0
 	.details-wrapper-bg
@@ -113,6 +137,7 @@
 		position: relative
 		bottom: -20px
 		flex-wrap: wrap
+		border-radius: 0
 		flex-direction: row-reverse
 	.details
 		&-items
@@ -125,17 +150,23 @@
 					width: auto
 					margin-bottom: 5px
 	.revert-btn
-		position: relative
-		top: -60px
+		position: fixed
+		top: 24px
+		right: 15px
 	.fenix
 		flex: 0 0 100%
 		max-width: 450px
+		margin: 10px 0
 		&-footer
 			gap: 0 7px
 			.btn-md
-				padding: 2px 15px
+				width: 120px
 		&-bg
 			padding: 15px 20px 15px
+		&-list
+			margin: 0
+			justify-content: center
+
 	.locations-notifications
 		width: auto
 		min-width: 300px
@@ -163,25 +194,36 @@
 		&-sm
 			max-width: 100%
 		&-content
-			margin: auto 0 0
+			margin: auto 10px
 			padding-top: 20px
 			position: relative
 			max-width: 100%
-		&-close
-			top: -40px
-			position: absolute
+			max-height: 100vh
+			height: auto
 		&-title
 			padding: 0 10px 20px
 		&-btn-group
-			padding: 0 15px 20px
+			padding: 10px 15px 20px
 			justify-content: space-between
 			gap: 10px
 			.btn
-				width: 45%
+				min-width: 40%
+				width: auto
 		&-img-mob
 			display: flex
+		&-close
+			position: absolute
+			right: -17px
+			top: 10px
 		&-body
 			padding: 0 15px 20px
+			overflow-y: auto !important
+			overflow-x: hidden !important
+			&::-webkit-scrollbar
+				width: 5px
+			&::-webkit-scrollbar-thumb
+				background-color: $scroll
+				border-radius: 10px
 			.list
 				margin-top: 0
 			.extend-mode
@@ -192,3 +234,52 @@
 		
 	.details-title
 		font-size: 2rem
+
+	.power-status
+		margin-left: -4px
+
+	.details-mode
+		padding-left: 5px
+		padding-top: 3px
+	
+	.list li
+		margin-bottom: 10px
+
+	.action-date
+		width: 100px
+		flex: 0 0 100px
+
+	.scroll-height
+		height: 100%
+
+	.select-icon-wr
+		justify-content: center
+
+	.select-icon-item
+		min-width: 140px
+
+	.setting-changed
+		padding: 0 7px
+		&:before
+			left: 0
+			right: 0
+		
+	.wrapper-content-btn
+		padding-top: 20px
+
+	.btn-group
+		gap: 10px
+
+
+@media screen and (max-width: 500px)
+	.action-list
+		margin-top: 15px
+		&.list
+			li
+				flex-direction: column
+			.action-date
+				flex: 0 0 auto
+
+	.btn-next
+		&:before, &:after
+			right: 5px

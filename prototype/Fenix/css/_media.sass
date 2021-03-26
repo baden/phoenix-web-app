@@ -51,7 +51,7 @@
 		.submenu-back .title, .submenu-item-title, .status, .submenu-type, .submenu
 			display: block
 		.menu-header
-			border-bottom: 1px solid $bgLight
+			border-bottom: 1px solid $bgBasic
 			padding: 5px 12px
 			min-height: 75px
 
@@ -66,6 +66,10 @@
 		transition: opacity .15s linear
 	.submenu
 		padding: 17px 15px
+		top: 75px
+
+	.copiedMess
+		position: fixed
 
 @media screen and (max-width: 768px)
 	.container
@@ -77,14 +81,14 @@
 		.menu-header
 			min-height: 65px
 	.submenu
-		top: 75px
+		top: 66px
 		padding: 20px 15px 40px
 
 	.menu-items
 		padding: 20px 15px
 
 	.container.container-login
-		padding-top: 50px
+		padding: 50px 10px 20px 
 		.wrapper-bg
 			min-height: 90%
 	.wrapper-page
@@ -103,14 +107,15 @@
 		min-height: 100%
 		.close
 			margin: 0 0 0
-			position: relative
-			top: -50px
+			position: fixed
+			top: 34px
 	.wrapper-content-btn, .btn.mt-40, .btn.mt-30
 		margin-top: auto
 	.led-indicator-wr
 		margin: 4px -16px 0
 		position: relative
 		bottom: -20px
+		border-radius: 0
 	.form-list
 		padding-left: 0
 	.details-wrapper-bg
@@ -132,6 +137,7 @@
 		position: relative
 		bottom: -20px
 		flex-wrap: wrap
+		border-radius: 0
 		flex-direction: row-reverse
 	.details
 		&-items
@@ -144,8 +150,9 @@
 					width: auto
 					margin-bottom: 5px
 	.revert-btn
-		position: relative
-		top: -60px
+		position: fixed
+		top: 24px
+		right: 15px
 	.fenix
 		flex: 0 0 100%
 		max-width: 450px
@@ -158,6 +165,7 @@
 			padding: 15px 20px 15px
 		&-list
 			margin: 0
+			justify-content: center
 
 	.locations-notifications
 		width: auto
@@ -186,25 +194,36 @@
 		&-sm
 			max-width: 100%
 		&-content
-			margin: auto 0 0
+			margin: auto 10px
 			padding-top: 20px
 			position: relative
 			max-width: 100%
-		&-close
-			top: -40px
-			position: absolute
+			max-height: 100vh
+			height: auto
 		&-title
 			padding: 0 10px 20px
 		&-btn-group
-			padding: 0 15px 20px
+			padding: 10px 15px 20px
 			justify-content: space-between
 			gap: 10px
 			.btn
-				width: 45%
+				min-width: 40%
+				width: auto
 		&-img-mob
 			display: flex
+		&-close
+			position: absolute
+			right: -17px
+			top: 10px
 		&-body
 			padding: 0 15px 20px
+			overflow-y: auto !important
+			overflow-x: hidden !important
+			&::-webkit-scrollbar
+				width: 5px
+			&::-webkit-scrollbar-thumb
+				background-color: $scroll
+				border-radius: 10px
 			.list
 				margin-top: 0
 			.extend-mode
@@ -230,12 +249,37 @@
 		width: 100px
 		flex: 0 0 100px
 
-	.scroll-wr .details-header
-		margin-bottom: 15px
+	.scroll-height
+		height: 100%
+
+	.select-icon-wr
+		justify-content: center
+
+	.select-icon-item
+		min-width: 140px
+
+	.setting-changed
+		padding: 0 7px
+		&:before
+			left: 0
+			right: 0
 		
+	.wrapper-content-btn
+		padding-top: 20px
+
+	.btn-group
+		gap: 10px
+
+
 @media screen and (max-width: 500px)
-	.action-list.list
-		li
-			flex-direction: column
-		.action-date
-			flex: 0 0 auto
+	.action-list
+		margin-top: 15px
+		&.list
+			li
+				flex-direction: column
+			.action-date
+				flex: 0 0 auto
+
+	.btn-next
+		&:before, &:after
+			right: 5px

@@ -24,12 +24,12 @@
 		flex-direction: column
 		max-width: 600px
 		width: 100%
-		border-radius: 20px
+		border-radius: 10px
 		margin: auto
 		background: $modalBg
 		padding-top: 25px
 	&-content-light
-		background: $bgLight
+		background: $bgBasic
 	&-title
 		padding: 10px 48px 25px
 		letter-spacing: 0.05em
@@ -82,6 +82,14 @@
 	align-self: flex-end
 	cursor: pointer
 	margin-right: 25px
+	position: relative
+	&:after
+		content: ""
+		position: absolute
+		left: -20px
+		right: -20px
+		top: -20px
+		bottom: -20px
 	&:hover
 		opacity: .8
 

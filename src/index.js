@@ -31,7 +31,7 @@ const fx_api_endpoint = protocol + "//fx.navi.cc"  + api_path;
 // const choosed_endpoint = (hostname=="localhost") ? local_api_endpoint : global_api_endpoint;
 // const choosed_endpoint = global_api_endpoint;
 // const choosed_endpoint = fx_api_endpoint;
-const choosed_endpoint = (hostname=="localhost") ? fx_api_endpoint : global_api_endpoint;
+const choosed_endpoint = (hostname=="localhost" || hostname=="fenix-ca60d.web.app") ? fx_api_endpoint : global_api_endpoint;
 
 const theme_style = document.querySelector("#theme");
 

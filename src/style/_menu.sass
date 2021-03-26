@@ -11,10 +11,14 @@
 	&-header
 		display: flex
 		justify-content: space-between
-		border-bottom: 1px solid $bgLight
+		border-bottom: 1px solid $bgBasic
 		padding: 20px 30px
 		min-height: 99px
 		align-items: center
+	&-body
+		height: 100%
+		display: flex
+		flex-direction: column
 	&-options
 		margin-bottom: 35px
 		.dropdown
@@ -102,7 +106,7 @@
 .submenu
 	position: absolute
 	background: $bgDark
-	top: 99px
+	top: 100px
 	left: 0
 	right: 0
 	overflow: hidden
@@ -130,7 +134,7 @@
 		padding-left: 21px
 		top: 3px
 		margin-bottom: 20px
-		padding: 12px 15px 12px 40px
+		padding: 12px 15px 12px 30px
 		.arrow
 			position: absolute
 			left: 0
@@ -189,7 +193,6 @@
 .submenu-settings
 	height: 0
 	overflow: hidden
-	transition: all .2s linear
 	&-item
 		a
 			font-size: 1rem
@@ -215,7 +218,7 @@
 		.icon-arrow-menu
 			transform: rotate(0)
 		& ~ .submenu-settings
-			height: 190px
+			height: auto
 
 .logout-image
 	color: $error
@@ -226,3 +229,14 @@
 
 .menu-close-bg
 	display: none
+
+.fenix-status .status
+	color: $titles !important
+
+.submenu-name
+	color: $titles
+
+.submenu-back
+	color: $secondaryTxt
+	.arrow
+		background: url('../images/menu_back_light.svg') no-repeat
