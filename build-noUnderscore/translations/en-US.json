@@ -1,0 +1,4 @@
+{
+  "welcome": "Welcome back, {{name}}",
+  "logout": "Click here to log out"
+}

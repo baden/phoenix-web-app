@@ -1,5 +1,6 @@
 import L from 'leaflet';
 import Lem from 'leaflet-extra-markers';
+import _ from 'underscore';
 // import '.css';
 // import 'leaflet.css';
 import '../../node_modules/leaflet/dist/leaflet.css';
@@ -13,6 +14,7 @@ import './leaflet.css';
 import {MapTiles} from './tile_layers';
 import {MapSettings} from './settings';
 
+import debounce from './debounce';
 // import greenIconUrl from 'static/images/markers/leaf-green.png';
 
 var maps = {};
@@ -47,6 +49,15 @@ let greenIcon = L.icon({
 	shadowAnchor: [4, 62],  // the same for the shadow
 	popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
 });
+
+
+const redMarker = L.ExtraMarkers.icon({
+    icon: 'fa-car',
+    markerColor: 'pink',
+    shape: 'square',
+    prefix: 'fa'
+  });
+console.log("redMarker = ", redMarker);
 
 // L.Marker.prototype.options.icon = DefaultIcon;
 
@@ -167,13 +178,16 @@ const minScaleAttr = 'min-scale';
 class LeafletMap extends HTMLElement {
     constructor() {
         super();
-        console.log("LeafletMap:constructor", this, L);
+        console.log("LeafletMap:constructor:", this, L);
 
         this._center = this.center || {
             lat: 48.5013798,
             lng: 34.6234255
         };
         delete this.center;
+
+        this._markers = this.markers || [];
+        delete this.markers;
 
         if(false) {
             new MutationObserver((mr) => this._stageElChange(mr))
@@ -203,41 +217,56 @@ class LeafletMap extends HTMLElement {
         // var values = center.split(",");
         // var lat = parseFloat(values[0]);
         // var lng = parseFloat(values[1]);
-        console.log('add map', this, this._center);
+        console.log('add map', this, this._center, this._markers);
         var lat = this._center ? this._center.lat : 0.0;
         var lng = this._center ? this._center.lng : 0.0;
         this._map = addMap(container);
         this._map.setView(L.latLng(lat, lng), 15);
 
-        var redMarker = L.ExtraMarkers.icon({
-            icon: 'fa-car',
-            markerColor: 'pink',
-            shape: 'square',
-            prefix: 'fa'
-          });
-        console.log("redMarker = ", redMarker);
 
         // this._center_marker = L.marker([lat, lng], {icon: DefaultIcon}).addTo(this._map);
         L.marker([lat, lng], {icon: redMarker}).addTo(this._map);
 
         this._leaflet_id = container._leaflet_id;
 
-        this._map.on('moveend', e => {
-        // this._map.on('click', e => {
+        const centerChanged = debounce(() => {
             const newCenter = this._map.getCenter();
             if((newCenter.lat != this._center.lat) || (newCenter.lng != this._center.lng)) {
                 // console.log("map:move", this._center, newCenter);
                 this._center = newCenter;
                 this.dispatchEvent(new CustomEvent('centerChanged'));
             }
-            // console.log("offeset", this._map.containerPointToLayerPoint([0, 0]));
-        });
+        }, 100);
+
+        this._map.on('moveend', centerChanged);
+
+        setTimeout(() => {
+            if(this._map) this._map.invalidateSize();
+        }, 100);
+
+        // const resizeContent = debounce((entries) => {
+        //     console.log("resizeObserver", entries);
+        // });
+        const resizeContent = (entries) => {
+            console.log("resizeObserver", entries);
+        };
+
+        // const resizeObserver = new ResizeObserver(entries => {
+        //     console.log("resizeObserver", entries);
+        //     // this._map.invalidateSize();
+        // });
+        // const resizeObserver = new ResizeObserver(resizeContent);
+        // const resizeObserver = new ResizeObserver(_.debounce(resizeContent, 500));
+        const resizeObserver = new ResizeObserver(debounce(resizeContent, 500));
+        // const resizeObserver = new ResizeObserver(_.throttle(resizeContent, 500));
+        resizeObserver.observe(this);
     }
 
     disconnectedCallback() {
         // this[VIEW].disconnect();
         console.log('remove map', this);
         maps[this._leaflet_id].remove();
+        // resizeObserver.unobserve(this);
         delete maps[this._leaflet_id];
     }
 
@@ -254,7 +283,24 @@ class LeafletMap extends HTMLElement {
             var lat = this._center.lat;
             var lng = this._center.lng;
             this._map.flyTo(L.latLng(lat, lng), 15);
+            this._map.invalidateSize();
             if(this._center_marker) this._center_marker.setLatLng(L.latLng(lat, lng));
+        }
+    }
+
+    get markers() { return this._markers; }
+    set markers(value) {
+        if (value !== null && !_.isEqual(value, this._markers)) {
+            console.log("set markers", value);
+
+            value.forEach(item => {
+                let {pos, title} = item;
+                L.marker([pos.lat, pos.lng], {icon: redMarker}).addTo(this._map);
+
+            });
+
+
+            this._markers = value;
         }
     }
 
@@ -280,3 +326,15 @@ class LeafletMap extends HTMLElement {
 }
 
 window.customElements.define("leaflet-map", LeafletMap);
+
+// const debounce = func => {
+//   let token;
+//   return function() {
+//     const later = () => {
+//       token = null;
+//       func.apply(null, arguments);
+//     };
+//     cancelIdleCallback(token);
+//     token = requestIdleCallback(later);
+//   };
+// };

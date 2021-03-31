@@ -13,19 +13,15 @@ import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Msg as GMsg
+import Page.Map.Types exposing (..)
 import Types.Dt as DT
-
-
-type alias LatLng =
-    { lat : Float
-    , lng : Float
-    }
 
 
 type alias Model =
     { center : LatLng
     , address : Maybe String
     , showAddress : Bool
+    , markers : List Marker
     }
 
 
@@ -34,6 +30,7 @@ init =
     ( { center = LatLng 48.5013798 34.6234255
       , address = Nothing
       , showAddress = False
+      , markers = []
       }
     , Cmd.none
     )
@@ -59,7 +56,14 @@ update msg model =
             ( { model | center = newPos }, Cmd.none, Nothing )
 
         GetAddress { lat, lng } ->
-            ( { model | showAddress = True, center = LatLng lat lng }, Geo.getAddress ( lat, lng ) ResponseAddress, Nothing )
+            ( { model
+                | showAddress = True
+                , center = LatLng lat lng
+                , markers = [ Marker (LatLng lat lng) "TBD" ]
+              }
+            , Geo.getAddress ( lat, lng ) ResponseAddress
+            , Nothing
+            )
 
         ResponseAddress (Ok address) ->
             ( { model | address = Just <| Geo.addressToString address }, Cmd.none, Nothing )
@@ -93,15 +97,6 @@ latLng2String { lat, lng } =
 -- encodeFloats : List Float -> Encode.Value
 -- encodeFloats list =
 --     Encode.list (List.map Encode.float list)
-
-
-encodeLatLng : LatLng -> Encode.Value
-encodeLatLng { lat, lng } =
-    -- Encode.list Encode.float [ lat, lon ]
-    Encode.object
-        [ ( "lat", Encode.float lat )
-        , ( "lng", Encode.float lng )
-        ]
 
 
 viewSystem : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
@@ -139,7 +134,7 @@ viewSystem appState model system =
     -- ]
     div [ class "container-map" ]
         -- [ lazy mapAt center
-        [ mapAt model.center
+        [ mapAt model.center model.markers
         , div [ class "map-debug" ] [ text <| "Position: " ++ String.fromFloat model.center.lat ++ ", " ++ String.fromFloat model.center.lng ]
         , div [ class "locations" ]
             -- [ span [ class "locations-btn open-locations", onClick (SetCenter 48.4226036 35.0252341) ]
@@ -161,6 +156,17 @@ viewSystem appState model system =
                 ]
             ]
         ]
+
+
+mapAt : LatLng -> List Marker -> Html Msg
+mapAt center markers =
+    Html.node "leaflet-map"
+        [ --Html.Attributes.attribute "data-map-center" (latLng2String model.center)
+          Html.Attributes.property "center" (encodeLatLng center)
+        , Html.Attributes.property "markers" (Encode.list encodeMarker markers)
+        , Html.Events.on "centerChanged" <| Decode.map CenterChanged <| Decode.at [ "target", "center" ] <| decodeLatLng
+        ]
+        []
 
 
 sysPosition : AppState.AppState -> String -> Maybe System.Dynamic -> Maybe String -> List (Html Msg)
@@ -187,20 +193,3 @@ sysPosition appState sid maybe_dynamic maddress =
 
                 ( _, _, _ ) ->
                     [ UI.row_item [ Html.text <| "Положение неизвестно" ] ]
-
-
-mapAt : LatLng -> Html Msg
-mapAt center =
-    Html.node "leaflet-map"
-        [ --Html.Attributes.attribute "data-map-center" (latLng2String model.center)
-          Html.Attributes.property "center" (encodeLatLng center)
-        , Html.Events.on "centerChanged" <| Decode.map CenterChanged <| Decode.at [ "target", "center" ] <| decodeLatLng
-        ]
-        []
-
-
-decodeLatLng : Decode.Decoder LatLng
-decodeLatLng =
-    Decode.map2 LatLng
-        (Decode.field "lat" Decode.float)
-        (Decode.field "lng" Decode.float)
