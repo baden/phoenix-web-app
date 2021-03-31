@@ -14,47 +14,35 @@
 		z-index: 101
 		width: 320px
 		flex: 0 0 320px
-		transform: translate(-320px, 0)
+		transform: translate(0, 0)
 		transition: all .2s linear 
-		.menu-toggle-btn
-			background: $bgDark url(../images/menu_burger.svg) no-repeat center/24px 24px
-			box-shadow: 0px 1px 4px rgb(0, 0, 0)
-			flex: 0 0 48px
-			height: 48px
-			border-radius: 6px
-			margin-top: 15px
-			transform: translate(76px, 0)
-			&.visibility
-				flex: 0 0 48px
-				height: 48px
-				width: 22px
-				background: url(../images/toggle_menu.svg) no-repeat center/22px 22px
-				cursor: pointer
-				border: none
-				margin-top: 15px
-				transform: translate(10px, 0)
-				box-shadow: 0px 0 0 rgb(0, 0, 0)
+		height: auto
+		bottom: 0
 		.menu-header
-			border-bottom: none
-			padding: 5px 12px
+			border-bottom: 1px solid $bgBasic
+			padding: 5px 12px 10px
 			min-height: 75px
 	.menu-visibility
 		background: $bgDark
 		height: 100vh
-		transform: translate(0, 0)
+		transform: translate(-320px, 0)
 		width: 320px
 		flex: 0 0 320px
 		.menu-options-wr
 			padding: 0 30px
-		.logo, .menu-items, .menu-options-wr, .menu-item-title, 
-		#selectedTheme, #selectedLanguage, .accaunt-title,
-		.submenu-back .title, .submenu-item-title, .status, .submenu-type, .submenu
-			display: block
 		.menu-header
-			border-bottom: 1px solid $bgBasic
+			border-bottom: none
 			padding: 5px 12px
 			min-height: 75px
-
+		.menu-toggle-btn
+			&.visibility
+				background: $bgDark url(../images/menu_burger.svg) no-repeat center/24px 24px
+				box-shadow: 0px 1px 4px rgb(0, 0, 0)
+				flex: 0 0 48px
+				height: 48px
+				border-radius: 6px
+				margin-top: 15px
+				transform: translate(323px, 0)
 	.menu-close-bg
 		position: fixed
 		z-index: 100
@@ -121,6 +109,10 @@
 	.details-wrapper-bg
 		padding: 0
 		min-height: 100%
+	.manage-details-title
+		margin-top: -45px
+		text-align: center
+		margin-left: 60px
 	.details-item
 		flex-direction: column
 		justify-content: flex-start
@@ -129,9 +121,12 @@
 			flex: 0 0 auto
 		.title
 			flex: 0 0 auto
-			margin-bottom: 12px
+			margin-bottom: 10px
 			br
 				display: none
+		.content-item
+			margin-bottom: 8px
+
 	.details-footer
 		margin: auto -16px 0
 		position: relative
@@ -143,7 +138,7 @@
 		&-items
 			padding: 20px 0 0
 		&-item:not(:last-child)
-			padding-bottom: 20px
+			padding-bottom: 10px
 		&-item
 			.content-item-group
 				.details-blue-title
@@ -198,8 +193,6 @@
 			padding-top: 20px
 			position: relative
 			max-width: 100%
-			max-height: 100vh
-			height: auto
 		&-title
 			padding: 0 10px 20px
 		&-btn-group
@@ -217,13 +210,6 @@
 			top: 10px
 		&-body
 			padding: 0 15px 20px
-			overflow-y: auto !important
-			overflow-x: hidden !important
-			&::-webkit-scrollbar
-				width: 5px
-			&::-webkit-scrollbar-thumb
-				background-color: $scroll
-				border-radius: 10px
 			.list
 				margin-top: 0
 			.extend-mode
@@ -233,7 +219,7 @@
 		min-width: 130px
 		
 	.details-title
-		font-size: 2rem
+		font-size: 1.4rem
 
 	.power-status
 		margin-left: -4px
@@ -271,7 +257,7 @@
 		gap: 10px
 
 
-@media screen and (max-width: 500px)
+@media screen and (max-width: 550px)
 	.action-list
 		margin-top: 15px
 		&.list
@@ -283,3 +269,17 @@
 	.btn-next
 		&:before, &:after
 			right: 5px
+
+	.details-footer-btn
+		padding: 10px 10px 5px
+		flex: 0 0 100%
+
+	.select-icon-item
+		width: 45%
+		min-width: 100px
+
+	.select-icon-item.config-select-item
+		margin: 5px
+		
+	.select-icon-wr
+		gap: 0

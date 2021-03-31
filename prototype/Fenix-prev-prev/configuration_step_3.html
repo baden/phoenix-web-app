@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="css/style.css">
+	<title>Configuration Settings step 3</title>
+</head>
+<body>
+	<div class="layout">
+		<div class="menu">
+			<div class="menu-header">
+				<div class="logo">
+					 
+				</div>
+				<button class="menu-toggle-btn" id="toggleBtn"></button>
+			</div>
+			<ul class="menu-items">
+				<li>
+					<a href="#">
+						<span class="list-icon menu-icon"></span>
+						<span class="menu-item-title">Список Фениксов</span>
+					</a>
+				</li>	
+			</ul>
+
+			<div class="menu-options-wr">
+				<div class="menu-options">
+					<span class="menu-options-title">Системные опции</span>
+					<div class="dropdown">
+						<div class="dropdown-title">
+							<span class="mode-icon"></span>
+							<span id="selectedTheme">Темная</span>
+							<span class="dropdown-icon"></span>
+						</div>
+						<ul class="dropdown-list">
+							<li class="title">
+								Тема
+							</li>
+							<li onclick="selectTheme('Темная')">
+								<span class="item">
+									Темная
+								</span>
+							</li>
+							<li onclick="selectTheme('Светлая')">
+								<span class="item">
+									Светлая
+								</span>
+							</li>
+						</ul>
+					</div>
+
+					<div class="dropdown">
+						<div class="dropdown-title">
+							<span class="language-icon"></span>
+							<span id="selectedLanguage">Русский</span>
+							<span class="dropdown-icon"></span>
+						</div>
+						<ul class="dropdown-list">
+							<li class="title">
+								Язык
+							</li>
+							<li onclick="selectLanguage('Українська')">
+								<span class="item">
+									<span class="flag uk"></span>
+									Українська
+								</span>
+							</li>
+							<li onclick="selectLanguage('Русский')">
+								<span class="item">
+									<span class="flag ru"></span>
+									Русский
+								</span>
+							</li>
+							<li onclick="selectLanguage('English')">
+								<span class="item">
+									<span class="flag en"></span>
+									English
+								</span>
+							</li>
+						</ul>
+					</div>					
+				</div>
+				<div class="menu-options">
+					<span class="menu-options-title">Аккаунт</span>
+					<div class="dropdown">
+						<div class="dropdown-title">
+							<span class="accaunt-icon"></span>
+							<span class="accaunt-title">loginexample</span>
+							<span class="dropdown-icon"></span>
+						</div>
+						<ul class="dropdown-list">
+							<li>
+								<a href="#">Настройки</a>
+							</li>
+							<li>
+								<a href="#">Выйти</a>
+							</li>
+						</ul>
+					</div>	
+				</div>
+			</div>
+		</div>
+		<div class="container">
+			<div class="wrapper-content wrapper-page">
+				<div class="wrapper-bg">
+					<div class="title-sm-gr">Основные настройки феникса</div>
+
+					<!-- progressbar -->
+					<div class="progress">
+						<div class="progress-item done">
+							<span class="circle">
+								<span class="progress-icon icon-clock"></span>
+							</span>
+						</div>
+						<div class="progress-item done">
+							<span class="circle">
+								<span class="progress-icon icon-magnifier"></span>
+							</span>
+						</div>
+						<div class="progress-item active">
+							<span class="circle">
+								<span class="progress-icon icon-phone"></span>
+							</span>
+						</div>
+						<div class="progress-item">
+							<span class="circle">
+								<span class="progress-icon icon-sim_logo"></span>
+							</span>
+						</div>
+						<div class="progress-item">
+							<span class="circle">
+								<span class="progress-icon icon-done"></span>
+							</span>
+						</div>
+					</div>
+					<!-- progressbar -->
+
+					<div class="title-st">Информирование</div>
+
+					<div class="page-subtext">
+						Когда происходят определенные события, Феникс может отправлять SMS на заданный номер
+					</div>
+				
+					<div class="config-sm-title">
+						Укажите номер телефона
+					</div>
+
+					<div class="config-set-phone input-st">
+						<span class="phone-prefix">+380</span>
+						<input autocomplete="off">
+					</div>
+
+					<div class="config-sm-title">
+						Выберите события
+					</div>
+					<!-- list -->
+					<div class="toggler-list">
+						<div class="toggler">
+							<span class="toggler-title">Критический остаток средств</span>
+							<label class="toggler-wr">
+								<input type="checkbox" checked>
+								<span class="toggler-icon"></span>
+							</label>
+						</div>
+						<div class="toggler">
+							<span class="toggler-title">Низкий уровень заряда батареи</span>
+							<label class="toggler-wr">
+								<input type="checkbox" checked>
+								<span class="toggler-icon"></span>
+							</label>
+						</div>
+
+						<div class="toggler">
+							<span class="toggler-title">Изменение режима (Поиск <-> Ожидание)</span>
+							<label class="toggler-wr">
+								<input type="checkbox" checked>
+								<span class="toggler-icon"></span>
+							</label>
+						</div>
+
+						<div class="toggler">
+							<span class="toggler-title">Начало движения (в режиме Поиск)</span>
+							<label class="toggler-wr">
+								<input type="checkbox">
+								<span class="toggler-icon"></span>
+							</label>
+						</div>
+
+						<div class="toggler">
+							<span class="toggler-title">Включение и выключение Феникса</span>
+							<label class="toggler-wr">
+								<input type="checkbox">
+								<span class="toggler-icon"></span>
+							</label>
+						</div>
+
+						<div class="toggler">
+							<span class="toggler-title">Вскрытие корпуса</span>
+							<label class="toggler-wr">
+								<input type="checkbox">
+								<span class="toggler-icon"></span>
+							</label>
+						</div>
+					</div>
+
+					<div class="wrapper-content-btn btn-group">
+						<button class="btn btn-md btn-secondary btn-prev">
+							Назад
+						</button>
+						<button class="btn btn-md btn-primary btn-next">
+							Далeе
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+	<script src="scripts/general.js"></script>
+</body>
+</html>

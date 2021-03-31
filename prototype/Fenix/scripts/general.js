@@ -38,7 +38,7 @@ function selectLanguage(theme) {
 $('#toggleBtn').click(function() {
 	$(this).closest('.menu').toggleClass('menu-visibility');
 	$(this).toggleClass('visibility');
-	$(this).closest('.layout').find('.closeMenuBg').toggleClass('show');
+	$(this).closest('.layout').find('.closeMenuBg').toggleClass('hidden');
 })
 
 $('.closeAddFenix').click(function() {
@@ -64,9 +64,9 @@ $('.submenu-back').click(function() {
 // cloe menu when click to bg
 
 $('.closeMenuBg').click(function() {
-	$(this).removeClass('show');
-	$(this).closest('.layout').find('.menu').removeClass('menu-visibility');
-	$(this).closest('.layout').find('#toggleBtn').removeClass('visibility');
+	$(this).addClass('hidden');
+	$(this).closest('.layout').find('.menu').addClass('menu-visibility');
+	$(this).closest('.layout').find('#toggleBtn').addClass('visibility');
 })
 
 //submenu settings

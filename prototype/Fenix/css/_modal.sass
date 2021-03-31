@@ -28,6 +28,12 @@
 		margin: auto
 		background: $modalBg
 		padding-top: 25px
+		max-height: 90vh
+		position: relative
+		.close
+			position: absolute
+			top: 25px
+			right: 0
 	&-content-light
 		background: $bgBasic
 	&-title
@@ -43,6 +49,13 @@
 		color: $defaultTxt
 	&-body
 		padding: 0 48px 25px
+		overflow-y: auto !important
+		overflow-x: hidden !important
+		&::-webkit-scrollbar
+			width: 5px
+		&::-webkit-scrollbar-thumb
+			background-color: $scroll
+			border-radius: 10px
 	&-btn-group
 		padding: 0 48px 48px
 		width: 100%
@@ -82,7 +95,6 @@
 	align-self: flex-end
 	cursor: pointer
 	margin-right: 25px
-	position: relative
 	&:after
 		content: ""
 		position: absolute

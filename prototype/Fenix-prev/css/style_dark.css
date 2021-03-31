@@ -47,13 +47,13 @@
     .btn-primary:active, .btn-primary:focus {
       background: #0F68BB; }
   .btn-secondary {
-    background: #fff;
+    background: #38394E;
     -webkit-filter: drop-shadow(0px 3px 15px rgba(0, 0, 0, 0.5));
             filter: drop-shadow(0px 3px 15px rgba(0, 0, 0, 0.5)); }
     .btn-secondary:hover {
-      background: #F6F7FA; }
+      background: #494A64; }
     .btn-secondary:active, .btn-secondary:focus {
-      background: #EFF3FF; }
+      background: #34354B; }
   .btn-cancel {
     background: #FF5959; }
     .btn-cancel:hover {
@@ -1361,7 +1361,7 @@ button, select, input {
     font-size: 22px;
     color: #DFE0F3; }
   .submenu-type {
-    color: #fff;
+    color: #38394E;
     position: absolute;
     bottom: 40px;
     right: 6%;
@@ -1542,7 +1542,7 @@ button, select, input {
   min-height: 305px;
   margin: 15px; }
   .fenix-type {
-    color: #fff;
+    color: #38394E;
     position: absolute;
     top: 35%;
     right: 6%;
@@ -1610,7 +1610,7 @@ button, select, input {
     font-size: 2.57rem;
     color: #fff; }
   .fenix-set-btn {
-    background: #fff;
+    background: #38394E;
     -webkit-transition: all 0.2s linear;
     transition: all 0.2s linear;
     position: relative;
@@ -2147,7 +2147,7 @@ button, select, input {
       right: -1px;
       border-radius: 10px;
       z-index: 1;
-      background: #F6F7FA;
+      background: #494A64;
       -webkit-transition: all 0.2s linear;
       transition: all 0.2s linear; }
     .extend-mode-btn:hover:before {
@@ -2200,7 +2200,7 @@ button, select, input {
       opacity: 0.8; }
 
 .revert-btn {
-  background: #fff;
+  background: #38394E;
   -webkit-transition: all 0.2s linear;
   transition: all 0.2s linear;
   position: relative;
@@ -2224,7 +2224,7 @@ button, select, input {
   .revert-btn .icon-revert {
     color: #fff; }
   .revert-btn:hover {
-    background: #F6F7FA; }
+    background: #494A64; }
 
 .action-date {
   font-weight: 600;
@@ -2604,7 +2604,7 @@ button, select, input {
       right: -1px;
       border-radius: 10px;
       z-index: 1;
-      background: #F6F7FA;
+      background: #494A64;
       -webkit-transition: all 0.2s linear;
       transition: all 0.2s linear; }
     .config-select-item:hover:before {
@@ -2849,7 +2849,7 @@ button, select, input {
   .setting-changed:before {
     content: "";
     position: absolute;
-    background: #fff;
+    background: #38394E;
     border-radius: 10px;
     left: -15px;
     right: -15px;
@@ -2952,7 +2952,7 @@ button, select, input {
       position: relative; }
 
 .warning {
-  background: #fff;
+  background: #38394E;
   padding: 10px;
   border-radius: 10px;
   border-left: 8px solid #FACB39;

@@ -628,34 +628,37 @@ button, select, input {
   cursor: pointer; }
 
 .orange-gradient-text {
-  color: #FF8643; }
+  color: #FF8643;
+  background: transparent; }
   .orange-gradient-text:after {
     content: "";
     position: absolute;
-    left: -10px;
-    right: -10px;
-    top: -10px;
-    bottom: -10px; }
+    left: -15px;
+    right: -15px;
+    top: -15px;
+    bottom: -15px; }
 
 .blue-gradient-text {
-  color: #3B6DF3; }
+  color: #3B6DF3;
+  background: transparent; }
   .blue-gradient-text:after {
     content: "";
     position: absolute;
-    left: -10px;
-    right: -10px;
-    top: -10px;
-    bottom: -10px; }
+    left: -15px;
+    right: -15px;
+    top: -15px;
+    bottom: -15px; }
 
 .green-gradient-text {
-  color: #25BDBB; }
+  color: #25BDBB;
+  background: transparent; }
   .green-gradient-text:after {
     content: "";
     position: absolute;
-    left: -10px;
-    right: -10px;
-    top: -10px;
-    bottom: -10px; }
+    left: -15px;
+    right: -15px;
+    top: -15px;
+    bottom: -15px; }
 
 @supports ((background-clip: text) or (-webkit-background-clip: text)) and ((text-fill-color: transparent) or (-webkit-text-fill-color: transparent)) {
   .orange-gradient-text {
@@ -665,7 +668,8 @@ button, select, input {
     border-image-source: linear-gradient(to left, #FF8643, #FF6163);
     display: flex;
     align-items: center;
-    position: relative; }
+    position: relative;
+    color: #FF8643; }
   .blue-gradient-text {
     background: -webkit-linear-gradient(0deg, #3A6DED 0%, #5582FF 100%);
     -webkit-background-clip: text;
@@ -673,7 +677,8 @@ button, select, input {
     border-image-source: linear-gradient(0deg, #3A6DED 0%, #5582FF 100%);
     display: flex;
     align-items: center;
-    position: relative; }
+    position: relative;
+    color: #3B6DF3; }
   .green-gradient-text {
     background: -webkit-linear-gradient(180deg, #25BDBB 0%, #0CE091 100%);
     -webkit-background-clip: text;
@@ -681,7 +686,8 @@ button, select, input {
     border-image-source: linear-gradient(180deg, #25BDBB 0%, #0CE091 100%);
     display: flex;
     align-items: center;
-    position: relative; } }
+    position: relative;
+    color: #25BDBB; } }
 
 .red-text {
   color: #FF5959;
@@ -689,10 +695,10 @@ button, select, input {
   .red-text:after {
     content: "";
     position: absolute;
-    left: -10px;
-    right: -10px;
-    top: -10px;
-    bottom: -10px; }
+    left: -15px;
+    right: -15px;
+    top: -15px;
+    bottom: -15px; }
 
 .blue-text {
   color: #3B6DF3;
@@ -700,10 +706,10 @@ button, select, input {
   .blue-text:after {
     content: "";
     position: absolute;
-    left: -10px;
-    right: -10px;
-    top: -10px;
-    bottom: -10px; }
+    left: -15px;
+    right: -15px;
+    top: -15px;
+    bottom: -15px; }
 
 .led-title {
   font-weight: 600;
@@ -717,10 +723,10 @@ button, select, input {
   .led-title:after {
     content: "";
     position: absolute;
-    left: -10px;
-    right: -10px;
-    top: -10px;
-    bottom: -10px; }
+    left: -15px;
+    right: -15px;
+    top: -15px;
+    bottom: -15px; }
   .led-title img {
     margin-right: 6px; }
 
@@ -979,7 +985,8 @@ button, select, input {
   position: sticky;
   left: 0;
   top: 0;
-  height: 100vh; }
+  height: auto;
+  min-height: 100vh; }
   .menu-header {
     display: flex;
     justify-content: space-between;
@@ -1063,12 +1070,20 @@ button, select, input {
   background: url("../images/toggle_menu.svg") no-repeat center/22px 22px;
   cursor: pointer;
   border: none;
-  margin-top: 20px; }
+  margin-top: 20px;
+  position: relative; }
   .menu-toggle-btn:hover {
     transform: translate(-2px);
     transition: all .2s linear; }
   .menu-toggle-btn.visibility {
     background: url("../images/menu_burger.svg") no-repeat center/24px 24px; }
+  .menu-toggle-btn:after {
+    content: "";
+    position: absolute;
+    left: -15px;
+    right: -15px;
+    top: -15px;
+    bottom: -15px; }
 
 .list-icon {
   background: url("../images/list_fenix.svg") no-repeat center/24px 24px; }
@@ -1193,7 +1208,7 @@ button, select, input {
   margin-right: 10px; }
 
 .menu-close-bg {
-  display: none; }
+  display: block; }
 
 .fenix-status .status {
   color: #000 !important; }
@@ -1236,7 +1251,13 @@ button, select, input {
   border-radius: 10px;
   margin: auto;
   background: #202028;
-  padding-top: 25px; }
+  padding-top: 25px;
+  max-height: 90vh;
+  position: relative; }
+  .modal-content .close {
+    position: absolute;
+    top: 25px;
+    right: 0; }
 
 .modal-content-light {
   background: #F6F7FA; }
@@ -1255,7 +1276,14 @@ button, select, input {
   color: #333; }
 
 .modal-body {
-  padding: 0 48px 25px; }
+  padding: 0 48px 25px;
+  overflow-y: auto !important;
+  overflow-x: hidden !important; }
+  .modal-body::-webkit-scrollbar {
+    width: 5px; }
+  .modal-body::-webkit-scrollbar-thumb {
+    background-color: #D3D6DE;
+    border-radius: 10px; }
 
 .modal-btn-group {
   padding: 0 48px 48px;
@@ -1300,8 +1328,7 @@ button, select, input {
   display: flex;
   align-self: flex-end;
   cursor: pointer;
-  margin-right: 25px;
-  position: relative; }
+  margin-right: 25px; }
   .close:after {
     content: "";
     position: absolute;
@@ -1530,7 +1557,8 @@ button, select, input {
       position: absolute;
       left: -2px;
       right: -2px;
-      top: -2px; }
+      top: -2px;
+      width: 22px; }
     .power-bg.low {
       background: linear-gradient(246.04deg, #FF5E5E 0%, #FF0000 100%); }
     .power-bg.full {
@@ -2430,11 +2458,13 @@ button, select, input {
 .details-footer-btn {
   font-weight: 700;
   font-size: 1.14rem;
-  margin: 0 10px; }
+  padding: 0 10px;
+  flex: 1 0 50%;
+  justify-content: center;
+  align-items: center;
+  display: flex; }
   .details-footer-btn:hover {
     opacity: .8; }
-  .details-footer-btn .icon-remove, .details-footer-btn .icon-eye_active, .details-footer-btn .icon-change_battery {
-    top: 3px; }
   .details-footer-btn .icon-remove, .details-footer-btn .icon-eye_active, .details-footer-btn .image {
     font-size: 20px;
     margin-right: 5px;
@@ -2473,6 +2503,7 @@ button, select, input {
     .select-icon-item.config-select-item:before {
       border-radius: 3px; }
     .select-icon-item.config-select-item.active .image-big, .select-icon-item.config-select-item.active .image-logo {
+      color: #25BDBB;
       background: -webkit-linear-gradient(180deg, #25BDBB 0%, #0CE091 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -2518,6 +2549,9 @@ button, select, input {
 .details-title-flat.details-item .content-item .name {
   width: 180px; }
 
+.general-setting-wr .details-item .title, .general-setting-wr .setting-item-wr {
+  flex: 0 0 50%; }
+
 @media screen and (max-width: 1200px) {
   .fenix {
     margin: 10px;
@@ -2534,46 +2568,34 @@ button, select, input {
     z-index: 101;
     width: 320px;
     flex: 0 0 320px;
+    transform: translate(0, 0);
+    transition: all .2s linear;
+    height: auto;
+    bottom: 0; }
+    .menu .menu-header {
+      border-bottom: 1px solid #F6F7FA;
+      padding: 5px 12px 10px;
+      min-height: 75px; }
+  .menu-visibility {
+    background: #fff;
+    height: 100vh;
     transform: translate(-320px, 0);
-    transition: all .2s linear; }
-    .menu .menu-toggle-btn {
+    width: 320px;
+    flex: 0 0 320px; }
+    .menu-visibility .menu-options-wr {
+      padding: 0 30px; }
+    .menu-visibility .menu-header {
+      border-bottom: none;
+      padding: 5px 12px;
+      min-height: 75px; }
+    .menu-visibility .menu-toggle-btn.visibility {
       background: #fff url(../images/menu_burger.svg) no-repeat center/24px 24px;
       box-shadow: 0px 1px 4px black;
       flex: 0 0 48px;
       height: 48px;
       border-radius: 6px;
       margin-top: 15px;
-      transform: translate(76px, 0); }
-      .menu .menu-toggle-btn.visibility {
-        flex: 0 0 48px;
-        height: 48px;
-        width: 22px;
-        background: url(../images/toggle_menu.svg) no-repeat center/22px 22px;
-        cursor: pointer;
-        border: none;
-        margin-top: 15px;
-        transform: translate(10px, 0);
-        box-shadow: 0px 0 0 black; }
-    .menu .menu-header {
-      border-bottom: none;
-      padding: 5px 12px;
-      min-height: 75px; }
-  .menu-visibility {
-    background: #fff;
-    height: 100vh;
-    transform: translate(0, 0);
-    width: 320px;
-    flex: 0 0 320px; }
-    .menu-visibility .menu-options-wr {
-      padding: 0 30px; }
-    .menu-visibility .logo, .menu-visibility .menu-items, .menu-visibility .menu-options-wr, .menu-visibility .menu-item-title,
-    .menu-visibility #selectedTheme, .menu-visibility #selectedLanguage, .menu-visibility .accaunt-title,
-    .menu-visibility .submenu-back .title, .menu-visibility .submenu-item-title, .menu-visibility .status, .menu-visibility .submenu-type, .menu-visibility .submenu {
-      display: block; }
-    .menu-visibility .menu-header {
-      border-bottom: 1px solid #F6F7FA;
-      padding: 5px 12px;
-      min-height: 75px; }
+      transform: translate(323px, 0); }
   .menu-close-bg {
     position: fixed;
     z-index: 100;
@@ -2636,6 +2658,10 @@ button, select, input {
   .details-wrapper-bg {
     padding: 0;
     min-height: 100%; }
+  .manage-details-title {
+    margin-top: -45px;
+    text-align: center;
+    margin-left: 60px; }
   .details-item {
     flex-direction: column;
     justify-content: flex-start; }
@@ -2644,9 +2670,11 @@ button, select, input {
       flex: 0 0 auto; }
     .details-item .title {
       flex: 0 0 auto;
-      margin-bottom: 12px; }
+      margin-bottom: 10px; }
       .details-item .title br {
         display: none; }
+    .details-item .content-item {
+      margin-bottom: 8px; }
   .details-footer {
     margin: auto -16px 0;
     position: relative;
@@ -2657,7 +2685,7 @@ button, select, input {
   .details-items {
     padding: 20px 0 0; }
   .details-item:not(:last-child) {
-    padding-bottom: 20px; }
+    padding-bottom: 10px; }
   .details-item .content-item-group .details-blue-title {
     width: auto;
     margin-bottom: 5px; }
@@ -2702,9 +2730,7 @@ button, select, input {
     margin: auto 10px;
     padding-top: 20px;
     position: relative;
-    max-width: 100%;
-    max-height: 100vh;
-    height: auto; }
+    max-width: 100%; }
   .modal-title {
     padding: 0 10px 20px; }
   .modal-btn-group {
@@ -2721,14 +2747,7 @@ button, select, input {
     right: -17px;
     top: 10px; }
   .modal-body {
-    padding: 0 15px 20px;
-    overflow-y: auto !important;
-    overflow-x: hidden !important; }
-    .modal-body::-webkit-scrollbar {
-      width: 5px; }
-    .modal-body::-webkit-scrollbar-thumb {
-      background-color: #D3D6DE;
-      border-radius: 10px; }
+    padding: 0 15px 20px; }
     .modal-body .list {
       margin-top: 0; }
     .modal-body .extend-mode {
@@ -2737,7 +2756,7 @@ button, select, input {
   .modal-btn-group .btn {
     min-width: 130px; }
   .details-title {
-    font-size: 2rem; }
+    font-size: 1.4rem; }
   .power-status {
     margin-left: -4px; }
   .details-mode {
@@ -2764,7 +2783,7 @@ button, select, input {
   .btn-group {
     gap: 10px; } }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 550px) {
   .action-list {
     margin-top: 15px; }
     .action-list.list li {
@@ -2772,7 +2791,17 @@ button, select, input {
     .action-list.list .action-date {
       flex: 0 0 auto; }
   .btn-next:before, .btn-next:after {
-    right: 5px; } }
+    right: 5px; }
+  .details-footer-btn {
+    padding: 10px 10px 5px;
+    flex: 0 0 100%; }
+  .select-icon-item {
+    width: 45%;
+    min-width: 100px; }
+  .select-icon-item.config-select-item {
+    margin: 5px; }
+  .select-icon-wr {
+    gap: 0; } }
 
 .container-login {
   background: #F6F7FA; }
@@ -2948,8 +2977,8 @@ button, select, input {
   background: #EFF3FF; }
 
 @media screen and (max-width: 960px) {
-  .menu .menu-toggle-btn {
+  .menu .menu-toggle-btn.visibility {
     background: #fff url("../images/menu_burger_light.svg") no-repeat center/24px 24px;
     box-shadow: 0px 3px 15px #DCDCDC; }
-  .menu .menu-toggle-btn.visibility {
+  .menu .menu-toggle-btn {
     background: url("../images/toggle_menu_light.svg") no-repeat center/22px 22px; } }

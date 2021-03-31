@@ -108,7 +108,7 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
 
                 Just system ->
                     ( True
-                    , [ menuItem ("/map/" ++ system.id) (pageBase == Page.Route.HomeBase) "icon-map" "Карта"
+                    , [ menuItem ("/map/" ++ system.id) (pageBase == Page.Route.MapBase) "icon-map" "Карта"
                       , menuItem ("/system/" ++ system.id) (pageBase == Page.Route.SystemInfoBase) "icon-manage" "Управление"
                       , menuItemWithSubmenu ("/system/" ++ system.id ++ "/config") (pageBase == Page.Route.SystemConfigBase) "icon-manage" "Настройки"
                       , menuItem ("/system/" ++ system.id ++ "/logs") (pageBase == Page.Route.SystemLogsBase) "icon-calendar" "События"
@@ -153,10 +153,10 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
                 Just system ->
                     system.icon
     in
-    [ div [ classList [ ( "menu", True ), ( "menu-visibility", model.menuVisibility ) ] ]
+    [ div [ classList [ ( "menu", True ), ( "menu-visibility", not model.menuVisibility ) ] ]
         [ div [ class "menu-header" ]
             [ div [ class "logo" ] []
-            , button [ classList [ ( "menu-toggle-btn", True ), ( "visibility", model.menuVisibility ) ], id "toggleBtn", onClick ToggleMenu ] []
+            , button [ classList [ ( "menu-toggle-btn", True ), ( "visibility", not model.menuVisibility ) ], id "toggleBtn", onClick ToggleMenu ] []
             ]
         , div [ class "menu-body scroll" ]
             [ ul [ class "menu-items" ]
@@ -199,7 +199,7 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
             , modal model.showLogoutModal appState
             ]
         ]
-    , div [ class "menu-close-bg closeMenuBg", classList [ ( "show", model.menuVisibility ) ] ] []
+    , div [ class "menu-close-bg closeMenuBg", classList [ ( "hidden", not model.menuVisibility ) ] ] []
     ]
 
 

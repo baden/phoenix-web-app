@@ -5,6 +5,11 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ]
+    ],
+    // Serves index.html for requests to files or directories that do not exist
+    "rewrites": [ {
+        "source": "**",
+        "destination": "/index.html"
+    } ]
   }
 }

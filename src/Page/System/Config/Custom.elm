@@ -21,7 +21,7 @@ configCustomView ({ t } as appState) model sysId sysparams =
         Just params ->
             [ div [ class "details-header" ]
                 [ div [ class "details-title" ] [ text <| t "menu.Расширенные настройки" ] ]
-            , div [ class "details-items", id "scroll-wr" ] <|
+            , div [ class "details-items general-setting-wr scroll scroll-height" ] <|
                 [ div [ class "warning" ]
                     [ div [ class "warning-content" ]
                         [ span [ class "warning-title" ] [ img [ alt "", src "/images/warning.svg" ] [], text <| t "config.Предупреждение!" ]

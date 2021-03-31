@@ -86,7 +86,8 @@ function addMap(element) {
         minZoom: 2,
         zoomAnimation: true,
         fadeAnimation: false,
-        markerZoomAnimation: false
+        markerZoomAnimation: false,
+        zoomControl: false
     };
     var map = L.map(element, myOptions).fitWorld();
     // L.tileLayer(tileUrl, {
@@ -102,6 +103,10 @@ function addMap(element) {
 
     var layersControl = new L.Control.Layers(tileLayers.baseLayers);
     layersControl.addTo(map);
+
+    L.control.zoom({
+        position: 'bottomleft'
+    }).addTo(map);
 
     map.on('baselayerchange', function(evt) {
         // console.log("Map layer changed to ", evt.name);
@@ -211,6 +216,14 @@ class LeafletMap extends HTMLElement {
         L.marker([lat, lng], {icon: redMarker}).addTo(this._map);
 
         this._leaflet_id = container._leaflet_id;
+
+
+        this._map.on('move', e => {
+            var new_center = this._map.getCenter();
+            // console.log("map:move", center);
+            this.dispatchEvent(new CustomEvent('centerChanged'));
+            // console.log("offeset", this._map.containerPointToLayerPoint([0, 0]));
+        });
     }
 
     disconnectedCallback() {

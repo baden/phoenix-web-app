@@ -268,11 +268,13 @@
 .details-footer-btn
 	font-weight: 700
 	font-size: 1.14rem
-	margin: 0 10px
+	padding: 0 10px
+	flex: 1 0 50%
+	justify-content: center
+	align-items: center
+	display: flex
 	&:hover
 		opacity: .8
-	.icon-remove, .icon-eye_active, .icon-change_battery
-		top: 3px
 	.icon-remove, .icon-eye_active, .image
 		font-size: 20px
 		margin-right: 5px
@@ -313,6 +315,7 @@
 				border-radius: 3px
 			&.active
 				.image-big, .image-logo
+					color: #25BDBB
 					background: -webkit-linear-gradient(180deg, #25BDBB 0%, #0CE091 100%)
 					-webkit-background-clip: text
 					-webkit-text-fill-color: transparent
@@ -362,3 +365,7 @@
 .details-title-flat.details-item 
 	.content-item .name
 		width: 180px
+
+.general-setting-wr
+	.details-item .title, .setting-item-wr
+		flex: 0 0 50%

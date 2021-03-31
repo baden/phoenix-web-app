@@ -250,7 +250,7 @@ viewContainer ({ t } as appState) model system mparams =
             Html.div [ class "wrapper-bg" ] <| masterDialogView appState model system.id mparams
 
         SS_Custom ->
-            Html.div [ class "wrapper-bg" ] <| configCustomView appState model system.id mparams
+            Html.div [ class "details-wrapper-bg" ] <| configCustomView appState model system.id mparams
 
         SS_Congrat ->
             Html.div [ class "wrapper-bg" ]

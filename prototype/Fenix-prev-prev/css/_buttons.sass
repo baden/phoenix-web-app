@@ -1,0 +1,189 @@
+//buttons
+
+.btn
+	font-weight: 600
+	display: flex
+	justify-content: center
+	align-items: center
+	color: #fff
+	border-radius: 60px
+	width: 100%
+	cursor: pointer
+	letter-spacing: 0.05em
+	&:hover
+		transition: all .2s linear
+	//size
+	&-lg
+		font-size: 1.14rem
+		height: 48px
+		padding: 2px 30px
+		&.btn-add
+			&:before
+				width: 30px
+				height: 30px
+			&:after
+				width: 30px
+				height: 30px
+				background: url('../images/plus.svg') no-repeat center / 20px 20px
+	&-md
+		font-size: 1rem
+		height: 40px
+		padding: 2px 30px
+
+	//colors
+	&-disabled
+		background: $disabled
+		color: #9B9BA3
+
+	&-disabled-opacity
+		opacity: .4
+		pointer-events: none
+
+	&-primary
+		background: $primary
+		&:hover
+			background: $primaryHover
+		&:active, &:focus
+			background: $primaryPressed
+	&-secondary
+		background: $secondary
+		filter: drop-shadow(0px 3px 15px rgba(0, 0, 0, 0.5))
+		&:hover
+			background: $secondaryHover
+		&:active, &:focus
+			background: $secondaryPressed
+	&-cancel
+		background: $error
+		&:hover
+			background: $redGradient
+		
+
+.btn-group
+	display: flex
+	justify-content: space-between
+	gap: 30px
+	width: 100%
+	.btn
+		width: 50%
+		max-width: 160px
+
+.btn-block
+	position: relative
+	display: block
+	padding-left: 30px
+	&:before
+		content: ''
+		width: 30px
+		height: 30px
+		border-radius: 50%
+		position: absolute
+		left: 12px
+		top: 9px
+		background: $primaryHover
+	&:after
+		content: ''
+		width: 30px
+		height: 30px
+		border-radius: 50%
+		position: absolute
+		left: 12px
+		top: 9px
+		background: url('../images/block.svg') no-repeat center
+	&:hover
+		&:before
+			background: $primaryHover
+
+.btn-clock
+	position: relative
+	display: block
+	padding-right: 30px
+	&:before
+		content: ''
+		width: 30px
+		height: 30px
+		border-radius: 50%
+		position: absolute
+		right: 12px
+		top: 9px
+		background: linear-gradient(0deg, #4070F4 0%, #144DDE 100%)
+	&:after
+		content: ''
+		width: 30px
+		height: 30px
+		border-radius: 50%
+		position: absolute
+		right: 12px
+		top: 9px
+		background: url('../images/clock_icon.svg') no-repeat center
+	&:hover
+		&:before
+			background: $primaryHover
+.btn-add
+	position: relative
+	&:before
+		content: ''
+		width: 24px
+		height: 24px
+		border-radius: 50%
+		position: absolute
+		right: 10px
+		top: 9px
+		background: linear-gradient(0deg, #4070F4 0%, #144DDE 100%)
+	&:after
+		content: ''
+		width: 24px
+		height: 24px
+		border-radius: 50%
+		position: absolute
+		right: 10px
+		top: 9px
+		background: url('../images/plus.svg') no-repeat center / 20px 20px
+	&:hover
+		&:before
+			background: $primaryHover
+
+.btn-prev
+	position: relative
+	&:before
+		content: ''
+		width: 24px
+		height: 24px
+		border-radius: 50%
+		position: absolute
+		left: 10px
+		top: 9px
+		background: linear-gradient(0deg, #28282E 0%, #414257 100%)
+	&:after
+		content: ''
+		width: 24px
+		height: 24px
+		border-radius: 50%
+		position: absolute
+		left: 10px
+		top: 9px
+		background: url('../images/arrow_next.svg') no-repeat center / 13px 13px
+		transform: rotate(180deg)
+
+.btn-next
+	position: relative
+	&:before
+		content: ''
+		width: 24px
+		height: 24px
+		border-radius: 50%
+		position: absolute
+		right: 10px
+		top: 9px
+		background: linear-gradient(0deg, #4070F4 0%, #144DDE 100%)
+	&:after
+		content: ''
+		width: 24px
+		height: 24px
+		border-radius: 50%
+		position: absolute
+		right: 10px
+		top: 9px
+		background: url('../images/arrow_next.svg') no-repeat center / 13px 13px
+	&:hover
+		&:before
+			background: $primaryHover

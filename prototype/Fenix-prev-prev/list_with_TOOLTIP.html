@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="css/style.css">
+	<title>Fenix list</title>
+</head>
+<body>
+	<div class="layout">
+		<div class="menu">
+			<div class="menu-header">
+				<div class="logo">
+					 
+				</div>
+				<button class="menu-toggle-btn" id="toggleBtn"></button>
+			</div>
+			<ul class="menu-items">
+				<li>
+					<a href="#" class="active">
+						<span class="list-icon menu-icon"></span>
+						<span class="menu-item-title">Список Фениксов</span>
+					</a>
+				</li>	
+			</ul>
+
+			<div class="menu-options-wr">
+				<div class="menu-options">
+					<span class="menu-options-title">Системные опции</span>
+					<div class="dropdown">
+						<div class="dropdown-title">
+							<span class="mode-icon"></span>
+							<span id="selectedTheme">Темная</span>
+							<span class="dropdown-icon"></span>
+						</div>
+						<ul class="dropdown-list">
+							<li class="title">
+								Тема
+							</li>
+							<li onclick="selectTheme('Темная')">
+								<span class="item">
+									Темная
+								</span>
+							</li>
+							<li onclick="selectTheme('Светлая')">
+								<span class="item">
+									Светлая
+								</span>
+							</li>
+						</ul>
+					</div>
+
+					<div class="dropdown">
+						<div class="dropdown-title">
+							<span class="language-icon"></span>
+							<span id="selectedLanguage">Русский</span>
+							<span class="dropdown-icon"></span>
+						</div>
+						<ul class="dropdown-list">
+							<li class="title">
+								Язык
+							</li>
+							<li onclick="selectLanguage('Українська')">
+								<span class="item">
+									<span class="flag uk"></span>
+									Українська
+								</span>
+							</li>
+							<li onclick="selectLanguage('Русский')">
+								<span class="item">
+									<span class="flag ru"></span>
+									Русский
+								</span>
+							</li>
+							<li onclick="selectLanguage('English')">
+								<span class="item">
+									<span class="flag en"></span>
+									English
+								</span>
+							</li>
+						</ul>
+					</div>					
+				</div>
+				<div class="menu-options">
+					<span class="menu-options-title">Аккаунт</span>
+					<div class="dropdown">
+						<div class="dropdown-title">
+							<span class="accaunt-icon"></span>
+							<span class="accaunt-title">loginexample</span>
+							<span class="dropdown-icon"></span>
+						</div>
+						<ul class="dropdown-list">
+							<li>
+								<a href="#">Настройки</a>
+							</li>
+							<li>
+								<a href="#">Выйти</a>
+							</li>
+						</ul>
+					</div>	
+				</div>
+			</div>
+			<!-- sub menu for opened fenix -->
+			<div class="submenu">
+				<!------------------- FENIX TYPE------------------->
+				<span class="icon-car submenu-type"></span>
+				<!------------------- FENIX TYPE ------------------->
+				<div class="submenu-header">
+					<a href="#" class="submenu-back">
+						<span class="arrow"></span>
+						<span class="title">Список Фениксов</span>
+					</a>
+					<span class="submenu-name">АА 1234 АС</span>
+					<span class="submenu-status">
+						<div class="fenix-status">
+							<span class="status-icon wait-status"></span>
+							<span class="status">Ожидание</span>
+
+							<div class="tooltip-title">
+								<span class="icon sleep"></span>
+							</div>
+						</div>
+					</span>
+				</div>
+				<!-- add class active for submenu -->
+				<ul class="submenu-items">	
+					<li>
+						<a href="#">
+							<span class="icon-map submenu-icon"></span>
+							<span class="submenu-item-title">Карта</span>
+						</a>
+					</li>
+					<li>
+						<a href="#" class="active">
+							<span class="icon-manage submenu-icon"></span>
+							<span class="submenu-item-title">Управление</span>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<span class="icon-settings submenu-icon"></span>
+							<span class="submenu-item-title">Настройки</span>
+						</a>
+					</li>
+					<li>
+						<a href="#">
+							<span class="icon-calendar submenu-icon"></span>
+							<span class="submenu-item-title">События</span>
+						</a>
+					</li>
+				</ul> 
+			</div>
+		</div>
+		<div class="container">
+			<!-- <div class="fenix-wr"></div> -->
+			<div class="title-st">Список фениксов</div>
+			<div class="fenix-list">
+				<!-- fenix for car, green power -->
+				<div class="fenix fenix-bg">
+					<!------------------- FENIX TYPE------------------->
+					<span class="icon-car fenix-type"></span>
+					<!------------------- FENIX TYPE ------------------->
+					<div class="fenix-header">
+						<div class="fenix-status">
+							<span class="status-icon search-status"></span>
+							<span class="status">Поиск</span>
+							<!-- ТУЛТИП -->
+							<!-- для того что бы добавить тултип нужно обгорнуть блок для которого нужен тултип, в класс  tooltip и в блок с классом tooltip-content добавить -->
+							<div class="tooltip">
+								<div class="tooltip-wr">
+									<div class="tooltip-content">
+										Авто в движении
+									</div>
+								</div>
+
+								<div class="tooltip-title">
+									<span class="icon green-car"></span>
+								</div>
+								
+							</div>
+							<!--  -->
+						</div>
+						<button class="fenix-set-btn"></button>
+					</div>
+					<div class="fenix-body">
+						<span class="fenix-title">
+							АА 1234 АС
+						</span>
+						<div class="fenix-power-wr">
+							<div class="power-status">
+								<span class="power">
+									<span class="power-top"></span>
+									<span class="power-wr">
+										<!-- changing height for this block and add class low for change  power -->
+										<span class="power-bg full" style="height: 80%">
+											<svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet"> 
+												<path d="M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z" style="stroke:none; fill: #323343;"></path> 
+											</svg> 
+										</span>
+									</span>
+								</span>
+								<div class="power-status-title full">
+									100%
+								</div>
+							</div>
+							<span class="text">
+								<span class="title">Режим Поиск:</span>
+								<span>
+									8 месяцев 17 дней
+								</span>
+							</span>
+						</div>
+					</div>
+					<div class="fenix-footer">
+						<button class="btn btn-md btn-secondary open-maps">На карте</button>
+						<button class="btn btn-md btn-primary">Управление</button>
+					</div>
+				</div>
+				<!-- fenix for truck, yellow -->
+				<div class="fenix fenix-bg">
+					<!------------------- FENIX TYPE------------------->
+					<span class="icon-truck fenix-type"></span>
+					<!------------------- FENIX TYPE ------------------->
+					<div class="fenix-header">
+						<div class="fenix-status">
+							<span class="status-icon wait-status"></span>
+							<span class="status">Ожидание</span>
+							<!-- ТУЛТИП -->
+							<div class="tooltip">
+								<div class="tooltip-wr">
+									<div class="tooltip-content">
+										Авто не движется
+									</div>
+								</div>
+
+								<div class="tooltip-title">
+									<span class="icon stop"></span>
+								</div>
+							</div>
+							<!--  -->
+						</div>
+						<button class="fenix-set-btn"></button>
+					</div>
+					<div class="fenix-body">
+						<span class="fenix-title">
+							АА 1234 АС
+						</span>
+						<div class="fenix-power-wr">
+							<div class="power-status">
+								<span class="power">
+									<span class="power-top"></span>
+									<span class="power-wr">
+										<!-- changing height for this block and add class low for change  power -->
+										<span class="power-bg high" style="height: 90%">
+
+											<svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet"> 
+												<path d="M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z" style="stroke:none; fill: #323343;"></path> 
+											</svg> 
+										</span>
+									</span>
+								</span>
+								<div class="power-status-title high">
+									85%
+								</div>
+							</div>
+							<span class="text">
+								<span class="title">Режим Ожидание:</span>
+								<span>
+									8 месяцев 17 дней
+								</span>
+							</span>
+						</div>
+					</div>
+					<div class="fenix-footer">
+						<button class="btn btn-md btn-secondary open-maps">На карте</button>
+						<button class="btn btn-md btn-primary">Управление</button>
+					</div>
+				</div>
+				<!-- fenix for taxi, low power -->
+				<div class="fenix fenix-bg">
+					<!------------------- FENIX TYPE------------------->
+					<span class="icon-taxi fenix-type">
+					</span>
+					<!------------------- FENIX TYPE ------------------->
+					<div class="fenix-header">
+						<div class="fenix-status">
+							<span class="status-icon wait-status"></span>
+							<span class="status">Ожидание</span>
+
+							<!-- ТУЛТИП -->
+							<div class="tooltip">
+
+								<div class="tooltip-wr">
+									<div class="tooltip-content">
+										Нет сигнала
+									</div>
+								</div>
+
+								<div class="tooltip-title">
+									<span class="icon chair"></span>
+								</div>
+							</div>
+							<!--  -->
+
+						</div>
+						<button class="fenix-set-btn"></button>
+					</div>
+					<div class="fenix-body">
+						<span class="fenix-title">
+							АА 1234 АС
+						</span>
+						<div class="fenix-power-wr">
+							<div class="power-status">
+								<span class="power">
+									<span class="power-top"></span>
+									<span class="power-wr">
+										<!-- changing height for this block and add class low for change  power -->
+										<span class="power-bg medium" style="height: 70%">
+
+											<svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet"> 
+												<path d="M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z" style="stroke:none; fill: #323343;"></path> 
+											</svg> 
+										</span>
+									</span>
+								</span>
+								<div class="power-status-title medium">
+									50%
+								</div>
+							</div>
+							<span class="text">
+								<span class="title">Режим Ожидание:</span>
+								<span>
+									8 месяцев 17 дней
+								</span>
+							</span>
+						</div>
+					</div>
+					<div class="fenix-footer">
+						<button class="btn btn-md btn-secondary open-maps">На карте</button>
+						<button class="btn btn-md btn-primary">Управление</button>
+					</div>
+				</div>
+				<!-- fenix for wagon low power -->
+				<div class="fenix fenix-bg">
+					<!------------------- FENIX TYPE------------------->
+					<span class="icon-wagon fenix-type"></span>
+					<!------------------- FENIX TYPE ------------------->
+					<div class="fenix-header">
+						<div class="fenix-status">
+							<span class="status-icon wait-status"></span>
+							<span class="status">Ожидание</span>
+
+							<!-- ТУЛТИП -->
+							<div class="tooltip">
+
+								<div class="tooltip-wr">
+									<div class="tooltip-content">
+										Авто в спящем состоянии
+									</div>
+								</div>
+								
+								<div class="tooltip-title">
+									<span class="icon sleep"></span>
+								</div>
+							</div>
+							<!--  -->
+
+						</div>
+						<button class="fenix-set-btn"></button>
+					</div>
+					<div class="fenix-body">
+						<span class="fenix-title">
+							АА 1234 АС
+						</span>
+						<div class="fenix-power-wr">
+							<div class="power-status">
+								<span class="power">
+									<span class="power-top"></span>
+									<span class="power-wr">
+										<!-- changing height for this block and add class low for change  power -->
+										<span class="power-bg low" style="height: 30%">
+
+											<svg viewBox="0 0 500 500" preserveAspectRatio="xMinYMin meet"> 
+												<path d="M0, 100 C150, 200 350, 0 500, 100 L500, 00 L0, 0 Z" style="stroke:none; fill: #323343;"></path> 
+											</svg>  
+										</span>
+									</span>
+								</span>
+								<div class="power-status-title low">
+									15%
+								</div>
+							</div>
+							<span class="text">
+								<span class="title">Режим Ожидание:</span>
+								<span>
+									8 месяцев 17 дней
+								</span>
+							</span>
+						</div>
+
+					</div>
+					<div class="fenix-footer">
+						<button class="btn btn-md btn-secondary open-maps">На карте</button>
+						<button class="btn btn-md btn-primary">Управление</button>
+					</div>
+				</div>
+				<!--add fenix -->
+				<div class="fenix fenix-bg fenix-add">
+					<div class="fenix-header">
+					</div>
+					<div class="fenix-body">
+						<div class="fenix-add-text">
+							Добавьте ещё один Феникс
+							<br /> в список наблюдения
+						</div>
+						<button class="btn btn-primary btn-lg btn-add">Добавить</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+	<script src="scripts/general.js"></script>
+</body>
+</html>

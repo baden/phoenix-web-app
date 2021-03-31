@@ -159,7 +159,7 @@ view ({ t } as appState) model system =
     div [ class "container" ] <|
         [ div [ class "wrapper-content" ]
             [ div [ class "details-wrapper-bg" ]
-                [ div [ class "details-title" ] [ text system.title ]
+                [ div [ class "details-title manage-details-title" ] [ text system.title ]
                 , div [ class "details-items" ]
                     [ State.view appState model system
                     , Session.view appState model system

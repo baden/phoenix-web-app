@@ -7,7 +7,8 @@
 	position: sticky
 	left: 0
 	top: 0
-	height: 100vh
+	height: auto
+	min-height: 100vh
 	&-header
 		display: flex
 		justify-content: space-between
@@ -93,12 +94,20 @@
 	cursor: pointer
 	border: none
 	margin-top: 20px
+	position: relative
 	&:hover
 		transform: translate(-2px)
 		transition: all .2s linear 
 	&.visibility
 		background: url('../images/menu_burger.svg') no-repeat center / 24px 24px
-
+	&:after
+		content: ""
+		position: absolute
+		left: -15px
+		right: -15px
+		top: -15px
+		bottom: -15px
+		
 //icons
 .list-icon
 	background: url('../images/list_fenix.svg') no-repeat center / 24px 24px
@@ -228,7 +237,7 @@
 	margin-right: 10px
 
 .menu-close-bg
-	display: none
+	display: block
 
 .fenix-status .status
 	color: $titles !important

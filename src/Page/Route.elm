@@ -25,6 +25,7 @@ type Page
 
 type PageBase
     = HomeBase
+    | MapBase
     | SystemInfoBase
     | SystemLogsBase
     | SystemConfigBase

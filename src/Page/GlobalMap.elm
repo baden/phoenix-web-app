@@ -5,11 +5,12 @@ import API.System as System exposing (State(..), SystemDocumentInfo)
 import AppState
 import Components.DateTime exposing (dateTimeFormat)
 import Components.UI as UI
-import Html exposing (Html, a, div, h1, img)
-import Html.Attributes exposing (class, href, src)
+import Html exposing (Html, a, div, h1, img, span, text)
+import Html.Attributes exposing (class, classList, href, src)
 import Html.Events exposing (onClick)
 import Html.Lazy exposing (lazy, lazy2)
 import Http
+import Json.Decode as Decode
 import Json.Encode as Encode
 import Msg as GMsg
 import Types.Dt as DT
@@ -18,6 +19,7 @@ import Types.Dt as DT
 type alias Model =
     { center : ( Float, Float )
     , address : Maybe String
+    , showAddress : Bool
     }
 
 
@@ -25,6 +27,7 @@ init : ( Model, Cmd Msg )
 init =
     ( { center = ( 48.5013798, 34.6234255 )
       , address = Nothing
+      , showAddress = False
       }
     , Cmd.none
     )
@@ -34,6 +37,8 @@ type Msg
     = SetCenter Float Float
     | GetAddress Float Float
     | ResponseAddress (Result Http.Error Address)
+    | HideAddress
+    | CenterChanged String
 
 
 setCenter : ( Float, Float ) -> Model -> Model
@@ -48,12 +53,22 @@ update msg model =
             ( { model | center = ( x, y ) }, Cmd.none, Nothing )
 
         GetAddress lat lon ->
-            ( model, Geo.getAddress ( lat, lon ) ResponseAddress, Nothing )
+            ( { model | showAddress = True, center = ( lat, lon ) }, Geo.getAddress ( lat, lon ) ResponseAddress, Nothing )
 
         ResponseAddress (Ok address) ->
             ( { model | address = Just <| Geo.addressToString address }, Cmd.none, Nothing )
 
         ResponseAddress (Err _) ->
+            ( model, Cmd.none, Nothing )
+
+        HideAddress ->
+            ( { model | showAddress = False }, Cmd.none, Nothing )
+
+        CenterChanged tbd ->
+            let
+                _ =
+                    Debug.log "map:CenterChanged (TBD)" tbd
+            in
             ( model, Cmd.none, Nothing )
 
 
@@ -99,21 +114,43 @@ viewSystem appState model system =
                         _ ->
                             model.center
     in
-    div []
-        [ --div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []
-          lazy2 mapAt lat lon
-        , div [ class "control" ]
-            [ -- , div [] [ Html.text <| "Центр: " ++ (String.fromFloat lat) ++ ", " ++ (String.fromFloat lon) ]
-              -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.4226036 35.0252341) ]
-              --     [ Html.text "На высоковольтную" ]
-              -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.5013798 34.6234255) ]
-              --     [ Html.text "Домой" ]
-              div []
-                [ Html.text system.title
-                , div [] (sysPosition appState system.id system.dynamic model.address)
+    -- div []
+    -- [ --div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []
+    -- lazy2 mapAt lat lon
+    -- , div [ class "control" ]
+    -- [ -- , div [] [ Html.text <| "Центр: " ++ (String.fromFloat lat) ++ ", " ++ (String.fromFloat lon) ]
+    -- -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.4226036 35.0252341) ]
+    -- --     [ Html.text "На высоковольтную" ]
+    -- -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.5013798 34.6234255) ]
+    -- --     [ Html.text "Домой" ]
+    -- div []
+    -- [ Html.text system.title
+    -- , div [] (sysPosition appState system.id system.dynamic model.address)
+    -- ]
+    -- , UI.linkIconTextButton "gamepad" "Управление" ("/system/" ++ system.id)
+    -- , UI.linkIconTextButton "clone" "Выбрать объект" "/"
+    -- ]
+    -- ]
+    div [ class "container-map" ]
+        [ lazy2 mapAt lat lon
+        , div [ class "locations" ]
+            -- [ span [ class "locations-btn open-locations", onClick (SetCenter 48.4226036 35.0252341) ]
+            [ span [ class "locations-btn open-locations", onClick (GetAddress lat lon) ]
+                [ span [ class "icon-location" ] [] ]
+            , div [ class "locations-wr", classList [ ( "show", model.showAddress ) ] ]
+                [ div [ class "locations-notifications" ]
+                    [ span [ class "image icon-location" ] []
+                    , span [ class "content" ]
+                        [ span [ class "title" ] <| sysPosition appState system.id system.dynamic model.address
+
+                        -- , span [ class "text" ]
+                        --     [ text "Положение определено:"
+                        --     , span [ class "date" ] [ text "14 Июн 18:22" ]
+                        --     ]
+                        ]
+                    , span [ class "locations-notifications-close close-locations", onClick HideAddress ] []
+                    ]
                 ]
-            , UI.linkIconTextButton "gamepad" "Управление" ("/system/" ++ system.id)
-            , UI.linkIconTextButton "clone" "Выбрать объект" "/"
             ]
         ]
 
@@ -122,7 +159,7 @@ sysPosition : AppState.AppState -> String -> Maybe System.Dynamic -> Maybe Strin
 sysPosition appState sid maybe_dynamic maddress =
     case maybe_dynamic of
         Nothing ->
-            []
+            [ Html.text <| "Данные от трекера еще не получены" ]
 
         Just dynamic ->
             case ( dynamic.latitude, dynamic.longitude, dynamic.dt ) of
@@ -131,7 +168,6 @@ sysPosition appState sid maybe_dynamic maddress =
                         [ Html.text <| "Последнее положение определено " ++ (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ++ " "
 
                         -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter latitude longitude) ] [ Html.text "Центровать" ]
-                        , Html.button [ class "btn blue-btn", onClick (GetAddress latitude longitude) ] [ Html.text "?" ]
                         ]
                     , case maddress of
                         Nothing ->
@@ -150,5 +186,6 @@ mapAt lat lon =
     Html.node "leaflet-map"
         [ --Html.Attributes.attribute "data-map-center" (latLng2String model.center)
           Html.Attributes.property "center" (encodeLatLong lat lon)
+        , Html.Events.on "centerChanged" <| Decode.map CenterChanged <| Decode.at [ "target", "center" ] <| Decode.string
         ]
         []
