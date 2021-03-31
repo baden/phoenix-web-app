@@ -16,8 +16,14 @@ import Msg as GMsg
 import Types.Dt as DT
 
 
+type alias LatLng =
+    { lat : Float
+    , lng : Float
+    }
+
+
 type alias Model =
-    { center : ( Float, Float )
+    { center : LatLng
     , address : Maybe String
     , showAddress : Bool
     }
@@ -25,7 +31,7 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { center = ( 48.5013798, 34.6234255 )
+    ( { center = LatLng 48.5013798 34.6234255
       , address = Nothing
       , showAddress = False
       }
@@ -34,14 +40,14 @@ init =
 
 
 type Msg
-    = SetCenter Float Float
-    | GetAddress Float Float
+    = SetCenter LatLng
+    | GetAddress LatLng
     | ResponseAddress (Result Http.Error Address)
     | HideAddress
-    | CenterChanged String
+    | CenterChanged LatLng
 
 
-setCenter : ( Float, Float ) -> Model -> Model
+setCenter : LatLng -> Model -> Model
 setCenter newPos model =
     { model | center = newPos }
 
@@ -49,11 +55,11 @@ setCenter newPos model =
 update : Msg -> Model -> ( Model, Cmd Msg, Maybe GMsg.UpMsg )
 update msg model =
     case msg of
-        SetCenter x y ->
-            ( { model | center = ( x, y ) }, Cmd.none, Nothing )
+        SetCenter newPos ->
+            ( { model | center = newPos }, Cmd.none, Nothing )
 
-        GetAddress lat lon ->
-            ( { model | showAddress = True, center = ( lat, lon ) }, Geo.getAddress ( lat, lon ) ResponseAddress, Nothing )
+        GetAddress { lat, lng } ->
+            ( { model | showAddress = True, center = LatLng lat lng }, Geo.getAddress ( lat, lng ) ResponseAddress, Nothing )
 
         ResponseAddress (Ok address) ->
             ( { model | address = Just <| Geo.addressToString address }, Cmd.none, Nothing )
@@ -64,12 +70,8 @@ update msg model =
         HideAddress ->
             ( { model | showAddress = False }, Cmd.none, Nothing )
 
-        CenterChanged tbd ->
-            let
-                _ =
-                    Debug.log "map:CenterChanged (TBD)" tbd
-            in
-            ( model, Cmd.none, Nothing )
+        CenterChanged newPos ->
+            ( { model | center = newPos }, Cmd.none, Nothing )
 
 
 view : Html a
@@ -82,8 +84,8 @@ view =
         ]
 
 
-latLng2String : ( Float, Float ) -> String
-latLng2String ( lat, lng ) =
+latLng2String : LatLng -> String
+latLng2String { lat, lng } =
     String.fromFloat lat ++ "," ++ String.fromFloat lng
 
 
@@ -93,15 +95,19 @@ latLng2String ( lat, lng ) =
 --     Encode.list (List.map Encode.float list)
 
 
-encodeLatLong : Float -> Float -> Encode.Value
-encodeLatLong lat lon =
-    Encode.list Encode.float [ lat, lon ]
+encodeLatLng : LatLng -> Encode.Value
+encodeLatLng { lat, lng } =
+    -- Encode.list Encode.float [ lat, lon ]
+    Encode.object
+        [ ( "lat", Encode.float lat )
+        , ( "lng", Encode.float lng )
+        ]
 
 
 viewSystem : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 viewSystem appState model system =
     let
-        ( lat, lon ) =
+        center =
             case system.dynamic of
                 Nothing ->
                     model.center
@@ -109,7 +115,7 @@ viewSystem appState model system =
                 Just dynamic ->
                     case ( dynamic.latitude, dynamic.longitude ) of
                         ( Just latitude, Just longitude ) ->
-                            ( latitude, longitude )
+                            LatLng latitude longitude
 
                         _ ->
                             model.center
@@ -132,10 +138,12 @@ viewSystem appState model system =
     -- ]
     -- ]
     div [ class "container-map" ]
-        [ lazy2 mapAt lat lon
+        -- [ lazy mapAt center
+        [ mapAt model.center
+        , div [ class "map-debug" ] [ text <| "Position: " ++ String.fromFloat model.center.lat ++ ", " ++ String.fromFloat model.center.lng ]
         , div [ class "locations" ]
             -- [ span [ class "locations-btn open-locations", onClick (SetCenter 48.4226036 35.0252341) ]
-            [ span [ class "locations-btn open-locations", onClick (GetAddress lat lon) ]
+            [ span [ class "locations-btn open-locations", onClick (GetAddress center) ]
                 [ span [ class "icon-location" ] [] ]
             , div [ class "locations-wr", classList [ ( "show", model.showAddress ) ] ]
                 [ div [ class "locations-notifications" ]
@@ -181,11 +189,18 @@ sysPosition appState sid maybe_dynamic maddress =
                     [ UI.row_item [ Html.text <| "Положение неизвестно" ] ]
 
 
-mapAt : Float -> Float -> Html Msg
-mapAt lat lon =
+mapAt : LatLng -> Html Msg
+mapAt center =
     Html.node "leaflet-map"
         [ --Html.Attributes.attribute "data-map-center" (latLng2String model.center)
-          Html.Attributes.property "center" (encodeLatLong lat lon)
-        , Html.Events.on "centerChanged" <| Decode.map CenterChanged <| Decode.at [ "target", "center" ] <| Decode.string
+          Html.Attributes.property "center" (encodeLatLng center)
+        , Html.Events.on "centerChanged" <| Decode.map CenterChanged <| Decode.at [ "target", "center" ] <| decodeLatLng
         ]
         []
+
+
+decodeLatLng : Decode.Decoder LatLng
+decodeLatLng =
+    Decode.map2 LatLng
+        (Decode.field "lat" Decode.float)
+        (Decode.field "lng" Decode.float)

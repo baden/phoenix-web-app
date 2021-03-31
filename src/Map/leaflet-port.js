@@ -169,10 +169,16 @@ class LeafletMap extends HTMLElement {
         super();
         console.log("LeafletMap:constructor", this, L);
 
-        this._center = [48.5013798, 34.6234255];
+        this._center = this.center || {
+            lat: 48.5013798,
+            lng: 34.6234255
+        };
+        delete this.center;
 
-        new MutationObserver((mr) => this._stageElChange(mr))
-          .observe(this, { attributes: true, attributeFilter: ["data-map-center"], attributeOldValue: true});
+        if(false) {
+            new MutationObserver((mr) => this._stageElChange(mr))
+              .observe(this, { attributes: true, attributeFilter: ["data-map-center"], attributeOldValue: true});
+        }
 
         // static get observedAttributes() {
         //     console.log("observedAttributes");
@@ -198,11 +204,10 @@ class LeafletMap extends HTMLElement {
         // var lat = parseFloat(values[0]);
         // var lng = parseFloat(values[1]);
         console.log('add map', this, this._center);
-        var lat = this._center ? this._center[0] : 0.0;
-        var lng = this._center ? this._center[1] : 0.0;
+        var lat = this._center ? this._center.lat : 0.0;
+        var lng = this._center ? this._center.lng : 0.0;
         this._map = addMap(container);
         this._map.setView(L.latLng(lat, lng), 15);
-
 
         var redMarker = L.ExtraMarkers.icon({
             icon: 'fa-car',
@@ -217,11 +222,14 @@ class LeafletMap extends HTMLElement {
 
         this._leaflet_id = container._leaflet_id;
 
-
-        this._map.on('move', e => {
-            var new_center = this._map.getCenter();
-            // console.log("map:move", center);
-            this.dispatchEvent(new CustomEvent('centerChanged'));
+        this._map.on('moveend', e => {
+        // this._map.on('click', e => {
+            const newCenter = this._map.getCenter();
+            if((newCenter.lat != this._center.lat) || (newCenter.lng != this._center.lng)) {
+                // console.log("map:move", this._center, newCenter);
+                this._center = newCenter;
+                this.dispatchEvent(new CustomEvent('centerChanged'));
+            }
             // console.log("offeset", this._map.containerPointToLayerPoint([0, 0]));
         });
     }
@@ -234,39 +242,40 @@ class LeafletMap extends HTMLElement {
     }
 
     get center() {
-        console.log("get center");
+        // console.log("get center", this._center);
         return this._center;
-        // return Number(this.htmlElement.getAttribute("cx"));
     }
     set center(value) {
         // this.htmlElement.setAttribute("cx", value);
-        console.log("set center", value);
-        this._center = value;
-        if(!this._map) return;
-        var lat = this._center[0];
-        var lng = this._center[1];
-        this._map.flyTo(L.latLng(lat, lng), 15);
-        if(this._center_marker) this._center_marker.setLatLng(L.latLng(lat, lng));
+        if (value !== null && value.lat !== this._center.lat && value.lng !== this._center.lng) {
+            // console.log("set center", value, "old: ", this._center);
+            this._center = value;
+            if(!this._map) return;
+            var lat = this._center.lat;
+            var lng = this._center.lng;
+            this._map.flyTo(L.latLng(lat, lng), 15);
+            if(this._center_marker) this._center_marker.setLatLng(L.latLng(lat, lng));
+        }
     }
 
-    _stageElChange(mutations) {
-        const me = this;
-        console.log("_stageElChange", this, mutations);
-        mutations.forEach(function(m) {
-            switch (m.attributeName) {
-                case 'data-map-center':
-                    var center = me.getAttribute('data-map-center');
-                    var values = center.split(",");
-                    var lat = parseFloat(values[0]);
-                    var lng = parseFloat(values[1]);
-                    console.log("Pan map to ", lat, ', ', lng);
-                    me._map.flyTo(L.latLng(lat, lng), 15);
-                    break;
-                default:
-            };
-        });
 
-    }
+    // _stageElChange(mutations) {
+    //     const me = this;
+    //     console.log("_stageElChange", this, mutations);
+    //     mutations.forEach(function(m) {
+    //         switch (m.attributeName) {
+    //             case 'data-map-center':
+    //                 var center = me.getAttribute('data-map-center');
+    //                 var values = center.split(",");
+    //                 var lat = parseFloat(values[0]);
+    //                 var lng = parseFloat(values[1]);
+    //                 console.log("Pan map to ", lat, ', ', lng);
+    //                 me._map.flyTo(L.latLng(lat, lng), 15);
+    //                 break;
+    //             default:
+    //         };
+    //     });
+    // }
 
 }
 
