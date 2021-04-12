@@ -199,6 +199,7 @@
 	display: flex
 	flex-direction: column
 	align-items: center
+	height: 39px
 	&-top
 		height: 5px
 		width: 12px
@@ -222,10 +223,10 @@
 		border-radius: 2px
 		svg
 			position: absolute
-			left: -2px
-			right: -2px
+			left: 0
+			right: 0
+			width: 19px
 			top: -2px
-			width: 22px
 		&.low
 			background: $redGradient
 		&.full
@@ -334,6 +335,7 @@
 		font-size: 1.08rem
 		font-weight: 700
 		cursor: pointer
+		position: relative
 	&-header
 		display: flex
 		justify-content: space-between
@@ -373,6 +375,7 @@
 					font-size: 1rem
 					color: $defaultTxt
 					font-weight: 700
+					white-space: nowrap
 				&-group
 					display: flex
 					flex-wrap: wrap
@@ -387,7 +390,6 @@
 	&-footer
 		background-color: $darkColor
 		border-radius: 0 0 20px 20px
-		padding: 16px
 		display: flex
 		align-items: center
 		justify-content: center
@@ -395,6 +397,9 @@
 		color: $secondaryTxt
 		font-size: 1.14rem
 		font-weight: 700
+		overflow: hidden
+		a, button
+			padding: 16px 0
 	&-mode
 		display: flex
 		flex-direction: column

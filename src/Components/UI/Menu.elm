@@ -18,7 +18,8 @@ type alias Model =
     , languagePopup : Bool
     , accountPopup : Bool
     , showLogoutModal : Bool
-    , menuVisibility : Bool
+    , menuHiddenMob : Bool
+    , menuOpened : Bool
     }
 
 
@@ -32,7 +33,8 @@ type Msg
     | HideLogoutModal
     | HidePopups
     | OnLogout
-    | ToggleMenu
+    | ToggleMobMenu
+    | ToggleDeskMenu
 
 
 type MenuMsg
@@ -47,7 +49,8 @@ init =
     , languagePopup = False
     , accountPopup = False
     , showLogoutModal = False
-    , menuVisibility = False
+    , menuHiddenMob = True
+    , menuOpened = True
     }
 
 
@@ -81,18 +84,27 @@ update msg model =
         OnLogout ->
             ( model, Cmd.none, Just Logout )
 
-        ToggleMenu ->
-            ( { model | menuVisibility = not model.menuVisibility }, Cmd.none, Nothing )
+        ToggleMobMenu ->
+            ( { model | menuHiddenMob = not model.menuHiddenMob }, Cmd.none, Nothing )
+
+        ToggleDeskMenu ->
+            ( { model | menuOpened = not model.menuOpened }, Cmd.none, Nothing )
 
 
-hideMenu : Model -> Model
-hideMenu model =
-    { model | menuVisibility = False }
+hideMobMenu : Model -> Model
+hideMobMenu model =
+    { model | menuHiddenMob = True }
 
 
 view : Page.Route.PageBase -> AccountDocumentInfo -> AppState -> Maybe SystemDocumentInfo -> Model -> List (Html Msg)
 view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup } as model) =
     let
+        class4mob =
+            classList [ ( "menu-hidden-mob", model.menuHiddenMob ), ( "menu-opened-mob", not model.menuHiddenMob ) ]
+
+        class4desk =
+            classList [ ( "menu-opened", model.menuOpened ), ( "menu-hidden", not model.menuOpened ) ]
+
         popupShow i =
             case i of
                 True ->
@@ -134,14 +146,6 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
                 [ a [ class "menu-settings", classList [ ( "active", active ) ], href url ]
                     [ span [ class "icon-settings submenu-icon" ] []
                     , span [ class "submenu-item-title" ] [ text <| t <| "menu." ++ title_ ]
-                    , span [ class "icon-arrow-menu" ] []
-                    ]
-                , div [ class "submenu-settings" ]
-                    [ submenu "#" "Иконка и название Феникса" False
-                    , submenu "#" "Основные настройки" False
-                    , submenu "#" "Расширенные настройки" False
-                    , submenu "#" "Обслуживание батареи" False
-                    , submenu "#" "Детали о Фениксе" False
                     ]
                 ]
 
@@ -153,10 +157,22 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
                 Just system ->
                     system.icon
     in
-    [ div [ classList [ ( "menu", True ), ( "menu-visibility", not model.menuVisibility ) ] ]
+    -- menu menu-hidden-mob menu-opened
+    -- menu menu-opened-mob menu-opened
+    -- menu menu-opened-mob menu-hidden
+    [ button [ class "menu-show-btn-mob mobHiddenBtn mobShowBtn", id "showMenuMob", onClick ToggleMobMenu ] []
+    , div [ class "menu", class4mob, class4desk ]
         [ div [ class "menu-header" ]
             [ div [ class "logo" ] []
-            , button [ classList [ ( "menu-toggle-btn", True ), ( "visibility", not model.menuVisibility ) ], id "toggleBtn", onClick ToggleMenu ] []
+
+            -- <!-- КНОМПКИ ДЛЯ ЗАКРИТТЯ ВІДКРИТТЯ МЕНЮ десктоп-->
+            , button [ class "menu-show-btn hiddenBtn", classList [ ( "showBtn", not model.menuOpened ) ], onClick ToggleDeskMenu ] []
+            , button [ class "menu-close-btn hiddenBtn", classList [ ( "showBtn", model.menuOpened ) ], onClick ToggleDeskMenu ] []
+
+            -- , button [ classList [ ( "menu-toggle-btn", True ), ( "visibility", not model.menuVisibility ) ], id "toggleBtn", onClick ToggleMenu ] []
+            -- <!-- КНОМПКИ ДЛЯ ЗАКРИТТЯ  МЕНЮ моб версія-->
+            -- , button [ class "menu-close-bg closeMenuBg", classList [ ( "hidden", not model.menuVisibility ) ] ] []
+            , button [ class "menu-close-btn-mob mobShowBtn mobHiddenBtn", id "closeMenuMob", onClick ToggleMobMenu ] []
             ]
         , div [ class "menu-body scroll" ]
             [ ul [ class "menu-items" ]
@@ -199,7 +215,7 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
             , modal model.showLogoutModal appState
             ]
         ]
-    , div [ class "menu-close-bg closeMenuBg", classList [ ( "hidden", not model.menuVisibility ) ] ] []
+    , div [ class "menu-close-bg closeMenuBg", classList [ ( "menu-close-bg-opened", not model.menuHiddenMob ) ] ] []
     ]
 
 

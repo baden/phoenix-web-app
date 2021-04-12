@@ -50,7 +50,6 @@ button, select, input
 .layout
 	display: flex
 	min-height: 100%
-	overflow-x: hidden
 
 .container
 	position: relative
@@ -462,6 +461,7 @@ button, select, input
 .orange-gradient-text
 	color: #FF8643
 	background: transparent
+	position: relative
 	&:after
 		content: ""
 		position: absolute
@@ -472,6 +472,7 @@ button, select, input
 
 .blue-gradient-text
 	color: $primary
+	position: relative
 	background: transparent
 	&:after
 		content: ""
@@ -484,6 +485,7 @@ button, select, input
 .green-gradient-text
 	color: #25BDBB
 	background: transparent
+	position: relative
 	&:after
 		content: ""
 		position: absolute
@@ -492,8 +494,7 @@ button, select, input
 		top: -15px
 		bottom: -15px
 
-@supports ((background-clip: text) or (-webkit-background-clip: text)) and ((text-fill-color: transparent) or (-webkit-text-fill-color: transparent))
-
+@supports not (-webkit-touch-callout: none)
 	.orange-gradient-text
 		background: -webkit-linear-gradient(0deg, #FF8643 0%, #FF6163 100%)
 		-webkit-background-clip: text

@@ -782,3 +782,27 @@ span#passwordText {
     width: 100%;
     padding: 5px;
 }
+
+.menu-items {
+    z-index: 1;
+}
+.logo {
+    z-index: 1;
+}
+.menu-show-btn-mob {
+    z-index: 1001;
+}
+
+.menu-close-bg {
+    z-index: 999;
+}
+
+.menu-close-bg-opened {
+    display: block;
+}
+
+.processing-engeine {
+    /* padding-top: 10px;
+    padding-bottom: 10px; */
+    padding: 10px;
+}

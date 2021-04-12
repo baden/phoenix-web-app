@@ -176,7 +176,7 @@ translations =
                 , ( "Введите название", string "Enter a name" )
                 , ( "Отмена", string "Cancel" )
                 , ( "Сохранить", string "Save" )
-                , ( "Иконка Феникса", string "Fenix icon”" )
+                , ( "Иконка Феникса", string "Fenix icon" )
                 , ( "Выберите подходящую иконку для вашего феникса", string "Choose a suitable icon for your fenix" )
                 , ( "Обслуживание батареи", string "Battery service" )
                 , ( "Предполагаемое время", string "Expected time" )

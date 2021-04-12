@@ -8,6 +8,7 @@ import Html exposing (Html, a, button, div, span, text)
 import Html.Attributes as HA exposing (attribute, class, href, id)
 import Html.Events exposing (onClick)
 import Page.System.Info.Types exposing (..)
+import Page.System.Info.UI as InfoUI
 import Types.Dt as DT
 
 
@@ -59,14 +60,14 @@ view ({ t } as appState) model system =
                             in
                             ( "Поиск"
                             , [ expectSleepIn appState dynamic prolongCmd
-                              , startNewState appState "Ожидание" system.id System.Hidden
+                              , startNewState appState "Ожидание" system.id System.Hidden dynamic
                               ]
                             )
 
                         -- Just Tracking ->
                         -- ++ prolongCmd
                         Just Hidden ->
-                            ( System.stateAsString Hidden, [ startNewState appState "Поиск" system.id System.Tracking ] )
+                            ( System.stateAsString Hidden, [ startNewState appState "Поиск" system.id System.Tracking dynamic ] )
 
                         Just state ->
                             -- [ UI.row_item [ text <| "Текущий режим: " ++ (System.stateAsString state) ] ]
@@ -204,10 +205,11 @@ expectSleepIn ({ t } as appState) dynamic prolongCmd =
                     ]
                 , span [ class "date" ] [ text autosleep ]
                 ]
-            , div [ class "details-blue-title blue-gradient-text modal-open", onClick OnShowProlongSleepDialog ]
-                [ text <| t "control.Продлить режим"
-                , span [ class "uppercase-txt mode" ] [ text "Поиск" ]
-                ]
+            , InfoUI.disabledOnWait appState <|
+                div [ class "details-blue-title blue-gradient-text modal-open", InfoUI.disabledOnWaitClass dynamic, onClick OnShowProlongSleepDialog ]
+                    [ text <| t "control.Продлить режим"
+                    , span [ class "uppercase-txt mode" ] [ text "Поиск" ]
+                    ]
             ]
         ]
 
@@ -216,13 +218,14 @@ expectSleepIn ({ t } as appState) dynamic prolongCmd =
 -- OnSysCmdPre sysId i
 
 
-startNewState : AppState.AppState -> String -> String -> System.State -> Html Msg
-startNewState { t } state sysId i =
+startNewState : AppState.AppState -> String -> String -> System.State -> System.Dynamic -> Html Msg
+startNewState ({ t } as appState) state sysId i dynamic =
     div [ class "content-item" ]
-        [ div [ class "details-blue-title blue-gradient-text", onClick (OnSysCmdPre sysId i) ]
-            [ span [ class "details-icon icon-search" ] []
-            , text <| t "control.Включить режим"
-            , text " "
-            , text <| t <| "control." ++ state
-            ]
+        [ InfoUI.disabledOnWait appState <|
+            div [ class "details-blue-title blue-gradient-text", InfoUI.disabledOnWaitClass dynamic, onClick (OnSysCmdPre sysId i) ]
+                [ span [ class "details-icon icon-search" ] []
+                , text <| t "control.Включить режим"
+                , text " "
+                , text <| t <| "control." ++ state
+                ]
         ]

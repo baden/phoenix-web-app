@@ -236,14 +236,33 @@ viewContainer : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe System
 viewContainer ({ t } as appState) model system mparams =
     case model.showState of
         SS_Root ->
-            Html.div [ class "wrapper-bg" ]
-                [ row [ cmdTextIconButton "edit" (t "menu.Иконка и название Феникса") (OnOpenNameAndIcon system.id) ]
-                , row [ cmdTextIconButton "cogs" "Мастер Конфигурации (TBD)" (OnStartMaster system.id) ]
-                , row [ cmdTextIconButton "cogs" (t "menu.Расширенные настройки") (OnMasterCustom system.id) ]
-                , row [ cmdTextIconButton "cogs" (t "menu.Обслуживание батареи") (OnOpenBattery system.id) ]
-                , row [ cmdTextIconButton "cogs" (t "menu.Детали о Фениксе") (OnOpenDetails system.id) ]
-
-                -- , row [ cmdTextIconButton "trash" "Удалить" (OnRemove system.id) ]
+            -- Html.div [ class "wrapper-bg" ]
+            --     [ row [ cmdTextIconButton "edit" (t "menu.Иконка и название Феникса") (OnOpenNameAndIcon system.id) ]
+            --     , row [ cmdTextIconButton "cogs" "Мастер Конфигурации (TBD)" (OnStartMaster system.id) ]
+            --     , row [ cmdTextIconButton "cogs" (t "menu.Расширенные настройки") (OnMasterCustom system.id) ]
+            --     , row [ cmdTextIconButton "cogs" (t "menu.Обслуживание батареи") (OnOpenBattery system.id) ]
+            --     , row [ cmdTextIconButton "cogs" (t "menu.Детали о Фениксе") (OnOpenDetails system.id) ]
+            --
+            --     -- , row [ cmdTextIconButton "trash" "Удалить" (OnRemove system.id) ]
+            --     ]
+            let
+                item icon lab msg =
+                    div [ class "setting-nav-item", HE.onClick msg ]
+                        [ span [ class <| "icon icon-" ++ icon ] []
+                        , span [ class "text" ] [ text <| t <| "menu." ++ lab ]
+                        , span [ class "setting-nav-arrow" ] []
+                        ]
+            in
+            div [ class "details-wrapper-bg" ]
+                [ div [ class "details-header" ]
+                    [ div [ class "details-title manage-details-title" ] [ text <| t "menu.Настройки" ] ]
+                , div [ class "setting-nav-wr" ]
+                    [ item "car1" "Иконка и название Феникса" (OnOpenNameAndIcon system.id)
+                    , item "settings-sm" "Основные настройки" (OnStartMaster system.id)
+                    , item "tool" "Расширенные настройки" (OnMasterCustom system.id)
+                    , item "battery_setting" "Обслуживание батареи" (OnOpenBattery system.id)
+                    , item "id" "Детали о Фениксе" (OnOpenDetails system.id)
+                    ]
                 ]
 
         SS_Master ->

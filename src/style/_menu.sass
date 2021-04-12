@@ -1,5 +1,4 @@
 .menu
-	flex: 0 0 334px
 	display: flex
 	background: $bgDark
 	flex-direction: column
@@ -7,8 +6,18 @@
 	position: sticky
 	left: 0
 	top: 0
-	height: auto
-	min-height: 100vh
+	&:before
+		content: ''
+		top: -100%
+		left: 0
+		right: 0
+		bottom: 0
+		position: absolute
+		background: $bgDark
+		z-index: 1
+	.menu-show-btn-mob,
+	.menu-close-btn-mob 
+		display: none
 	&-header
 		display: flex
 		justify-content: space-between
@@ -16,10 +25,12 @@
 		padding: 20px 30px
 		min-height: 99px
 		align-items: center
+		z-index: 2
 	&-body
 		height: 100%
 		display: flex
 		flex-direction: column
+		z-index: 2
 	&-options
 		margin-bottom: 35px
 		.dropdown
@@ -70,15 +81,6 @@
 		width: 24px
 		height: 24px
 		display: inline-flex
-	&-visibility
-		flex: 0 0 84px
-		width: 84px
-		transition: all .2s linear
-		.logo, .menu-item-title, #selectedTheme, #selectedLanguage, .accaunt-title,
-		.submenu-back .title, .submenu-item-title, .status, .submenu-type 
-			display: none
-		.menu-options-wr
-			padding: 0 10px
 
 .accaunt-icon
 	width: 30px
@@ -87,7 +89,7 @@
 	margin-right: 7px
 	background: url('../images/account.svg') no-repeat center / 30px 30px
 
-.menu-toggle-btn
+.menu-close-btn
 	width: 22px
 	height: 22px
 	background: url('../images/toggle_menu.svg') no-repeat center / 22px 22px
@@ -98,8 +100,25 @@
 	&:hover
 		transform: translate(-2px)
 		transition: all .2s linear 
-	&.visibility
-		background: url('../images/menu_burger.svg') no-repeat center / 24px 24px
+	&:after
+		content: ""
+		position: absolute
+		left: -15px
+		right: -15px
+		top: -15px
+		bottom: -15px
+		
+.menu-show-btn
+	width: 22px
+	height: 22px
+	background: url('../images/menu_burger.svg') no-repeat center / 24px 24px
+	cursor: pointer
+	border: none
+	margin-top: 20px
+	position: relative
+	&:hover
+		transform: translate(-2px)
+		transition: all .2s linear 
 	&:after
 		content: ""
 		position: absolute
@@ -123,6 +142,7 @@
 	padding: 40px 15px
 	transform: translateX(-100%)
 	transition: all .2s linear
+	z-index: 3
 	&-header
 		display: flex
 		flex-direction: column
@@ -236,9 +256,6 @@
 	top: 3px
 	margin-right: 10px
 
-.menu-close-bg
-	display: block
-
 .fenix-status .status
 	color: $titles !important
 
@@ -246,6 +263,7 @@
 	color: $titles
 
 .submenu-back
+	white-space: nowrap
 	color: $secondaryTxt
 	.arrow
 		background: url('../images/menu_back_light.svg') no-repeat

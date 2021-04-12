@@ -8,6 +8,7 @@ import Html exposing (Html, a, button, div, span, text)
 import Html.Attributes as HA exposing (attribute, class, href, id)
 import Html.Events exposing (onClick)
 import Page.System.Info.Types exposing (..)
+import Page.System.Info.UI as InfoUI
 import Types.Dt as DT
 
 
@@ -40,8 +41,9 @@ view ({ t } as appState) model system =
                             div [ class "content-item content-item-group" ]
                                 [ a [ class "details-blue-title blue-gradient-text", href ("/map/" ++ system.id) ]
                                     [ span [ class "details-icon icon-map" ] [], text <| t "control.Показать" ]
-                                , div [ class "details-blue-title blue-gradient-text", onClick (OnSysCmdPre system.id System.Point) ]
-                                    [ span [ class "details-icon icon-refresh" ] [], text <| t "control.Обновить" ]
+                                , InfoUI.disabledOnWait appState <|
+                                    div [ class "details-blue-title blue-gradient-text", InfoUI.disabledOnWaitClass dynamic, onClick (OnSysCmdPre system.id System.Point) ]
+                                        [ span [ class "details-icon icon-refresh" ] [], text <| t "control.Обновить" ]
                                 ]
 
                         False ->

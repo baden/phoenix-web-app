@@ -45,13 +45,6 @@
 				z-index: 1
 				background: $secondaryHover
 				transition: all .2s linear
-			&:hover
-				&:before
-					top: -2px
-					bottom: -2px
-					left: -2px
-					right: -2px
-					background: $greenGradient
 			&.active
 				&:before
 					top: -2px
@@ -316,13 +309,22 @@
 			&.active
 				.image-big, .image-logo
 					color: #25BDBB
-					background: -webkit-linear-gradient(180deg, #25BDBB 0%, #0CE091 100%)
-					-webkit-background-clip: text
-					-webkit-text-fill-color: transparent
-					border-image-source: $greenGradient
 					display: flex
 					align-items: center
 					position: relative
+
+
+@supports not (-webkit-touch-callout: none)
+	.select-icon
+		&-item
+			&.config-select-item
+				&.active
+					.image-big, .image-logo
+						color: #25BDBB
+						background: -webkit-linear-gradient(180deg, #25BDBB 0%, #0CE091 100%)
+						-webkit-background-clip: text
+						-webkit-text-fill-color: transparent
+						border-image-source: $greenGradient
 
 // warning
 
@@ -369,3 +371,34 @@
 .general-setting-wr
 	.details-item .title, .setting-item-wr
 		flex: 0 0 50%
+
+
+.setting
+	&-nav-wr
+		padding: 20px 0
+	&-nav-item
+		font-size: 1.14rem
+		color: $titles
+		display: flex
+		padding: 13px 15px
+		margin: 0 -15px 14px
+		border-radius: 10px
+		cursor: pointer
+		align-items: center
+		transition: all .2s linear
+		&:hover
+			background: $bgBasic
+			.setting-nav-arrow
+				transform: translate(5px,0)
+				transition: all .2s linear
+		.icon
+			color: #fff
+			font-size: 24px
+			margin-right: 36px
+		// #8f90a3
+	&-nav-arrow
+		display: block
+		margin-left: auto
+		width: 13px
+		height: 13px
+		background: url('../images/arrow_next.svg') no-repeat center
