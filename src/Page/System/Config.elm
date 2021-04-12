@@ -45,6 +45,7 @@ init sysId =
       , systemId = sysId
       , showParamChangeDialog = Nothing
       , showQueue = False
+      , newBatteryCapacity = BC_None
       }
     , Cmd.none
     )
@@ -200,6 +201,28 @@ update msg model =
         OnCancelParam ->
             ( { model | showParamChangeDialog = Nothing }, Cmd.none, Nothing )
 
+        -- OnBatteryChange capacity ->
+        OnBatteryChange capacity ->
+            ( { model | newBatteryCapacity = capacity }, Cmd.none, Nothing )
+
+        OnBatteryCapacityConfirm sysId capacity ->
+            let
+                cmd =
+                    case model.newBatteryCapacity of
+                        BC_None ->
+                            Cmd.none
+
+                        BC_Change _ ->
+                            Cmd.batch [ API.websocketOut <| System.resetBattery sysId capacity ]
+
+                        BC_Capacity _ ->
+                            Cmd.batch [ API.websocketOut <| System.setBatteryCapacity sysId capacity ]
+            in
+            ( { model | newBatteryCapacity = BC_None }, cmd, Nothing )
+
+        OnBatteryCapacityCancel ->
+            ( { model | newBatteryCapacity = BC_None }, Cmd.none, Nothing )
+
         OnNoCmd ->
             ( model, Cmd.none, Nothing )
 
@@ -230,6 +253,7 @@ view appState model system mparams =
             ++ iconChangeDialogView appState model system.id
             ++ viewRemoveWidget appState model system
             ++ Dialogs.paramChangeDialogView appState model mparams
+            ++ batteryMaintanceDialogView appState model system.id
 
 
 viewContainer : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> Html Msg

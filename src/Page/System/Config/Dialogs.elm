@@ -170,24 +170,37 @@ paramChangeDialogView { t } model mparams =
             ]
 
 
-batteryReplaceDialogView : AppState -> Model -> String -> List (UI Msg)
-batteryReplaceDialogView { t } model sysId =
+batteryMaintanceDialogView : AppState -> Model -> String -> List (UI Msg)
+batteryMaintanceDialogView appState model sysId =
+    case model.newBatteryCapacity of
+        BC_None ->
+            []
+
+        BC_Change capacity ->
+            batteryReplaceDialogView appState model sysId capacity
+
+        BC_Capacity capacity ->
+            batteryChangeCapacityDialogView appState model sysId capacity
+
+
+batteryReplaceDialogView : AppState -> Model -> String -> String -> List (UI Msg)
+batteryReplaceDialogView { t } model sysId capacity =
     [ div [ class "modal-bg modal-change-battery show" ]
         [ div [ class "modal-wr" ]
             [ div [ class "modal-content modal-md" ]
-                [ div [ class "modal-close close modal-close-btn" ] []
+                [ div [ class "modal-close close modal-close-btn", onClick OnBatteryCapacityCancel ] []
                 , div [ class "modal-title" ] [ text <| t "config.Замена батареи" ]
                 , div [ class "modal-body" ]
                     [ span [ class "modal-text" ]
                         [ text <| t "config.bat_replace_text" ]
                     , div [ class "input-st modal-input" ]
                         [ span [ class "input-sm-label" ] [ text <| t "config.Укажите начальную емкость батареи (мАч)" ]
-                        , input [ attribute "autocomplete" "off", HA.value "5580" ] []
+                        , input [ attribute "autocomplete" "off", HA.value capacity, onInput (OnBatteryChange << BC_Change) ] []
                         ]
                     ]
                 , div [ class "modal-btn-group" ]
-                    [ button [ class "btn btn-md btn-secondary modal-close-btn" ] [ text <| t "config.Отмена" ]
-                    , button [ class "btn btn-md btn-primary" ] [ text <| "config.Применить" ]
+                    [ button [ class "btn btn-md btn-secondary modal-close-btn", onClick OnBatteryCapacityCancel ] [ text <| t "config.Отмена" ]
+                    , button [ class "btn btn-md btn-primary", onClick (OnBatteryCapacityConfirm sysId capacity) ] [ text <| t "config.Применить" ]
                     ]
                 ]
             ]
@@ -195,23 +208,23 @@ batteryReplaceDialogView { t } model sysId =
     ]
 
 
-batteryChangeCapacityDialogView : AppState -> Model -> String -> List (UI Msg)
-batteryChangeCapacityDialogView { t } model sysId =
+batteryChangeCapacityDialogView : AppState -> Model -> String -> String -> List (UI Msg)
+batteryChangeCapacityDialogView { t } model sysId capacity =
     [ div [ class "modal-bg modal-change-capacity show" ]
         [ div [ class "modal-wr" ]
             [ div [ class "modal-content modal-md" ]
-                [ div [ class "modal-close close modal-close-btn" ] []
+                [ div [ class "modal-close close modal-close-btn", onClick OnBatteryCapacityCancel ] []
                 , div [ class "modal-title" ] [ text <| t "config.Емкость батареи" ]
                 , div [ class "modal-body" ]
                     [ span [ class "modal-text" ] [ text <| t "config.bat_ch_capacity" ]
                     , div [ class "input-st modal-input" ]
                         [ span [ class "input-sm-label" ] [ text <| t "config.Укажите начальную емкость батареи (мАч)" ]
-                        , input [ attribute "autocomplete" "off", HA.value "5580" ] []
+                        , input [ attribute "autocomplete" "off", HA.value capacity, onInput (OnBatteryChange << BC_Capacity) ] []
                         ]
                     ]
                 , div [ class "modal-btn-group" ]
-                    [ button [ class "btn btn-md btn-secondary modal-close-btn" ] [ text <| t "config.Отмена" ]
-                    , button [ class "btn btn-md btn-primary" ] [ text <| t "config.Применить" ]
+                    [ button [ class "btn btn-md btn-secondary modal-close-btn", onClick OnBatteryCapacityCancel ] [ text <| t "config.Отмена" ]
+                    , button [ class "btn btn-md btn-primary", onClick (OnBatteryCapacityConfirm sysId capacity) ] [ text <| t "config.Применить" ]
                     ]
                 ]
             ]

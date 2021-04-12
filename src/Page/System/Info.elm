@@ -37,8 +37,8 @@ init =
       , showSleepProlongDialog = False
       , showCommandConfirmDialog = Nothing
       , offId = ""
-      , batteryExtendView = BVP1
-      , newBatteryCapacity = BC_None
+
+      -- , batteryExtendView = BVP1
       , showPhone = False
       , showCopyPhonePanel = False
 
@@ -86,45 +86,20 @@ update msg model =
         OnProlongSleep sysId hours ->
             ( { model | showSleepProlongDialog = False }, Cmd.batch [ API.websocketOut <| System.prolongSleep sysId hours ], Nothing )
 
-        OnBatteryClick ->
-            case model.batteryExtendView of
-                BVP1 ->
-                    ( { model | batteryExtendView = BVP2 }, Cmd.none, Nothing )
-
-                BVP2 ->
-                    ( { model | batteryExtendView = BVP1 }, Cmd.none, Nothing )
-
-                BVP3 ->
-                    ( model, Cmd.none, Nothing )
-
-        OnBatteryMaintance ->
-            ( { model | batteryExtendView = BVP3 }, Cmd.none, Nothing )
-
-        OnBatteryMaintanceDone ->
-            ( { model | batteryExtendView = BVP1 }, Cmd.none, Nothing )
-
-        -- OnBatteryChange capacity ->
-        OnBatteryChange capacity ->
-            ( { model | newBatteryCapacity = capacity }, Cmd.none, Nothing )
-
-        OnBatteryCapacityConfirm sysId capacity ->
-            let
-                cmd =
-                    case model.newBatteryCapacity of
-                        BC_None ->
-                            Cmd.none
-
-                        BC_Change _ ->
-                            Cmd.batch [ API.websocketOut <| System.resetBattery sysId capacity ]
-
-                        BC_Capacity _ ->
-                            Cmd.batch [ API.websocketOut <| System.setBatteryCapacity sysId capacity ]
-            in
-            ( { model | newBatteryCapacity = BC_None, batteryExtendView = BVP1 }, cmd, Nothing )
-
-        OnBatteryCapacityCancel ->
-            ( { model | newBatteryCapacity = BC_None }, Cmd.none, Nothing )
-
+        -- OnBatteryClick ->
+        --     case model.batteryExtendView of
+        --         BVP1 ->
+        --             ( { model | batteryExtendView = BVP2 }, Cmd.none, Nothing )
+        --
+        --         BVP2 ->
+        --             ( { model | batteryExtendView = BVP1 }, Cmd.none, Nothing )
+        --
+        --         BVP3 ->
+        --             ( model, Cmd.none, Nothing )
+        -- OnBatteryMaintance ->
+        --     ( { model | batteryExtendView = BVP3 }, Cmd.none, Nothing )
+        -- OnBatteryMaintanceDone ->
+        --     ( { model | batteryExtendView = BVP1 }, Cmd.none, Nothing )
         OnNoCmd ->
             ( model, Cmd.none, Nothing )
 

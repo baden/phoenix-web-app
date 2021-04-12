@@ -9,25 +9,11 @@ type alias Model =
     , showSleepProlongDialog : Bool
     , showCommandConfirmDialog : Maybe State
     , offId : String
-    , batteryExtendView : BatteryViewPage
-    , newBatteryCapacity : BatteryChange
     , showPhone : Bool
     , showCopyPhonePanel : Bool
 
     -- , smartBlock : Bool
     }
-
-
-type BatteryViewPage
-    = BVP1
-    | BVP2
-    | BVP3
-
-
-type BatteryChange
-    = BC_None
-    | BC_Change String
-    | BC_Capacity String
 
 
 type Msg
@@ -42,12 +28,9 @@ type Msg
     | OnHideProlongSleepDialog
     | OnHideCmdConfirmDialog
     | OnProlongSleep String Int
-    | OnBatteryClick
-    | OnBatteryMaintance
-    | OnBatteryMaintanceDone
-    | OnBatteryChange BatteryChange
-    | OnBatteryCapacityConfirm String String
-    | OnBatteryCapacityCancel
+      -- | OnBatteryClick
+      -- | OnBatteryMaintance
+      -- | OnBatteryMaintanceDone
     | OnNoCmd
     | OnShowPhone
     | OnHidePhone

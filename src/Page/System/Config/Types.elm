@@ -43,6 +43,7 @@ type alias Model =
     , systemId : Maybe String
     , showParamChangeDialog : Maybe ParamChange
     , showQueue : Bool
+    , newBatteryCapacity : BatteryChange
     }
 
 
@@ -92,6 +93,21 @@ type Msg
     | OnCancelParam
     | OnOpenNameAndIcon String
     | OnOpenBattery String
+    | OnBatteryChange BatteryChange
+    | OnBatteryCapacityConfirm String String
+    | OnBatteryCapacityCancel
+
+
+type BatteryChange
+    = BC_None
+    | BC_Change String
+    | BC_Capacity String
+
+
+type BatteryViewPage
+    = BVP1
+    | BVP2
+    | BVP3
 
 
 
