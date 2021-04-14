@@ -405,7 +405,53 @@ type alias SystemDocumentTrack =
 
 
 type alias TrackPoint =
-    List Float
+    { dt : Int
+    , lat : Float
+    , lng : Float
+    }
+
+
+encodeTrackPoint : TrackPoint -> Encode.Value
+encodeTrackPoint t =
+    Encode.object
+        [ ( "dt", Encode.int t.dt )
+        , ( "lat", Encode.float t.lat )
+        , ( "lng", Encode.float t.lng )
+        ]
+
+
+decodeTrackPoint : JD.Decoder TrackPoint
+decodeTrackPoint =
+    JD.succeed TrackPoint
+        -- TODO: DT
+        |> required "dt" JD.int
+        |> required "latitude" JD.float
+        |> required "longitude" JD.float
+
+
+
+-- #{
+-- <<"dt">> => 1618392900,
+-- <<"latitude">> => 48.42247166666667,
+-- <<"longitude">> => 35.02598,
+-- <<"course">> => 0,
+-- <<"fsource">> => 3,
+-- <<"sats">> => 5,
+-- <<"speed">> => 0.11112,
+--
+-- <<"vin">> => 0.0,
+-- <<"vout">> => 0.0}
+-- <<"adc1">> => 0,
+-- <<"alt">> => 170,
+-- <<"fuel">> => 0,
+-- <<"raw">> =>
+--  [255,245,3,5,68,183,118,96,43,82,187,1,36,172,64,1,6,0,170,0,0,
+--          0,0,0,0,0,0,0,0,0,0,0],
+-- <<"res1">> => 0,
+-- <<"res2">> => 0,
+-- <<"res3">> => 0,
+-- <<"res4">> => 0,
+-- <<"res5">> => 0,
 
 
 systemDocumentParamsDecoder : JD.Decoder SystemDocumentParams
@@ -477,7 +523,7 @@ systemDocumentTrackDecoder =
     JD.succeed SystemDocumentTrack
         |> required "from" JD.int
         |> required "to" JD.int
-        |> required "track" (JD.list (JD.list JD.float))
+        |> required "track" (JD.list decodeTrackPoint)
 
 
 

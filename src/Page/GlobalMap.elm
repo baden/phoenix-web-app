@@ -141,17 +141,12 @@ latLng2String { lat, lng } =
 --     Encode.list (List.map Encode.float list)
 
 
-encodeTrackPoint : System.TrackPoint -> Encode.Value
-encodeTrackPoint =
-    Encode.list Encode.float
-
-
 encodeTrack : System.SystemDocumentTrack -> Encode.Value
 encodeTrack { from, to, track } =
     Encode.object
         [ ( "from", Encode.int from )
         , ( "to", Encode.int to )
-        , ( "track", Encode.list encodeTrackPoint track )
+        , ( "track", Encode.list System.encodeTrackPoint track )
 
         -- , ( "track", Encode.list (Encode.list Encode.float track) )
         ]

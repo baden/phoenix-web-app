@@ -423,6 +423,8 @@ class LeafletMap extends HTMLElement {
                 this._map.removeLayer(this._trackLayer);
             }
 
+            this._trackLayer = L.layerGroup();
+
             // var layer_Onthogenetic_Juveniles_Migration_13 = L.layerGroup({
             //   attribution: '',
             //   interactive: false,
@@ -446,27 +448,55 @@ class LeafletMap extends HTMLElement {
                 layer.bindPopup(`Информация пока недоступна.`);
             };
 
-            console.log("L.polylineDecorator =", L.polylineDecorator);
+            // console.log("L.polylineDecorator =", L.polylineDecorator);
 
-            // var testarrow = new L.featureGroup();
-
-            const myLines = [{
-                "type": "LineString",
-                "coordinates": value.track
-            }];
-            this._trackLayer = L.geoJSON(myLines, {
-                    // onEachFeature: pop_Onthogenetic_Juveniles_Migration_13
-                    onEachFeature: onEachFeature,
-                    // pointToLayer: iro
-                    pointToLayer: function (feature, latlng) {
-                        return L.marker(latlng, {
-                            icon: arrowIcon,
-                            riseOnHover: true,
-                            rotationAngle: feature.properties.orientation,
-                            rotationOrigin: 'center center'
-                        })
+            this._trackLayer = new L.featureGroup();
+            var myLines = L.polyline(value.track).addTo(this._trackLayer);
+            // var myLines = L.polyline([[ 48.422656, 35.026016  ], [48.422656, 35.028016], [48.424656, 35.026016]]).addTo(this._trackLayer);
+            var arrowHead = L.polylineDecorator(myLines, {
+                patterns: [
+                    {offset: 0,
+                        repeat: 40,
+                        // symbol: L.Symbol.dash({pixelSize: 10})
+                        symbol: L.Symbol.arrowHead({pixelSize: 8, polygon: false, pathOptions: {color: '#3388ff', stroke: true}})
                     }
-                }).addTo(this._map);
+                ]
+            }).addTo(this._trackLayer);
+
+            this._trackLayer.addTo(this._map);
+
+            // const myLines = [{
+            //     "type": "LineString",
+            //     "coordinates": value.track
+            // }];
+            // // this._trackLayer =
+            // L.geoJSON(myLines, {
+            //         // onEachFeature: pop_Onthogenetic_Juveniles_Migration_13
+            //         onEachFeature: (feature, layer) => {
+            //             // console.log("onEachFeature", feature, layer);
+            //             L.polylineDecorator(layer, {
+            //                 patterns: [
+            //                     {offset: 0,
+            //                         repeat: 40,
+            //                         symbol: L.Symbol.arrowHead({pixelSize: 8, polygon: false, pathOptions: {color: '#3388ff', stroke: true}})
+            //                     }
+            //                 ]
+            //             // }).addTo(this._map);; //.addTo(this._trackLayer);
+            //             }).addTo(this._trackLayer); //.addTo(this._trackLayer);
+            //         },
+            //         // onEachFeature: onEachFeature,
+            //         // pointToLayer: iro
+            //         // pointToLayer: function (feature, latlng) {
+            //         //     return L.marker(latlng, {
+            //         //         icon: arrowIcon,
+            //         //         riseOnHover: true,
+            //         //         rotationAngle: feature.properties.orientation,
+            //         //         rotationOrigin: 'center center'
+            //         //     })
+            //         // }
+            //     }).addTo(this._trackLayer);
+            //
+            // this._trackLayer.addTo(this._map);
             // if(this._trackLayer) {
             //     console.log("update data", myLines);
             // this._trackLayer.addData(myLines);
