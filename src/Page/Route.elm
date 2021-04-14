@@ -1,6 +1,7 @@
 module Page.Route exposing (Page(..), PageBase(..), routeParser)
 
-import Url.Parser as Parser exposing ((</>), Parser, map, oneOf, s, string, top)
+import Url.Parser as Parser exposing ((</>), (<?>), Parser, map, oneOf, s, string, top)
+import Url.Parser.Query as Query
 
 
 type alias SysId =
@@ -14,7 +15,7 @@ type Page
     | User
     | Properties
     | GlobalMap
-    | SystemOnMap SysId
+    | SystemOnMap SysId (Maybe String) (Maybe String)
     | Config
     | SystemInfo String
     | SystemConfig String
@@ -39,7 +40,7 @@ routeParser =
         , map User (s "user")
         , map Properties (s "properties")
         , map GlobalMap (s "map")
-        , map SystemOnMap (s "map" </> string)
+        , map SystemOnMap (s "map" </> string <?> Query.string "lat" <?> Query.string "lng")
         , map Config (s "config")
         , map SystemInfo (s "system" </> string)
         , map SystemConfig (s "system" </> string </> s "config")

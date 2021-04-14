@@ -52,7 +52,7 @@ init flags url key =
             Login.init
 
         ( globalMapModel, _ ) =
-            GlobalMap.init
+            GlobalMap.init Nothing Nothing Nothing
 
         ( linkSysModel, _ ) =
             LinkSys.init
@@ -83,6 +83,7 @@ init flags url key =
             , account = Nothing
             , systems = Dict.empty
             , logs = Dict.empty
+            , tracks = Dict.empty
             , params = Dict.empty
             , errorMessage = Nothing
             , appState = AppState.initModel flags.language flags.theme
@@ -206,16 +207,14 @@ authRec =
 --     , view = SystemLogs.view
 --     , msg = SystemLogsMsg
 --     }
-
-
-systemOnMapRec : PageRec GlobalMap.Model GlobalMap.Msg Model Msg
-systemOnMapRec =
-    { get = .globalMap
-    , set = \newModel model -> { model | globalMap = newModel }
-    , update = PUT_Public GlobalMap.update
-    , view = PT_System GlobalMap.viewSystem
-    , msg = GlobalMapMsg >> OnPageMsg
-    }
+-- systemOnMapRec : PageRec GlobalMap.Model GlobalMap.Msg Model Msg
+-- systemOnMapRec =
+--     { get = .globalMap
+--     , set = \newModel model -> { model | globalMap = newModel }
+--     , update = PUT_Public GlobalMap.update
+--     , view = PT_System GlobalMap.viewSystem
+--     , msg = GlobalMapMsg >> OnPageMsg
+--     }
 
 
 updatePage : PageMsg -> Model -> ( Model, Cmd Msg )
@@ -232,7 +231,13 @@ updatePage pageMsg model =
             updateOverRec smsg linkSysRec model
 
         GlobalMapMsg globalMapMsg ->
-            updateOverRec globalMapMsg systemOnMapRec model
+            -- updateOverRec globalMapMsg systemOnMapRec model
+            let
+                ( updatedModel, upstream, upmessage ) =
+                    GlobalMap.update globalMapMsg model.globalMap
+            in
+            ( { model | globalMap = updatedModel }, Cmd.map (GlobalMapMsg >> OnPageMsg) upstream )
+                |> upmessageUpdate upmessage
 
         SystemInfoMsg globalInfoMsg ->
             updateOverRec globalInfoMsg systemInfoRec model
@@ -374,7 +379,7 @@ update msg model =
                                 Route.SystemInfo sid ->
                                     leaveIfmember sid
 
-                                Route.SystemOnMap sid ->
+                                Route.SystemOnMap sid _ _ ->
                                     leaveIfmember sid
 
                                 _ ->
@@ -415,9 +420,17 @@ update msg model =
                     --     _ =
                     --         Debug.log "params" document
                     -- in
-                    ( { model | params = Dict.insert sysId document model.params }
-                    , Cmd.none
-                    )
+                    ( { model | params = Dict.insert sysId document model.params }, Cmd.none )
+
+                Just (API.Document sysId (API.SystemHoursDocument document)) ->
+                    -- let
+                    --     _ =
+                    --         Debug.log "hours" document
+                    -- in
+                    ( model, Cmd.none )
+
+                Just (API.Document sysId (API.SystemTrackDocument document)) ->
+                    ( { model | tracks = Dict.insert sysId document model.tracks }, Cmd.none )
 
                 Just (API.Error error) ->
                     case errorMessageString error of
@@ -504,6 +517,14 @@ computeViewForPage page model =
                     SystemLogs.init (Just s)
             in
             ( { model | systemLogs = init_model }, Cmd.map (SystemLogsMsg >> OnPageMsg) init_cmd )
+
+        Route.SystemOnMap s mlat mlng ->
+            let
+                --TOTO: systemConfigRec.init
+                ( init_model, init_cmd ) =
+                    GlobalMap.init (Just s) mlat mlng
+            in
+            ( { model | globalMap = init_model }, Cmd.map (GlobalMapMsg >> OnPageMsg) init_cmd )
 
         _ ->
             ( model, Cmd.none )
@@ -595,8 +616,26 @@ viewPage model =
         Route.GlobalMap ->
             GlobalMap.view
 
-        Route.SystemOnMap sysId ->
-            view4SystemRec sysId model systemOnMapRec
+        Route.SystemOnMap sysId mlat mlng ->
+            -- let
+            --     track =
+            --         Dict.get sysId model.tracks
+            -- in
+            -- -- view4SystemRec sysId model systemOnMapRec track
+            -- GlobalMap.viewSystem model.appState model.globalMap
+            case Dict.get sysId model.systems of
+                Nothing ->
+                    Html.div []
+                        [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра."
+                        , Html.a [ HA.class "btn", HA.href "/" ] [ Html.text "Вернуться на главную" ]
+                        ]
+
+                Just system ->
+                    let
+                        track =
+                            Dict.get sysId model.tracks
+                    in
+                    GlobalMap.viewSystem model.appState model.globalMap system track |> Html.map (GlobalMapMsg >> OnPageMsg)
 
         Route.LinkSys ->
             view4SystemRec "" model linkSysRec
@@ -706,7 +745,7 @@ viewMenu model =
                         Just system ->
                             Menu.view Route.SystemConfigBase account model.appState (Just system) model.menuModel |> List.map (Html.map (OnPageMsg << Types.MenuMsg))
 
-                Route.SystemOnMap sysId ->
+                Route.SystemOnMap sysId mlat mlng ->
                     case Dict.get sysId model.systems of
                         Nothing ->
                             Menu.view Route.MapBase account model.appState Nothing model.menuModel |> List.map (Html.map (OnPageMsg << Types.MenuMsg))

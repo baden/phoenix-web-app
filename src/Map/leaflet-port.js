@@ -1,10 +1,11 @@
 import L from 'leaflet';
-import Lem from 'leaflet-extra-markers';
+// import Lem from 'leaflet-extra-markers';
+import PD from 'leaflet-polylinedecorator';
 import _ from 'underscore';
 // import '.css';
 // import 'leaflet.css';
 import '../../node_modules/leaflet/dist/leaflet.css';
-import '../../node_modules/leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css';
+// import '../../node_modules/leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css';
 
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -30,34 +31,55 @@ const settings = MapSettings();
 
 // console.log("Lem = ", Lem);
 
-// FIX leaflet's default icon path problems with webpack
-let DefaultIcon = L.icon({
-      iconUrl: icon,
-      // iconRetinaUrl: iconRetinaUrl,
-      shadowUrl: iconShadow,
-      iconSize: [24,36],
-      iconAnchor: [12,16]
-    });
+// FIX leaflet's default icon path problems with webpack (TRY #1)
 
-let greenIcon = L.icon({
-	iconUrl: '/static/images/markers/leaf-green.png',
-	shadowUrl: '/static/images/markers/leaf-shadow.png',
+delete L.Icon.Default.prototype._getIconUrl;
 
-	iconSize:     [38, 95], // size of the icon
-	shadowSize:   [50, 64], // size of the shadow
-	iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-	shadowAnchor: [4, 62],  // the same for the shadow
-	popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
+// FIX leaflet's default icon path problems with webpack (TRY #2 steel fail)
+// let DefaultIcon = L.icon({
+//       iconUrl: icon,
+//       iconRetinaUrl: iconRetinaUrl,
+//       shadowUrl: iconShadow,
+//       iconSize: [24,36],
+//       iconAnchor: [12,36]
+//     });
 
-const redMarker = L.ExtraMarkers.icon({
-    icon: 'fa-car',
-    markerColor: 'pink',
-    shape: 'square',
-    prefix: 'fa'
-  });
-console.log("redMarker = ", redMarker);
+// let greenIcon = L.icon({
+// 	iconUrl: '/static/images/markers/leaf-green.png',
+// 	shadowUrl: '/static/images/markers/leaf-shadow.png',
+//
+// 	iconSize:     [38, 95], // size of the icon
+// 	shadowSize:   [50, 64], // size of the shadow
+// 	iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+// 	shadowAnchor: [4, 62],  // the same for the shadow
+// 	popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+// });
+
+
+// const redMarker = L.ExtraMarkers.icon({
+//     icon: 'fa-car',
+//     markerColor: 'pink',
+//     shape: 'square',
+//     prefix: 'fa'
+//   });
+// console.log("redMarker = ", redMarker);
+
+
+// var myIcon = L.icon({
+//     iconUrl: 'my-icon.png',
+//     iconSize: [38, 95],
+//     iconAnchor: [22, 94],
+//     popupAnchor: [-3, -76],
+//     shadowUrl: 'my-icon-shadow.png',
+//     shadowSize: [68, 95],
+//     shadowAnchor: [22, 94]
+// });
 
 // L.Marker.prototype.options.icon = DefaultIcon;
 
@@ -189,6 +211,12 @@ class LeafletMap extends HTMLElement {
         this._markers = this.markers || [];
         delete this.markers;
 
+        this._title = this.title || [];
+        delete this.title;
+
+        this._track = this.track || [];
+        delete this.track;
+
         if(false) {
             new MutationObserver((mr) => this._stageElChange(mr))
               .observe(this, { attributes: true, attributeFilter: ["data-map-center"], attributeOldValue: true});
@@ -224,8 +252,72 @@ class LeafletMap extends HTMLElement {
         this._map.setView(L.latLng(lat, lng), 15);
 
 
+
+        // TRY GeoJSON
+        // 48.422656 35.026016
+        // var geojsonFeature = {
+        //     "type": "Feature",
+        //     "properties": {
+        //         "name": "Coors Field",
+        //         "amenity": "Baseball Stadium",
+        //         "popupContent": "This is where the Rockies play!"
+        //     },
+        //     "geometry": {
+        //         "type": "Point",
+        //         "coordinates": [35.026016, 48.422656]
+        //     }
+        // };
+        // L.geoJSON(geojsonFeature).addTo(this._map);
+
+        var myLines = [{
+            "type": "LineString",
+            "coordinates": [[ 35.026016, 48.422656 ], [35.028016, 48.422656], [35.026016, 48.424656]]
+        }, {
+            "type": "LineString",
+            "coordinates": [[-105, 40], [-110, 45], [-115, 55]]
+        }];
+
+        // var myLayer = L.geoJSON().addTo(this._map);
+        // myLayer.addData(myLines);
+
+        // this._trackLayer = L.geoJSON().addTo(this._map);
+
+        var data_points = {
+            "type": "FeatureCollection",
+            "name": "test-points-short-named",
+            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+            "features": [
+            { "type": "Feature", "properties": { "name": "<span class=\"icon-car_icon image-logo\"></span> " + this._title }, "geometry": { "type": "Point", "coordinates": [ 35.026016, 48.422656 ] } }
+            // { "type": "Feature", "properties": { "name": "6"}, "geometry": { "type": "Point", "coordinates": [ -135.02480935075292, 60.672888247036376 ] } },
+            // { "type": "Feature", "properties": { "name": "12"}, "geometry": { "type": "Point", "coordinates": [ -135.02449372349508, 60.672615176262731 ] } },
+            // { "type": "Feature", "properties": { "name": "25"}, "geometry": { "type": "Point", "coordinates": [ -135.0240752514004, 60.673313811878423 ] } }
+            ]};
+
+            // var customTooltip =
+            // var customTooltip = document.createElement("div");
+            // customTooltip.className = "custom-tooltip";
+            // customTooltip.innerHTML = "Boo:<span class=\"icon-car_icon image-logo\"></span>";
+
+            // this.appendChild(container);
+
+            var pointLayer = L.geoJSON(null, {
+              pointToLayer: function(feature, latlng){
+                const label = String(feature.properties.name) // .bindTooltip can't use straight 'feature.properties.attribute'
+                return new L.CircleMarker(latlng, {
+                  radius: 1,
+              }).bindTooltip( label /*customTooltip*/, {
+                  permanent: true,
+                  opacity: 1.0,
+                  direction: "bottom",
+                  className: 'icon-car_icon'
+              }).openTooltip();
+                }
+              });
+            pointLayer.addData(data_points);
+            this._map.addLayer(pointLayer);
+
         // this._center_marker = L.marker([lat, lng], {icon: DefaultIcon}).addTo(this._map);
-        L.marker([lat, lng], {icon: redMarker}).addTo(this._map);
+        // L.marker([lat, lng], {icon: redMarker}).addTo(this._map);
 
         this._leaflet_id = container._leaflet_id;
 
@@ -293,9 +385,15 @@ class LeafletMap extends HTMLElement {
         if (value !== null && !_.isEqual(value, this._markers)) {
             console.log("set markers", value);
 
+            if(!this._map) {
+                console.log("Wtf? Map is not found!");
+                return;
+            }
+
             value.forEach(item => {
                 let {pos, title} = item;
-                L.marker([pos.lat, pos.lng], {icon: redMarker}).addTo(this._map);
+                // L.marker([pos.lat, pos.lng], {icon: redMarker}).addTo(this._map);
+                L.marker([pos.lat, pos.lng]).addTo(this._map);
 
             });
 
@@ -304,6 +402,80 @@ class LeafletMap extends HTMLElement {
         }
     }
 
+
+    get title() { return this._title; }
+    set title(value) {
+        this._title = value;
+    }
+
+    get track() { return this._track; }
+    set track(value) {
+        if (value !== null && !_.isEqual(value, this._track)) {
+            console.log("set track", value);
+            this._track = value;
+
+            if(!this._map) {
+                console.log("Wtf? Map is not found!");
+                return;
+            }
+
+            if(this._trackLayer) {
+                this._map.removeLayer(this._trackLayer);
+            }
+
+            // var layer_Onthogenetic_Juveniles_Migration_13 = L.layerGroup({
+            //   attribution: '',
+            //   interactive: false,
+            //   layerName: 'layer_Onthogenetic_Juveniles_Migration_13',
+            //   pane: 'pane_Onthogenetic_Juveniles_Migration_13',
+            // });
+            //
+            // function pop_Onthogenetic_Juveniles_Migration_13(feature, layer) {
+            //   var polyline = L.polyline(layer.getLatLngs()).addTo(layer_Onthogenetic_Juveniles_Migration_13);
+            //   var arrowHead = L.polylineDecorator(polyline, {
+            //     patterns: [
+            //       {offset: '100%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: 60, polygon: false, pathOptions: {stroke: true}})}
+            //     ]
+            //   }).addTo(layer_Onthogenetic_Juveniles_Migration_13);
+            //   // your code
+            // }
+
+            // Style functions
+            function onEachFeature(feature, layer) {
+                // var congInfo = Object.values(feature.properties.member[cong])[0];
+                layer.bindPopup(`Информация пока недоступна.`);
+            };
+
+            console.log("L.polylineDecorator =", L.polylineDecorator);
+
+            // var testarrow = new L.featureGroup();
+
+            const myLines = [{
+                "type": "LineString",
+                "coordinates": value.track
+            }];
+            this._trackLayer = L.geoJSON(myLines, {
+                    // onEachFeature: pop_Onthogenetic_Juveniles_Migration_13
+                    onEachFeature: onEachFeature,
+                    // pointToLayer: iro
+                    pointToLayer: function (feature, latlng) {
+                        return L.marker(latlng, {
+                            icon: arrowIcon,
+                            riseOnHover: true,
+                            rotationAngle: feature.properties.orientation,
+                            rotationOrigin: 'center center'
+                        })
+                    }
+                }).addTo(this._map);
+            // if(this._trackLayer) {
+            //     console.log("update data", myLines);
+            // this._trackLayer.addData(myLines);
+            // }
+            console.log("_trackLayer", this._trackLayer);
+
+
+        }
+    }
 
     // _stageElChange(mutations) {
     //     const me = this;

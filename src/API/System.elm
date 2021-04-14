@@ -1,35 +1,4 @@
-module API.System exposing
-    (  Dynamic
-       -- , SysState
-       -- , State
-
-    ,  State(..)
-       -- , SysId
-
-    , SystemDocumentInfo
-    , SystemDocumentLog
-    , SystemDocumentParams
-    , cancelSystemState
-    ,  dynamicDecoder
-       -- , LastPosition
-       -- , LastSession
-
-    , getLogs
-    , getParams
-    , iconForCmdString
-    , paramQueue
-    , prolongSleep
-    , resetBattery
-    , setBatteryCapacity
-    , setSystemIcon
-    , setSystemState
-    , setSystemTitle
-    , stateAsCmdString
-    , stateAsString
-    , systemDocumentDecoder
-    , systemDocumentLogDecoder
-    , systemDocumentParamsDecoder
-    )
+module API.System exposing (..)
 
 import API.Document as Document
 import API.System.Battery as Battery exposing (Battery)
@@ -421,6 +390,24 @@ type alias SystemDocumentParams =
     }
 
 
+type alias SystemDocumentHour =
+    { from : Int
+    , to : Int
+    , hours : List Int
+    }
+
+
+type alias SystemDocumentTrack =
+    { from : Int
+    , to : Int
+    , track : List TrackPoint
+    }
+
+
+type alias TrackPoint =
+    List Float
+
+
 systemDocumentParamsDecoder : JD.Decoder SystemDocumentParams
 systemDocumentParamsDecoder =
     JD.succeed SystemDocumentParams
@@ -475,6 +462,22 @@ systemDocumentLogDecoder =
     JD.succeed SystemDocumentLog
         |> required "dt" DT.decoder
         |> required "text" JD.string
+
+
+systemDocumentHourDecoder : JD.Decoder SystemDocumentHour
+systemDocumentHourDecoder =
+    JD.succeed SystemDocumentHour
+        |> required "from" JD.int
+        |> required "to" JD.int
+        |> required "hours" (JD.list JD.int)
+
+
+systemDocumentTrackDecoder : JD.Decoder SystemDocumentTrack
+systemDocumentTrackDecoder =
+    JD.succeed SystemDocumentTrack
+        |> required "from" JD.int
+        |> required "to" JD.int
+        |> required "track" (JD.list (JD.list JD.float))
 
 
 
@@ -643,3 +646,23 @@ paramQueue sysId queue =
 --             , ( "path", Encode.string "title" )
 --             , ( "value", Encode.string newTitle )
 --             ]
+
+
+getTrack : String -> Int -> Int -> Encode.Value
+getTrack sysId from to =
+    Encode.object
+        [ ( "cmd", Encode.string "system_track" )
+        , ( "id", Encode.string sysId )
+        , ( "from", Encode.int from )
+        , ( "to", Encode.int to )
+        ]
+
+
+getHours : String -> Encode.Value
+getHours sysId =
+    Encode.object
+        [ ( "cmd", Encode.string "system_hours" )
+        , ( "id", Encode.string sysId )
+        , ( "from", Encode.int 0 )
+        , ( "to", Encode.int 10000000 )
+        ]

@@ -36,18 +36,27 @@ view ({ t } as appState) model system =
                             div [ class "content-item" ]
                                 [ span [ class "name" ] [ text <| t "control.Положение неизвестно" ]
                                 ]
-                    , case dynamic.available |> List.member System.Point of
-                        True ->
-                            div [ class "content-item content-item-group" ]
-                                [ a [ class "details-blue-title blue-gradient-text", href ("/map/" ++ system.id) ]
+                    , div [ class "content-item content-item-group" ] <|
+                        -- TODO: Немного коряво
+                        (case ( dynamic.latitude, dynamic.longitude, dynamic.dt ) of
+                            ( Just latitude, Just longitude, Just dt ) ->
+                                [ a [ class "details-blue-title blue-gradient-text", href ("/map/" ++ system.id ++ "?lat=" ++ String.fromFloat latitude ++ "&lng=" ++ String.fromFloat longitude) ]
                                     [ span [ class "details-icon icon-map" ] [], text <| t "control.Показать" ]
-                                , InfoUI.disabledOnWait appState <|
-                                    div [ class "details-blue-title blue-gradient-text", InfoUI.disabledOnWaitClass dynamic, onClick (OnSysCmdPre system.id System.Point) ]
-                                        [ span [ class "details-icon icon-refresh" ] [], text <| t "control.Обновить" ]
                                 ]
 
-                        False ->
-                            text ""
+                            ( _, _, _ ) ->
+                                []
+                        )
+                            ++ (case dynamic.available |> List.member System.Point of
+                                    True ->
+                                        [ InfoUI.disabledOnWait appState <|
+                                            div [ class "details-blue-title blue-gradient-text", InfoUI.disabledOnWaitClass dynamic, onClick (OnSysCmdPre system.id System.Point) ]
+                                                [ span [ class "details-icon icon-refresh" ] [], text <| t "control.Обновить" ]
+                                        ]
+
+                                    False ->
+                                        []
+                               )
                     ]
         ]
 

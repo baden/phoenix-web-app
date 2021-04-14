@@ -1,11 +1,11 @@
 port module API exposing (..)
 
 import API.Account as Account
-import API.System as System
 import API.Error as Error
-import Json.Encode as Encode
+import API.System as System
 import Json.Decode as JD exposing (Decoder, Value, string, value)
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
+import Json.Encode as Encode
 
 
 type APIContent
@@ -31,6 +31,8 @@ type DocumentInfo
     | SystemDocumentDynamic System.Dynamic
     | SystemLogsDocument (List System.SystemDocumentLog)
     | SystemParamsDocument System.SystemDocumentParams
+    | SystemHoursDocument System.SystemDocumentHour
+    | SystemTrackDocument System.SystemDocumentTrack
 
 
 parsePayload : String -> Maybe APIContent
@@ -45,7 +47,7 @@ parsePayload payload =
 
 payloadDecoder : JD.Decoder APIContent
 payloadDecoder =
-    (JD.field "cmd" JD.string)
+    JD.field "cmd" JD.string
         |> JD.andThen
             (\t ->
                 -- JD.field "data" <|
@@ -83,7 +85,7 @@ tokenDecoder =
 
 documentDecoder : JD.Decoder DocumentInfo
 documentDecoder =
-    (JD.field "collection" JD.string)
+    JD.field "collection" JD.string
         |> JD.andThen
             (\c ->
                 JD.field "value" <|
@@ -95,14 +97,19 @@ documentDecoder =
                             JD.map SystemDocument System.systemDocumentDecoder
 
                         "system.dynamic" ->
-                            JD.map SystemDocumentDynamic
-                                System.dynamicDecoder
+                            JD.map SystemDocumentDynamic System.dynamicDecoder
 
                         "system_logs" ->
                             JD.map SystemLogsDocument (JD.list System.systemDocumentLogDecoder)
 
                         "system_params" ->
                             JD.map SystemParamsDocument System.systemDocumentParamsDecoder
+
+                        "system_hours" ->
+                            JD.map SystemHoursDocument System.systemDocumentHourDecoder
+
+                        "system_track" ->
+                            JD.map SystemTrackDocument System.systemDocumentTrackDecoder
 
                         _ ->
                             JD.fail ("unexpected document " ++ c)
@@ -120,12 +127,13 @@ documentIs documentName =
         typeDecoder s =
             if s == documentName then
                 JD.succeed documentName
+
             else
                 JD.fail ""
     in
-        JD.andThen
-            typeDecoder
-            JD.string
+    JD.andThen
+        typeDecoder
+        JD.string
 
 
 

@@ -45,6 +45,7 @@ type alias Model =
     , account : Maybe AccountDocumentInfo
     , systems : Dict String SystemDocumentInfo
     , logs : Dict String (List SystemDocumentLog)
+    , tracks : Dict String API.System.SystemDocumentTrack
     , params : Dict String SystemDocumentParams
     , errorMessage : Maybe String -- Надо бы расширить функцилнал
     , appState : AppState.AppState

@@ -65,6 +65,7 @@ type alias Model x =
     { x
         | account : Maybe AccountDocumentInfo
         , appState : AppState
+        , tracks : Dict String API.System.SystemDocumentTrack
     }
 
 
@@ -113,3 +114,6 @@ upmessageUpdate msg ( model, cmd ) =
                 Menu.Logout ->
                     -- TODO:
                     ( model, cmd )
+
+        Just (MsgT.HideTrack sysId) ->
+            ( { model | tracks = Dict.remove sysId model.tracks }, cmd )
