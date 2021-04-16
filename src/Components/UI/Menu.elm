@@ -4,6 +4,7 @@ import API.Account as Account exposing (AccountDocumentInfo)
 import API.System exposing (SystemDocumentInfo)
 import AppState exposing (AppState)
 import AssocList as Dict exposing (Dict)
+import Components.UI.Scale as Scale
 import Components.UI.Theme as Theme
 import Html exposing (Html, a, button, div, img, li, span, text, ul)
 import Html.Attributes as HA exposing (alt, attribute, class, classList, href, id, src, style)
@@ -15,6 +16,7 @@ import Page.Route exposing (Page)
 
 type alias Model =
     { themePopup : Bool
+    , scalePopup : Bool
     , languagePopup : Bool
     , accountPopup : Bool
     , showLogoutModal : Bool
@@ -25,7 +27,9 @@ type alias Model =
 
 type Msg
     = ShowThemesPopup
+    | ShowScalesPopup
     | SelectTheme Theme.ThemeID
+    | SelectScale Scale.ScaleID
     | ShowLanguagePopup
     | SelectLanguage String
     | ShowAccountPopup
@@ -40,12 +44,14 @@ type Msg
 type MenuMsg
     = ChangeLanguage String
     | ChangeTheme String
+    | ChangeScale String
     | Logout
 
 
 init : Model
 init =
     { themePopup = False
+    , scalePopup = False
     , languagePopup = False
     , accountPopup = False
     , showLogoutModal = False
@@ -58,13 +64,19 @@ update : Msg -> Model -> ( Model, Cmd Msg, Maybe MenuMsg )
 update msg model =
     case msg of
         ShowThemesPopup ->
-            ( { model | themePopup = True, languagePopup = False, showLogoutModal = False }, Cmd.none, Nothing )
+            ( { model | themePopup = True, scalePopup = False, languagePopup = False, showLogoutModal = False }, Cmd.none, Nothing )
+
+        ShowScalesPopup ->
+            ( { model | scalePopup = True, themePopup = False, languagePopup = False, showLogoutModal = False }, Cmd.none, Nothing )
 
         SelectTheme (Theme.ThemeID tid) ->
             ( { model | themePopup = False }, saveTheme tid, Just <| ChangeTheme tid )
 
+        SelectScale (Scale.ScaleID tid) ->
+            ( { model | scalePopup = False }, saveScale tid, Just <| ChangeScale tid )
+
         ShowLanguagePopup ->
-            ( { model | languagePopup = True, themePopup = False, showLogoutModal = False }, Cmd.none, Nothing )
+            ( { model | languagePopup = True, themePopup = False, scalePopup = False, showLogoutModal = False }, Cmd.none, Nothing )
 
         SelectLanguage langCode ->
             ( { model | languagePopup = False }, Cmd.batch [ saveLanguage langCode ], Just <| ChangeLanguage langCode )
@@ -79,7 +91,7 @@ update msg model =
             ( { model | showLogoutModal = False }, Cmd.none, Nothing )
 
         HidePopups ->
-            ( { model | themePopup = False, languagePopup = False, accountPopup = False }, Cmd.none, Nothing )
+            ( { model | themePopup = False, scalePopup = False, languagePopup = False, accountPopup = False }, Cmd.none, Nothing )
 
         OnLogout ->
             ( model, Cmd.none, Just Logout )
@@ -182,6 +194,7 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
                 [ div [ class "menu-options" ]
                     [ span [ class "menu-options-title" ] [ text <| t "menu.Системные опции" ]
                     , menuTheme appState model
+                    , menuScale appState model
                     , menuLanguage appState model
                     ]
                 , div [ class "menu-options" ]
@@ -233,17 +246,6 @@ menuTheme { t, themeName } { themePopup } =
         theme_item ( tid, { name, class_name } ) =
             li [ onClick <| SelectTheme tid ]
                 [ span [ class "item" ] [ text <| t ("themes." ++ name) ] ]
-
-        cur_theme =
-            case themeName of
-                "dark" ->
-                    t "themes.Темная"
-
-                "light" ->
-                    t "themes.Светлая"
-
-                _ ->
-                    t "themes.Темная"
     in
     activableDropdown themePopup
         [ div [ class "dropdown-title", onClickStopPropagation ShowThemesPopup ]
@@ -252,8 +254,31 @@ menuTheme { t, themeName } { themePopup } =
             , span [ class "dropdown-icon" ] []
             ]
         , ul [ class "dropdown-list" ] <|
-            [ li [ class "title" ] [ text "Тема" ] ]
+            [ li [ class "title" ] [ text <| t "menu.Тема" ] ]
                 ++ (themes |> Dict.toList |> List.map theme_item)
+        ]
+
+
+menuScale : AppState -> Model -> Html Msg
+menuScale { t, scaleName } { scalePopup } =
+    let
+        scales =
+            Scale.defaultScales
+
+        scale_item : ( Scale.ScaleID, Scale.ScaleItem ) -> Html Msg
+        scale_item ( sid, { name, class_name } ) =
+            li [ onClick <| SelectScale sid ]
+                [ span [ class "item" ] [ text <| t ("scales." ++ name) ] ]
+    in
+    activableDropdown scalePopup
+        [ div [ class "dropdown-title", onClickStopPropagation ShowScalesPopup ]
+            [ span [ class "mode-icon" ] []
+            , span [ id "selectedScale" ] [ text <| t <| "scales." ++ scaleName ]
+            , span [ class "dropdown-icon" ] []
+            ]
+        , ul [ class "dropdown-list" ] <|
+            [ li [ class "title" ] [ text <| t "menu.Размер" ] ]
+                ++ (scales |> Dict.toList |> List.map scale_item)
         ]
 
 
@@ -341,3 +366,6 @@ port saveLanguage : String -> Cmd msg
 
 
 port saveTheme : String -> Cmd msg
+
+
+port saveScale : String -> Cmd msg

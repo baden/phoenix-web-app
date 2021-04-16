@@ -17,11 +17,22 @@ translations =
                 , ( "light", string "Свiтла" )
                 ]
           )
+        , ( "scales"
+          , object
+                [ ( "normal", string "Звичайний" )
+                , ( "small", string "Маленький" )
+                , ( "big", string "Великий" )
+                , ( "bigger", string "Більший" )
+                , ( "biggest", string "Найбільший" )
+                ]
+          )
         , ( "menu"
           , object
                 [ ( "Системные опции", string "Системнi опцiї" )
                 , ( "Аккаунт", string "Акаунт" )
                 , ( "Язык", string "Мова" )
+                , ( "Тема", string "Тема" )
+                , ( "Размер", string "Розмір" )
                 , ( "Настройки", string "Налаштування" )
                 , ( "Выйти", string "Вийти" )
                 , ( "Выйти?", string "Вийти?" )

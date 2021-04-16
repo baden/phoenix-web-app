@@ -90,4 +90,5 @@ type alias Flags =
     , api_url : String
     , language : String
     , theme : String
+    , scale : String
     }

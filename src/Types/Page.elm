@@ -5,6 +5,7 @@ import API.Account exposing (AccountDocumentInfo, fixSysListRequest)
 import API.System exposing (SystemDocumentInfo, SystemDocumentLog, SystemDocumentParams)
 import AppState exposing (AppState)
 import Components.UI.Menu as Menu
+import Components.UI.Scale as Scale
 import Components.UI.Theme as Theme
 import Dict exposing (Dict)
 import Html exposing (Html)
@@ -110,6 +111,9 @@ upmessageUpdate msg ( model, cmd ) =
 
                 Menu.ChangeTheme themeName ->
                     ( model, cmd ) |> Theme.replaceTheme themeName
+
+                Menu.ChangeScale scaleName ->
+                    ( model, cmd ) |> Scale.replaceScale scaleName
 
                 Menu.Logout ->
                     -- TODO:

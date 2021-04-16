@@ -127,6 +127,7 @@ loginView ({ t } as appState) model =
             , div [ class "wrapper-content-footer" ]
                 [ Menu.menuLanguage appState model.menuModel |> Html.map MenuMsg
                 , Menu.menuTheme appState model.menuModel |> Html.map MenuMsg
+                , Menu.menuScale appState model.menuModel |> Html.map MenuMsg
                 ]
             ]
         ]

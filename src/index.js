@@ -7,6 +7,7 @@ import registerServiceWorker from './registerServiceWorker';
 
 const LANGUAGE_KEY = 'fenix.language';
 const THEME_KEY = 'fenix.theme';
+const SCALE_KEY = 'fenix.scale';
 
 // process.env.NODE_ENV == "development" || "production"
 const env = process.env.NODE_ENV || 'development';
@@ -34,6 +35,7 @@ const fx_api_endpoint = protocol + "//fx.navi.cc"  + api_path;
 const choosed_endpoint = (hostname=="localhost" || hostname=="fenix-ca60d.web.app") ? fx_api_endpoint : global_api_endpoint;
 
 const theme_style = document.querySelector("#theme");
+const scale_style = document.querySelector("#scale");
 
 console.log("API endpoint: ", choosed_endpoint);
 
@@ -68,16 +70,13 @@ const flags = {
     token: localStorage.getItem(tokenKey),
     api_url: choosed_endpoint,
     language: getUserLanguage(),
-    theme: getUserTheme()
+    theme: getUserTheme(),
+    scale: getScale()
 }
 
 console.log("Start app with flags:", flags);
 
-var app = Elm.Main.init({
-  // node: document.getElementById('root'),
-  //
-  flags
-});
+var app = Elm.Main.init({flags});
 
 registerServiceWorker();
 
@@ -142,7 +141,6 @@ app.ports.saveLanguage.subscribe(langCode => {
 
 // TODO: Не удалять следующие коментарии. Он в скором времени пригодятся.
 
-
 function getUserTheme() {
     const urlParams = new URLSearchParams(window.location.search);
 
@@ -162,6 +160,14 @@ function defaultTheme() {
         return "light"
     }
 }
+
+function getScale() {
+    const scaleName =
+        window.localStorage.getItem(SCALE_KEY) || "normal";
+    scale_style.href = "/css/scale-" + scaleName + ".css";
+    return scaleName;
+}
+
 
 // ---------
 // Dark mode
@@ -190,6 +196,12 @@ app.ports.saveTheme.subscribe(themeName => {
     console.log("Save theme", themeName);
     localStorage.setItem(THEME_KEY, themeName);
     theme_style.href = "/css/style-" + themeName + ".css";
+});
+
+app.ports.saveScale.subscribe(scaleName => {
+    console.log("Save scale", scaleName);
+    localStorage.setItem(SCALE_KEY, scaleName);
+    scale_style.href = "/css/scale-" + scaleName + ".css";
 });
 
 
