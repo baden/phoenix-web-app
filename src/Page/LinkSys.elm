@@ -220,7 +220,7 @@ page5 { t } model =
         (form [ action "" ]
             [ div [ class "form-list" ]
                 [ div [ class "input-st" ]
-                    [ input [ HA.type_ "number", attribute "autocomplete" "off", attribute "required" "", HA.pattern "[0-9]*", HA.attribute "inputmode" "numeric", value model.code, onInput OnCode ] []
+                    [ input [ attribute "autocomplete" "off", attribute "required" "", HA.pattern "[0-9]*", HA.attribute "inputmode" "numeric", value model.code, onInput OnCode ] []
                     , label [ class "input-label" ] [ text <| t "master.Введите уникальный код из SMS" ]
                     ]
                 ]

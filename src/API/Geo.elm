@@ -1,9 +1,9 @@
 module API.Geo exposing (..)
 
 import Http
+import Json.Decode as JD exposing (Decoder, maybe, string)
+import Json.Decode.Pipeline exposing (hardcoded, optional, optionalAt, required, requiredAt)
 import Json.Encode as Encode
-import Json.Decode as JD exposing (Decoder, string, maybe)
-import Json.Decode.Pipeline exposing (hardcoded, optional, required, requiredAt, optional, optionalAt)
 
 
 apiURL : String
@@ -106,13 +106,13 @@ addressToString a =
             , optnl a.house_number
             , if a.building == a.house_number then
                 ""
+
               else
-                (a.building
+                a.building
                     |> orUse a.supermarket
                     |> orUse a.neighbourhood
                     |> orUse a.suburb
                     |> optnl
-                )
             , a.city
                 |> orUse a.town
                 |> optnl
@@ -120,8 +120,8 @@ addressToString a =
             , optnl a.country
             ]
     in
-        -- String.join ", " compose
-        join compose
+    -- String.join ", " compose
+    join compose
 
 
 join : List String -> String
@@ -130,12 +130,12 @@ join =
         (\i l ->
             if i == "" then
                 l
+
+            else if l == "" then
+                i
+
             else
-                (if l == "" then
-                    i
-                 else
-                    l ++ ", " ++ i
-                )
+                l ++ ", " ++ i
         )
         ""
 
@@ -167,6 +167,10 @@ join =
 getAddress : ( Float, Float ) -> (Result Http.Error Address -> msg) -> Cmd msg
 getAddress ( lat, lon ) msg =
     Http.get
-        { url = apiURL ++ "&lat=" ++ (String.fromFloat lat) ++ "&lon=" ++ (String.fromFloat lon)
+        { url = apiURL ++ "&lat=" ++ String.fromFloat lat ++ "&lon=" ++ String.fromFloat lon
         , expect = Http.expectJson msg addressDecoder
         }
+
+
+
+-- getHours : getHours

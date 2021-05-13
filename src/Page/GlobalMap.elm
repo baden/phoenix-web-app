@@ -3,6 +3,7 @@ module Page.GlobalMap exposing (Model, Msg(..), init, setCenter, update, view, v
 -- import Elm.Kernel.Json
 
 import API
+import API.GPS as GPS
 import API.Geo as Geo exposing (Address)
 import API.System as System exposing (State(..), SystemDocumentInfo)
 import AppState
@@ -47,7 +48,8 @@ mstr2float d v =
 
 getTrack : String -> Int -> Int -> Cmd Msg
 getTrack sysId from to =
-    API.websocketOut <| System.getTrack sysId from to
+    -- API.websocketOut <| System.getTrack sysId from to
+    GPS.getBinTrack from to |> Cmd.map GetBinTrack
 
 
 type Msg
@@ -59,6 +61,7 @@ type Msg
     | Init String
     | GetTrack String Int Int
     | HideTrack String
+    | GetBinTrack GPS.Msg
 
 
 initTask : Maybe String -> Cmd Msg
@@ -118,6 +121,13 @@ update msg model =
 
         CenterChanged newPos ->
             ( { model | center = newPos }, Cmd.none, Nothing )
+
+        GetBinTrack d ->
+            let
+                _ =
+                    Debug.log "GetBinTrack" d
+            in
+            ( model, Cmd.none, Nothing )
 
 
 view : Html a
