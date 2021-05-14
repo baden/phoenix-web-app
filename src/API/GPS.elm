@@ -6,7 +6,7 @@ import Http
 
 
 type Msg
-    = GotData (Result Http.Error Data)
+    = GotData (Result Http.Error (List Data))
 
 
 type alias Data =
@@ -24,12 +24,13 @@ getBinTrack from to =
     let
         e =
             -- Decode.expectBytes GPSGotData gpsDecoder
-            Http.expectBytes GotData dataDecoder
+            -- Http.expectBytes GotData dataDecoder
+            Http.expectBytes GotData listDataDecoder
     in
     Http.riskyRequest
         { method = "GET"
         , headers = [ Http.header "Accept" "application/octet-stream" ]
-        , url = "http://pil.fx.navi.cc/1.0/geos/ODY3NTU2MDQ2MTkxOTE1?from=450045&to=450188&access_token=6sAYC4AZ6Hnlawd1fwskF135X9PG7sGV"
+        , url = "http://pil.fx.navi.cc/1.0/geos/ODY3NTU2MDQ2MTkxOTE1?from=450045&to=450188&access_token=ICfFbWKPxEoJ14cGdSl1jsH4FKJOdbvv"
         , body = Http.emptyBody
         , expect = e
         , timeout = Nothing
@@ -42,19 +43,51 @@ getBinTrack from to =
 -- Пока выделим только часть полей
 
 
+type alias State =
+    ( Int, List Data )
+
+
+listDataDecoder : Decoder (List Data)
+listDataDecoder =
+    let
+        step ( n, acc ) =
+            -- let
+            --     _ =
+            --         Debug.log "step" ( n, List.length acc )
+            -- in
+            if n > 5000000 then
+                Decode.succeed <|
+                    Decode.Done (List.reverse acc)
+
+            else
+                dataDecoder
+                    |> Decode.map
+                        (\v ->
+                            Decode.Loop ( n + 1, v :: acc )
+                        )
+    in
+    Decode.loop ( 0, [] ) step
+
+
+
+-- listDataStep : State -> Decoder (Decode.Step State Data)
+-- listDataStep ( n, xs ) =
+--     Decode.succeed (Decode.Done xs)
+
+
 dataDecoder : Decoder Data
 dataDecoder =
     unsignedInt16 LE
         |> andThen
             (\header ->
-                let
-                    _ =
-                        Debug.log "Decode" header
-                in
                 if header == 0xF5FF then
                     decodeBody
 
                 else
+                    let
+                        _ =
+                            Debug.log "decode fail" header
+                    in
                     Decode.fail
              -- Decode.succeed (Data 0 0 0.0 0.0)
             )

@@ -122,10 +122,17 @@ update msg model =
         CenterChanged newPos ->
             ( { model | center = newPos }, Cmd.none, Nothing )
 
-        GetBinTrack d ->
+        GetBinTrack (GPS.GotData (Ok d)) ->
             let
                 _ =
-                    Debug.log "GetBinTrack" d
+                    Debug.log "GetBinTrack" (List.length d)
+            in
+            ( model, Cmd.none, Nothing )
+
+        GetBinTrack (GPS.GotData (Err _)) ->
+            let
+                _ =
+                    Debug.log "Error GetBinTrack" 0
             in
             ( model, Cmd.none, Nothing )
 

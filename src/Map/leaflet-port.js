@@ -149,7 +149,7 @@ function addMap(element) {
     });
 
     maps[element._leaflet_id] = map;
-    console.log("added leaflet id", element._leaflet_id);
+    // console.log("added leaflet id", element._leaflet_id);
     // configureMap(element);
     return map;
 }
@@ -340,7 +340,7 @@ class LeafletMap extends HTMLElement {
         //     console.log("resizeObserver", entries);
         // });
         const resizeContent = (entries) => {
-            console.log("resizeObserver", entries);
+            // console.log("resizeObserver", entries);
         };
 
         // const resizeObserver = new ResizeObserver(entries => {
@@ -383,7 +383,7 @@ class LeafletMap extends HTMLElement {
     get markers() { return this._markers; }
     set markers(value) {
         if (value !== null && !_.isEqual(value, this._markers)) {
-            console.log("set markers", value);
+            // console.log("set markers", value);
 
             if(!this._map) {
                 console.log("Wtf? Map is not found!");
