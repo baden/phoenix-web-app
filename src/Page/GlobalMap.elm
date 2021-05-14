@@ -28,6 +28,7 @@ type alias Model =
     , address : Maybe String
     , showAddress : Bool
     , markers : List Marker
+    , track : List System.TrackPoint
     }
 
 
@@ -37,6 +38,7 @@ init mSysId mlat mlng =
       , address = Nothing
       , showAddress = False
       , markers = []
+      , track = []
       }
     , Cmd.batch [ initTask mSysId ]
     )
@@ -123,11 +125,11 @@ update msg model =
             ( { model | center = newPos }, Cmd.none, Nothing )
 
         GetBinTrack (GPS.GotData (Ok d)) ->
-            let
-                _ =
-                    Debug.log "GetBinTrack" (List.length d)
-            in
-            ( model, Cmd.none, Nothing )
+            -- let
+            --     _ =
+            --         Debug.log "GetBinTrack" (List.length d)
+            -- in
+            ( { model | track = d }, Cmd.none, Nothing )
 
         GetBinTrack (GPS.GotData (Err _)) ->
             let
@@ -158,15 +160,15 @@ latLng2String { lat, lng } =
 --     Encode.list (List.map Encode.float list)
 
 
-encodeTrack : System.SystemDocumentTrack -> Encode.Value
-encodeTrack { from, to, track } =
-    Encode.object
-        [ ( "from", Encode.int from )
-        , ( "to", Encode.int to )
-        , ( "track", Encode.list System.encodeTrackPoint track )
-
-        -- , ( "track", Encode.list (Encode.list Encode.float track) )
-        ]
+encodeTrack : List System.TrackPoint -> Encode.Value
+encodeTrack track =
+    -- encodeTrack { from, to, track } =
+    -- Encode.object
+    --     [ ( "from", Encode.int from )
+    --     , ( "to", Encode.int to )
+    --     , ( "track", Encode.list System.encodeTrackPoint track )
+    --     ]
+    Encode.list System.encodeTrackPoint track
 
 
 viewSystem : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe System.SystemDocumentTrack -> Html Msg
@@ -184,9 +186,8 @@ viewSystem appState model system mtrack =
         --
         --                     _ ->
         --                         model.center
-        track =
-            mtrack |> Maybe.withDefault (System.SystemDocumentTrack 0 0 [])
-
+        -- track =
+        --     mtrack |> Maybe.withDefault (System.SystemDocumentTrack 0 0 [])
         markers =
             case system.dynamic of
                 Nothing ->
@@ -226,7 +227,7 @@ viewSystem appState model system mtrack =
               Html.Attributes.property "center" (encodeLatLng model.center)
             , Html.Attributes.property "markers" (Encode.list encodeMarker markers)
             , Html.Attributes.property "title" (Encode.string system.title)
-            , Html.Attributes.property "track" (encodeTrack track)
+            , Html.Attributes.property "track" (encodeTrack model.track)
             , Html.Events.on "centerChanged" <| Decode.map CenterChanged <| Decode.at [ "target", "center" ] <| decodeLatLng
             ]
             []

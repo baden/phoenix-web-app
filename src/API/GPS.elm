@@ -1,36 +1,40 @@
 module API.GPS exposing (..)
 
-import Bytes exposing (Endianness(..))
+import API.System exposing (SystemDocumentTrack, TrackPoint)
+import Bytes exposing (Bytes, Endianness(..))
 import Bytes.Decode as Decode exposing (Decoder, andThen, unsignedInt16, unsignedInt32, unsignedInt8)
 import Http
 
 
 type Msg
-    = GotData (Result Http.Error (List Data))
+    = GotData (Result Http.Error (List TrackPoint))
 
 
-type alias Data =
-    { fsourse : Int
-    , sats : Int
-    , dt : Int
-    , latLng : LatLng
-    , speed : Float
-    , dir : Int
-    }
+
+-- = GotData (Result Http.Error SystemDocumentTrack)
+-- type alias Data =
+--     { fsourse : Int
+--     , sats : Int
+--     , dt : Int
+--     , latLng : LatLng
+--     , speed : Float
+--     , dir : Int
+--     }
 
 
 getBinTrack : Int -> Int -> Cmd Msg
 getBinTrack from to =
     let
         e =
-            -- Decode.expectBytes GPSGotData gpsDecoder
-            -- Http.expectBytes GotData dataDecoder
-            Http.expectBytes GotData listDataDecoder
+            -- Http.expectBytes GotData listDataDecoder
+            Http.expectBytesResponse GotData listBinaryDataDecoder
     in
     Http.riskyRequest
         { method = "GET"
         , headers = [ Http.header "Accept" "application/octet-stream" ]
         , url = "http://pil.fx.navi.cc/1.0/geos/ODY3NTU2MDQ2MTkxOTE1?from=450045&to=450188&access_token=ICfFbWKPxEoJ14cGdSl1jsH4FKJOdbvv"
+
+        -- , url = "http://pil.fx.navi.cc/1.0/geos/ODY3NTU2MDQ2MTkxOTE1?from=450045&to=450055&access_token=ICfFbWKPxEoJ14cGdSl1jsH4FKJOdbvv"
         , body = Http.emptyBody
         , expect = e
         , timeout = Nothing
@@ -38,24 +42,59 @@ getBinTrack from to =
         }
 
 
+listBinaryDataDecoder : Http.Response Bytes.Bytes -> Result Http.Error (List TrackPoint)
+listBinaryDataDecoder response =
+    case response of
+        Http.BadUrl_ u ->
+            Err (Http.BadUrl u)
+
+        Http.Timeout_ ->
+            Err Http.Timeout
+
+        Http.NetworkError_ ->
+            Err Http.NetworkError
+
+        Http.BadStatus_ metadata _ ->
+            Err (Http.BadStatus metadata.statusCode)
+
+        Http.GoodStatus_ meta body ->
+            -- Ok (Blob (Dict.get "content-type" meta.headers |> Maybe.withDefault "") body)
+            let
+                _ =
+                    Debug.log "Good status" ( meta, Bytes.width body )
+            in
+            Ok <| newDataDecoder body
+
+
+newDataDecoder : Bytes -> List TrackPoint
+newDataDecoder body =
+    let
+        body_size =
+            Bytes.width body
+
+        _ =
+            Debug.log "Try to decode" body_size
+    in
+    Decode.decode (listDataDecoder body_size) body
+        |> Maybe.withDefault []
+
+
 
 -- |> Cmd.map APIGpsMsg
 -- Пока выделим только часть полей
+-- type alias State =
+--     ( Int, List Data )
 
 
-type alias State =
-    ( Int, List Data )
-
-
-listDataDecoder : Decoder (List Data)
-listDataDecoder =
+listDataDecoder : Int -> Decoder (List TrackPoint)
+listDataDecoder body_size =
     let
         step ( n, acc ) =
             -- let
             --     _ =
             --         Debug.log "step" ( n, List.length acc )
             -- in
-            if n > 5000000 then
+            if n <= 0 then
                 Decode.succeed <|
                     Decode.Done (List.reverse acc)
 
@@ -63,10 +102,10 @@ listDataDecoder =
                 dataDecoder
                     |> Decode.map
                         (\v ->
-                            Decode.Loop ( n + 1, v :: acc )
+                            Decode.Loop ( n - 32, v :: acc )
                         )
     in
-    Decode.loop ( 0, [] ) step
+    Decode.loop ( body_size, [] ) step
 
 
 
@@ -75,7 +114,7 @@ listDataDecoder =
 --     Decode.succeed (Decode.Done xs)
 
 
-dataDecoder : Decoder Data
+dataDecoder : Decoder TrackPoint
 dataDecoder =
     unsignedInt16 LE
         |> andThen
@@ -97,7 +136,7 @@ dataDecoder =
 -- Выглядит это конечно монструозно
 
 
-decodeBody : Decoder Data
+decodeBody : Decoder TrackPoint
 decodeBody =
     unsignedInt8
         |> andThen
@@ -124,7 +163,8 @@ decodeBody =
                                                                                         Decode.bytes 11
                                                                                             |> andThen
                                                                                                 (\rest ->
-                                                                                                    Decode.succeed (Data fsource sats dt latLng (toFloat speed * 1.852 / 100.0) (dir * 2))
+                                                                                                    -- Decode.succeed (Data fsource sats dt latLng (toFloat speed * 1.852 / 100.0) (dir * 2))
+                                                                                                    Decode.succeed (TrackPoint dt latLng.lat latLng.lng)
                                                                                                 )
                                                                                     )
                                                                         )

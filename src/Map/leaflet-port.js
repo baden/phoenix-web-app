@@ -451,7 +451,7 @@ class LeafletMap extends HTMLElement {
             // console.log("L.polylineDecorator =", L.polylineDecorator);
 
             this._trackLayer = new L.featureGroup();
-            var myLines = L.polyline(value.track).addTo(this._trackLayer);
+            var myLines = L.polyline(value).addTo(this._trackLayer);
             // var myLines = L.polyline([[ 48.422656, 35.026016  ], [48.422656, 35.028016], [48.424656, 35.026016]]).addTo(this._trackLayer);
             var arrowHead = L.polylineDecorator(myLines, {
                 patterns: [
