@@ -1,9 +1,9 @@
 module Page.GlobalMap exposing (Model, Msg(..), init, setCenter, update, view, viewSystem)
 
 -- import Elm.Kernel.Json
+-- import API.GPS as GPS
 
 import API
-import API.GPS as GPS
 import API.Geo as Geo exposing (Address)
 import API.System as System exposing (State(..), SystemDocumentInfo)
 import AppState
@@ -29,7 +29,9 @@ type alias Model =
     , address : Maybe String
     , showAddress : Bool
     , markers : List Marker
-    , track : List System.TrackPoint
+
+    -- , track : List System.TrackPoint
+    , track : TrackRec
     , calendar : Calendar.Model
     }
 
@@ -40,7 +42,7 @@ init mSysId mlat mlng =
       , address = Nothing
       , showAddress = False
       , markers = []
-      , track = []
+      , track = TrackRec "" 0 0
       , calendar = Calendar.init mSysId
       }
     , Cmd.batch [ initTask mSysId ]
@@ -51,10 +53,12 @@ mstr2float d v =
     v |> Maybe.withDefault "x" |> String.toFloat |> Maybe.withDefault d
 
 
-getTrack : String -> Int -> Int -> Cmd Msg
-getTrack sysId from to =
-    -- API.websocketOut <| System.getTrack sysId from to
-    GPS.getBinTrack from to |> Cmd.map GetBinTrack
+
+-- getTrack : String -> Int -> Int -> Cmd Msg
+-- getTrack sysId from to =
+--     -- API.websocketOut <| System.getTrack sysId from to
+--     -- GPS.getBinTrack from to |> Cmd.map GetBinTrack
+--     TrackRec sysId
 
 
 type Msg
@@ -66,7 +70,7 @@ type Msg
     | Init String
     | GetTrack String Int Int
     | HideTrack String
-    | GetBinTrack GPS.Msg
+      -- | GetBinTrack GPS.Msg
     | CalendarMsg Calendar.Msg
 
 
@@ -111,11 +115,11 @@ update msg model =
 
         GetTrack sysId from to ->
             -- TODO: Индикатор загрузки трека
-            ( model, getTrack sysId from to, Nothing )
+            ( { model | track = TrackRec sysId from to }, Cmd.none, Nothing )
 
         HideTrack sysId ->
             -- ( model, Cmd.none, Just <| GMsg.HideTrack sysId )
-            ( { model | track = [] }, Cmd.none, Just <| GMsg.HideTrack sysId )
+            ( { model | track = TrackRec "" 0 0 }, Cmd.none, Just <| GMsg.HideTrack sysId )
 
         ResponseAddress (Ok address) ->
             ( { model | address = Just <| Geo.addressToString address }, Cmd.none, Nothing )
@@ -129,20 +133,18 @@ update msg model =
         CenterChanged newPos ->
             ( { model | center = newPos }, Cmd.none, Nothing )
 
-        GetBinTrack (GPS.GotData (Ok d)) ->
-            -- let
-            --     _ =
-            --         Debug.log "GetBinTrack" (List.length d)
-            -- in
-            ( { model | track = d }, Cmd.none, Nothing )
-
-        GetBinTrack (GPS.GotData (Err _)) ->
-            let
-                _ =
-                    Debug.log "Error GetBinTrack" 0
-            in
-            ( model, Cmd.none, Nothing )
-
+        -- GetBinTrack (GPS.GotData (Ok d)) ->
+        --     -- let
+        --     --     _ =
+        --     --         Debug.log "GetBinTrack" (List.length d)
+        --     -- in
+        --     ( { model | track = d }, Cmd.none, Nothing )
+        -- GetBinTrack (GPS.GotData (Err _)) ->
+        --     let
+        --         _ =
+        --             Debug.log "Error GetBinTrack" 0
+        --     in
+        --     ( model, Cmd.none, Nothing )
         CalendarMsg sub_msg ->
             let
                 ( cmodel, cmsg ) =
@@ -172,15 +174,25 @@ latLng2String { lat, lng } =
 --     Encode.list (List.map Encode.float list)
 
 
-encodeTrack : List System.TrackPoint -> Encode.Value
-encodeTrack track =
+type alias TrackRec =
+    { sysId : String
+    , from : Int
+    , to : Int
+    }
+
+
+encodeTrack : TrackRec -> Encode.Value
+encodeTrack { sysId, from, to } =
     -- encodeTrack { from, to, track } =
-    -- Encode.object
-    --     [ ( "from", Encode.int from )
-    --     , ( "to", Encode.int to )
-    --     , ( "track", Encode.list System.encodeTrackPoint track )
-    --     ]
-    Encode.list System.encodeTrackPoint track
+    Encode.object
+        [ ( "sysId", Encode.string sysId )
+        , ( "from", Encode.int from )
+        , ( "to", Encode.int to )
+        ]
+
+
+
+-- Encode.list System.encodeTrackPoint track
 
 
 viewSystem : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe System.SystemDocumentTrack -> Html Msg
@@ -246,7 +258,9 @@ viewSystem appState model system mtrack =
         , div [ class "map-debug" ]
             [ div [] [ text <| "Position: " ++ String.fromFloat model.center.lat ++ ", " ++ String.fromFloat model.center.lng ]
             , div [ class "map-bottom-control" ]
-                [ div [ class "map-bottom-control-btn", onClick (GetTrack system.id 449541 449564) ] [ text "Трек за сегодня" ]
+                [ div [ class "map-bottom-control-btn", onClick (GetTrack system.id 450045 450069) ] [ text "Трек за сегодня" ]
+
+                -- [ div [ class "map-bottom-control-btn", onClick (GetTrack system.id 450045 450188) ] [ text "Трек за сегодня" ]
                 , div [ class "map-bottom-control-btn", onClick (HideTrack system.id) ] [ text "Скрыть трек" ]
                 , div [ class "map-bottom-control-btn" ] [ Calendar.view appState model.calendar |> Html.map CalendarMsg ]
                 ]

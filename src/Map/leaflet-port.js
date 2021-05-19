@@ -16,6 +16,7 @@ import {MapTiles} from './tile_layers';
 import {MapSettings} from './settings';
 
 import debounce from './debounce';
+import gps from './navi_api';
 // import greenIconUrl from 'static/images/markers/leaf-green.png';
 
 var maps = {};
@@ -435,7 +436,6 @@ class LeafletMap extends HTMLElement {
             console.log("set track", value);
             this._track = value;
 
-
             if(!this._map) {
                 console.log("Wtf? Map is not found!");
                 return;
@@ -444,6 +444,76 @@ class LeafletMap extends HTMLElement {
             if(this._trackLayer) {
                 this._map.removeLayer(this._trackLayer);
             }
+
+
+            // Весь функционал вынесен сюда.
+            if(value.sysId == "") return;
+
+            gps(value.sysId, value.from, value.to)
+                .then(data => {
+                    console.log("parsed=", data);
+
+                    this._trackLayer = L.layerGroup();
+
+                    function onEachFeature(feature, layer) {
+                        // var congInfo = Object.values(feature.properties.member[cong])[0];
+                        layer.bindPopup(`Информация пока недоступна.`);
+                    };
+
+                    this._trackLayer = new L.featureGroup();
+                    const myLines = map_path(data.track, this._trackLayer);
+                    path_decorator(myLines, this._trackLayer );
+
+                    // var myLines = L.polyline(data.track, {
+                    //     smoothFactor: 1.0
+                    // }).addTo(this._trackLayer);
+
+                    let index = 0;
+                    const eventMarker = (e) => {
+                        let title = '?';
+
+                        switch(e.type) {
+                            case 'START':
+                                title = 'S';
+                                break;
+                            case 'HOLD':
+                                title = '';
+                                break;
+                            case 'STOP':
+                                title = `${index}`;
+                                index++;
+                                break;
+                            case 'FINISH':
+                                title = 'F';
+                                break;
+                        }
+                        return new L.Marker([e.position.lat, e.position.lng], {
+                            icon: new L.DivIcon({
+                                className: `stop-marker stop-marker-${e.type}`,
+                                html: `<span>${title}</span>`
+                            })
+                        });
+
+                    }
+
+                    // let markers = [];
+                    data.events.forEach((e, i) => {
+                        console.log("event", e);
+                        // TODO: Вынести это в отдельный модуль
+                        eventMarker(e).addTo(this._trackLayer);
+                    });
+
+                    this._trackLayer.addTo(this._map);
+
+                    this._map.fitBounds(data.bounds);
+                    if(this._map.zoom > 17) this._map.setZoom(17);
+
+
+
+                });
+
+
+            return;
 
             // Получение точек остановок
             // Попробуем пока для простоты это реализовать тут
@@ -513,15 +583,6 @@ class LeafletMap extends HTMLElement {
             //     myfeatures.setStyle({color: '#8B0000',opacity: 1,fillOpacity:1});
             // });
 
-            // Маркеры остановок
-            const stopMarker = (lat, lng, n) => {
-                return new L.Marker([lat, lng], {
-                    icon: new L.DivIcon({
-                        className: 'stop-marker',
-                        html: '<span>'+n+'</span>'
-                    })
-                });
-            }
             stops.forEach((p, i) => {
                 stopMarker(p.lat, p.lng, i+1).addTo(this._trackLayer);
             });
@@ -589,6 +650,31 @@ class LeafletMap extends HTMLElement {
     //     });
     // }
 
+}
+
+const map_path = (track, layer) => L.polyline(track, {
+    smoothFactor: 1.0
+}).addTo(layer);
+
+const path_decorator = (track, layer) => L.polylineDecorator(track, {
+    patterns: [
+        {offset: 0,
+            repeat: 40,
+            symbol: L.Symbol.arrowHead({pixelSize: 8, polygon: false, pathOptions: {color: '#000000', stroke: true, weight: 1.5, opacity: 0.5}})
+        }
+    ]
+}).addTo(layer);
+
+
+
+// Маркеры остановок
+const stopMarker = (lat, lng, n) => {
+    return new L.Marker([lat, lng], {
+        icon: new L.DivIcon({
+            className: 'stop-marker',
+            html: '<span>'+n+'</span>'
+        })
+    });
 }
 
 window.customElements.define("leaflet-map", LeafletMap);
