@@ -50,3 +50,22 @@
 /* .leaflet-default-shadow-path {
     background-image: url(/images/marker-shadow.png);
 } */
+
+
+.stop-marker {
+    border: 2px solid white;
+    box-shadow: 0px 0px 3px #000000;
+    background-color: blue;
+    color: white;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0;
+    margin-top: -10px !important;
+    margin-left: -10px !important;
+    padding: 0;
+    width: 20px !important;
+    height: 20px !important;
+    text-align: center;
+    font-size: 11px;
+    font-weight: bold;
+}

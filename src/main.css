@@ -839,3 +839,32 @@ span#passwordText {
     .map-bottom-control-btn:hover {
         background-color: #bbb;
     }
+
+
+
+.calendar_opened {
+    border: 1px solid black;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: absolute;
+    bottom: 20px;
+    z-index: 1001;
+    padding: 10px;
+    cursor: default;
+}
+
+    .calendar_opened .calenrad_weeks {
+        display: flex;
+        gap: 10px;
+    }
+    .calendar_opened .calendar_control {
+        cursor: pointer;
+        /* padding: 10px; */
+    }
+        .calendar_opened .calendar_control:hover {
+            color: white;
+            background-color: #3B6DF3;
+            outline: 2px solid #3B6DF3;
+        }

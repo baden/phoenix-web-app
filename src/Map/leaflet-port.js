@@ -102,6 +102,27 @@ L.Icon.Default.mergeOptions({
 //
 // }
 
+
+const FSOURCE = {
+    UNKNOWN:        0,
+    SUDDENSTOP:     1,
+    STOPACC:        2,
+    TIMESTOPACC:    3,
+    SLOW:           4,
+    TIMEMOVE:       5,
+    START:          6,
+    TIMESTOP:       7,
+    ANGLE:          8,
+    DELTALAT:       9,
+    DELTALONG:      10,
+    DELTA:          11,
+    DU:             12, // Фиксация по дельте изменения внешнего напряжения
+    UMAX:           13, // Фиксация по превышению внешнего напряжения установленного порога
+    SUDDENSTART:    14, // Это признак возможных проблем с акселерометром
+    SUDDENPOS:      15, // Это признак возможных проблем с акселерометром
+    TIMEINIT:       16  // Фиксация точек при первоначальной запитке
+};
+
 export default function map() {
 
     console.log('Leaflet = ', [leaflet]);
@@ -414,6 +435,7 @@ class LeafletMap extends HTMLElement {
             console.log("set track", value);
             this._track = value;
 
+
             if(!this._map) {
                 console.log("Wtf? Map is not found!");
                 return;
@@ -422,6 +444,23 @@ class LeafletMap extends HTMLElement {
             if(this._trackLayer) {
                 this._map.removeLayer(this._trackLayer);
             }
+
+            // Получение точек остановок
+            // Попробуем пока для простоты это реализовать тут
+            let stops = [];
+            let stopped = false;
+            value.forEach(p => {
+                // console.log("point", p.fsource);
+                if([FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW].includes(p.fsource)) {
+                    if(!stopped) {
+                        stops.push(p);
+                        stopped = true;
+                    }
+                } else {
+                    stopped = false;
+                }
+            });
+            console.log("Stops: ", stops);
 
             this._trackLayer = L.layerGroup();
 
@@ -451,17 +490,42 @@ class LeafletMap extends HTMLElement {
             // console.log("L.polylineDecorator =", L.polylineDecorator);
 
             this._trackLayer = new L.featureGroup();
-            var myLines = L.polyline(value).addTo(this._trackLayer);
+            var myLines = L.polyline(value, {
+                smoothFactor: 2.0
+            }).addTo(this._trackLayer);
             // var myLines = L.polyline([[ 48.422656, 35.026016  ], [48.422656, 35.028016], [48.424656, 35.026016]]).addTo(this._trackLayer);
             var arrowHead = L.polylineDecorator(myLines, {
                 patterns: [
                     {offset: 0,
                         repeat: 40,
                         // symbol: L.Symbol.dash({pixelSize: 10})
-                        symbol: L.Symbol.arrowHead({pixelSize: 8, polygon: false, pathOptions: {color: '#3388ff', stroke: true}})
+                        // symbol: L.Symbol.arrowHead({pixelSize: 8, polygon: false, pathOptions: {color: '#3388ff', stroke: true}})
+                        symbol: L.Symbol.arrowHead({pixelSize: 8, polygon: false, pathOptions: {color: '#000000', stroke: true, weight: 1.5, opacity: 0.5}})
                     }
                 ]
             }).addTo(this._trackLayer);
+
+            // var myfeatures = L.featureGroup([myLines, arrowHead]).addTo(this._trackLayer);
+            // myfeatures.on('mouseover', function(e) {
+            //     // console.log("mouseover", e.target);
+            //     // var layer = e.target;
+            //     // layer.setStyle({color: '#8B0000',opacity: 1,fillOpacity:1});
+            //     myfeatures.setStyle({color: '#8B0000',opacity: 1,fillOpacity:1});
+            // });
+
+            // Маркеры остановок
+            const stopMarker = (lat, lng, n) => {
+                return new L.Marker([lat, lng], {
+                    icon: new L.DivIcon({
+                        className: 'stop-marker',
+                        html: '<span>'+n+'</span>'
+                    })
+                });
+            }
+            stops.forEach((p, i) => {
+                stopMarker(p.lat, p.lng, i+1).addTo(this._trackLayer);
+            });
+
 
             this._trackLayer.addTo(this._map);
 

@@ -9,6 +9,7 @@ import API.System as System exposing (State(..), SystemDocumentInfo)
 import AppState
 import Components.DateTime exposing (dateTimeFormat)
 import Components.UI as UI
+import Components.UI.Calendar as Calendar
 import Html exposing (Html, a, div, h1, img, span, text)
 import Html.Attributes exposing (class, classList, href, src)
 import Html.Events exposing (onClick)
@@ -29,6 +30,7 @@ type alias Model =
     , showAddress : Bool
     , markers : List Marker
     , track : List System.TrackPoint
+    , calendar : Calendar.Model
     }
 
 
@@ -39,6 +41,7 @@ init mSysId mlat mlng =
       , showAddress = False
       , markers = []
       , track = []
+      , calendar = Calendar.init mSysId
       }
     , Cmd.batch [ initTask mSysId ]
     )
@@ -64,6 +67,7 @@ type Msg
     | GetTrack String Int Int
     | HideTrack String
     | GetBinTrack GPS.Msg
+    | CalendarMsg Calendar.Msg
 
 
 initTask : Maybe String -> Cmd Msg
@@ -110,7 +114,8 @@ update msg model =
             ( model, getTrack sysId from to, Nothing )
 
         HideTrack sysId ->
-            ( model, Cmd.none, Just <| GMsg.HideTrack sysId )
+            -- ( model, Cmd.none, Just <| GMsg.HideTrack sysId )
+            ( { model | track = [] }, Cmd.none, Just <| GMsg.HideTrack sysId )
 
         ResponseAddress (Ok address) ->
             ( { model | address = Just <| Geo.addressToString address }, Cmd.none, Nothing )
@@ -137,6 +142,13 @@ update msg model =
                     Debug.log "Error GetBinTrack" 0
             in
             ( model, Cmd.none, Nothing )
+
+        CalendarMsg sub_msg ->
+            let
+                ( cmodel, cmsg ) =
+                    model.calendar |> Calendar.update sub_msg
+            in
+            ( { model | calendar = cmodel }, cmsg |> Cmd.map CalendarMsg, Nothing )
 
 
 view : Html a
@@ -236,6 +248,7 @@ viewSystem appState model system mtrack =
             , div [ class "map-bottom-control" ]
                 [ div [ class "map-bottom-control-btn", onClick (GetTrack system.id 449541 449564) ] [ text "Трек за сегодня" ]
                 , div [ class "map-bottom-control-btn", onClick (HideTrack system.id) ] [ text "Скрыть трек" ]
+                , div [ class "map-bottom-control-btn" ] [ Calendar.view appState model.calendar |> Html.map CalendarMsg ]
                 ]
             ]
         , div [ class "locations" ]

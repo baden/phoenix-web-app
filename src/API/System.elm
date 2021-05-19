@@ -405,7 +405,8 @@ type alias SystemDocumentTrack =
 
 
 type alias TrackPoint =
-    { dt : Int
+    { fsource : Int
+    , dt : Int
     , lat : Float
     , lng : Float
     }
@@ -414,7 +415,8 @@ type alias TrackPoint =
 encodeTrackPoint : TrackPoint -> Encode.Value
 encodeTrackPoint t =
     Encode.object
-        [ ( "dt", Encode.int t.dt )
+        [ ( "fsource", Encode.int t.fsource )
+        , ( "dt", Encode.int t.dt )
         , ( "lat", Encode.float t.lat )
         , ( "lng", Encode.float t.lng )
         ]
@@ -424,6 +426,7 @@ decodeTrackPoint : JD.Decoder TrackPoint
 decodeTrackPoint =
     JD.succeed TrackPoint
         -- TODO: DT
+        |> required "fsource" JD.int
         |> required "dt" JD.int
         |> required "latitude" JD.float
         |> required "longitude" JD.float
