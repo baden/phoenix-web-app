@@ -448,8 +448,19 @@ class LeafletMap extends HTMLElement {
 
             // Весь функционал вынесен сюда.
             if(value.sysId == "") return;
+            if(value.day == "") return;
 
-            gps(value.sysId, value.from, value.to)
+            const [d,m,y] = value.day.split('/');
+            const day = new Date(y|0, (m|0)-1, d|0);
+
+            const from = ~~((+day) / 3600000)
+            const to = from + 24;
+
+            console.log("Load track for", Intl.DateTimeFormat().format(day), from, to);
+
+            // return ;
+
+            gps(value.sysId, from, to)
                 .then(data => {
                     console.log("parsed=", data);
 
@@ -498,7 +509,7 @@ class LeafletMap extends HTMLElement {
 
                     // let markers = [];
                     data.events.forEach((e, i) => {
-                        console.log("event", e);
+                        // console.log("event", e);
                         // TODO: Вынести это в отдельный модуль
                         eventMarker(e).addTo(this._trackLayer);
                     });

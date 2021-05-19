@@ -21,7 +21,7 @@ type Msg
     = DoOpen
     | DoClose
     | LoadHours (List Int)
-    | LoadTrack Int
+    | LoadTrack String
 
 
 type VisState
@@ -110,19 +110,23 @@ dayListWidget timeZone hours =
                     (\e acc ->
                         case acc of
                             [] ->
-                                ( e, hour2day e ) :: acc
+                                ( hour2day e, hour2day e ) :: acc
 
                             ( h, d ) :: rest ->
                                 if d == hour2day e then
                                     acc
 
                                 else
-                                    ( e, hour2day e ) :: acc
+                                    -- Для универсальности будем сохранять два значения:
+                                    -- 1. то что используется в JS
+                                    -- 2. то, что отображается в списке
+                                    -- Сейчас эти значения одинаковые, но например, на другом языке второе значение может отличаться
+                                    ( hour2day e, hour2day e ) :: acc
                     )
                     []
 
-        _ =
-            Debug.log "day_list" ( day_list, timeZone )
+        -- _ =
+        --     Debug.log "day_list" ( day_list, timeZone )
     in
     day_list
         |> List.map (\( h, d ) -> div [ class "calendar_control", onClick (LoadTrack h) ] [ text d ])

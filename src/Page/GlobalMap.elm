@@ -32,7 +32,8 @@ type alias Model =
     , markers : List Marker
 
     -- , track : List System.TrackPoint
-    , track : TrackRec
+    -- Теперь это просто день, строкой
+    , track : String
 
     -- Мне не нравится что тут часы а не дни. Как-то бы это преобразовать на этапе загрузки
     -- , hours : List Int
@@ -46,7 +47,7 @@ init mSysId mlat mlng =
       , address = Nothing
       , showAddress = False
       , markers = []
-      , track = TrackRec "" 0 0
+      , track = ""
 
       -- , hours = []
       , calendar = Calendar.init mSysId
@@ -74,7 +75,7 @@ type Msg
     | HideAddress
     | CenterChanged LatLng
     | Init String
-    | GetTrack String Int Int
+    | GetTrack String String
     | HideTrack String
     | GPSMsg GPS.Msg
     | CalendarMsg Calendar.Msg
@@ -120,13 +121,13 @@ update msg model =
             , Nothing
             )
 
-        GetTrack sysId from to ->
+        GetTrack sysId day ->
             -- TODO: Индикатор загрузки трека
-            ( { model | track = TrackRec sysId from to }, Cmd.none, Nothing )
+            ( { model | track = day }, Cmd.none, Nothing )
 
         HideTrack sysId ->
             -- ( model, Cmd.none, Just <| GMsg.HideTrack sysId )
-            ( { model | track = TrackRec "" 0 0 }, Cmd.none, Just <| GMsg.HideTrack sysId )
+            ( { model | track = "" }, Cmd.none, Just <| GMsg.HideTrack sysId )
 
         ResponseAddress (Ok address) ->
             ( { model | address = Just <| Geo.addressToString address }, Cmd.none, Nothing )
@@ -164,12 +165,13 @@ update msg model =
             in
             -- Может и не самое элегантное решение
             case sub_msg of
-                Calendar.LoadTrack hour_start ->
+                Calendar.LoadTrack day_string ->
                     let
                         _ =
-                            Debug.log "LoadTrack" hour_start
+                            Debug.log "LoadTrack" day_string
                     in
-                    ( { model | calendar = cmodel }, cmsg |> Cmd.map CalendarMsg, Nothing )
+                    -- GetTrack
+                    ( { model | calendar = cmodel, track = day_string }, cmsg |> Cmd.map CalendarMsg, Nothing )
 
                 _ ->
                     ( { model | calendar = cmodel }, cmsg |> Cmd.map CalendarMsg, Nothing )
@@ -194,22 +196,20 @@ latLng2String { lat, lng } =
 -- encodeFloats : List Float -> Encode.Value
 -- encodeFloats list =
 --     Encode.list (List.map Encode.float list)
+-- type alias TrackRec =
+--     { sysId : String
+--
+--     -- , from : Int
+--     , day : String
+--     }
 
 
-type alias TrackRec =
-    { sysId : String
-    , from : Int
-    , to : Int
-    }
-
-
-encodeTrack : TrackRec -> Encode.Value
-encodeTrack { sysId, from, to } =
+encodeTrack : String -> String -> Encode.Value
+encodeTrack sysId day =
     -- encodeTrack { from, to, track } =
     Encode.object
         [ ( "sysId", Encode.string sysId )
-        , ( "from", Encode.int from )
-        , ( "to", Encode.int to )
+        , ( "day", Encode.string day )
         ]
 
 
@@ -220,20 +220,6 @@ encodeTrack { sysId, from, to } =
 viewSystem : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe System.SystemDocumentTrack -> Html Msg
 viewSystem appState model system mtrack =
     let
-        --     center =
-        --         case system.dynamic of
-        --             Nothing ->
-        --                 model.center
-        --
-        --             Just dynamic ->
-        --                 case ( dynamic.latitude, dynamic.longitude ) of
-        --                     ( Just latitude, Just longitude ) ->
-        --                         LatLng latitude longitude
-        --
-        --                     _ ->
-        --                         model.center
-        -- track =
-        --     mtrack |> Maybe.withDefault (System.SystemDocumentTrack 0 0 [])
         markers =
             case system.dynamic of
                 Nothing ->
@@ -247,44 +233,23 @@ viewSystem appState model system mtrack =
                         _ ->
                             []
     in
-    -- div []
-    -- [ --div [ class "leaflet-map", Html.Attributes.property "center" (Encode.string "35.0, 48.0") ] []
-    -- lazy2 mapAt lat lon
-    -- , div [ class "control" ]
-    -- [ -- , div [] [ Html.text <| "Центр: " ++ (String.fromFloat lat) ++ ", " ++ (String.fromFloat lon) ]
-    -- -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.4226036 35.0252341) ]
-    -- --     [ Html.text "На высоковольтную" ]
-    -- -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter 48.5013798 34.6234255) ]
-    -- --     [ Html.text "Домой" ]
-    -- div []
-    -- [ Html.text system.title
-    -- , div [] (sysPosition appState system.id system.dynamic model.address)
-    -- ]
-    -- , UI.linkIconTextButton "gamepad" "Управление" ("/system/" ++ system.id)
-    -- , UI.linkIconTextButton "clone" "Выбрать объект" "/"
-    -- ]
-    -- ]
     div [ class "container-map" ]
-        -- [ lazy mapAt center
-        [ --mapAt model.center model.markers
-          -- mapAt model.center markers
-          Html.node "leaflet-map"
+        [ Html.node "leaflet-map"
             [ --Html.Attributes.attribute "data-map-center" (latLng2String model.center)
               Html.Attributes.property "center" (encodeLatLng model.center)
             , Html.Attributes.property "markers" (Encode.list encodeMarker markers)
             , Html.Attributes.property "title" (Encode.string system.title)
-            , Html.Attributes.property "track" (encodeTrack model.track)
+            , Html.Attributes.property "track" (encodeTrack system.id model.track)
             , Html.Events.on "centerChanged" <| Decode.map CenterChanged <| Decode.at [ "target", "center" ] <| decodeLatLng
             ]
             []
         , div [ class "map-debug" ]
-            [ div [] [ text <| "Position: " ++ String.fromFloat model.center.lat ++ ", " ++ String.fromFloat model.center.lng ]
-            , div [ class "map-bottom-control" ]
-                [ div [ class "map-bottom-control-btn", onClick (GetTrack system.id 450045 450069) ] [ text "Трек за сегодня" ]
-
-                -- [ div [ class "map-bottom-control-btn", onClick (GetTrack system.id 450045 450188) ] [ text "Трек за сегодня" ]
+            [ --div [] [ text <| "Position: " ++ String.fromFloat model.center.lat ++ ", " ++ String.fromFloat model.center.lng ]
+              div [ class "map-bottom-control" ]
+                [ -- div [ class "map-bottom-control-btn", onClick (GetTrack system.id "10/05/2021") ] [ text "Трек за сегодня" ]
+                  -- [ div [ class "map-bottom-control-btn", onClick (GetTrack system.id 450045 450188) ] [ text "Трек за сегодня" ]
+                  div [ class "map-bottom-control-btn" ] [ Calendar.view appState model.calendar |> Html.map CalendarMsg ]
                 , div [ class "map-bottom-control-btn", onClick (HideTrack system.id) ] [ text "Скрыть трек" ]
-                , div [ class "map-bottom-control-btn" ] [ Calendar.view appState model.calendar |> Html.map CalendarMsg ]
                 ]
             ]
         , div [ class "locations" ]
