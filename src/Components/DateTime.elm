@@ -1,6 +1,6 @@
 module Components.DateTime exposing (..)
 
-import Time
+import Time exposing (Posix, Zone)
 
 
 dateFormat : Time.Zone -> Time.Posix -> String
@@ -95,3 +95,18 @@ toNumMonth month =
 
         Time.Dec ->
             "12"
+
+
+dateFormatFull : Time.Zone -> Time.Posix -> String
+dateFormatFull timeZone time =
+    let
+        year =
+            Time.toYear timeZone time |> String.fromInt
+
+        month =
+            Time.toMonth timeZone time |> toNumMonth
+
+        day =
+            Time.toDay timeZone time |> String.fromInt |> String.padLeft 2 '0'
+    in
+    day ++ "/" ++ month ++ "/" ++ year

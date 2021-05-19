@@ -868,3 +868,12 @@ span#passwordText {
             background-color: #3B6DF3;
             outline: 2px solid #3B6DF3;
         }
+
+        .calendar_opened .calendar_day_list {
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .calendar_opened .calendar_day_list > div {
+            padding: 5px 0;
+        }

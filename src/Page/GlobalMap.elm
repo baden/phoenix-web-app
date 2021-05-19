@@ -1,9 +1,9 @@
 module Page.GlobalMap exposing (Model, Msg(..), init, setCenter, update, view, viewSystem)
 
 -- import Elm.Kernel.Json
--- import API.GPS as GPS
 
 import API
+import API.GPS as GPS
 import API.Geo as Geo exposing (Address)
 import API.System as System exposing (State(..), SystemDocumentInfo)
 import AppState
@@ -21,6 +21,7 @@ import Msg as GMsg
 import Page.Map.Types exposing (..)
 import Process
 import Task
+import Time
 import Types.Dt as DT
 
 
@@ -32,6 +33,9 @@ type alias Model =
 
     -- , track : List System.TrackPoint
     , track : TrackRec
+
+    -- Мне не нравится что тут часы а не дни. Как-то бы это преобразовать на этапе загрузки
+    -- , hours : List Int
     , calendar : Calendar.Model
     }
 
@@ -43,6 +47,8 @@ init mSysId mlat mlng =
       , showAddress = False
       , markers = []
       , track = TrackRec "" 0 0
+
+      -- , hours = []
       , calendar = Calendar.init mSysId
       }
     , Cmd.batch [ initTask mSysId ]
@@ -70,7 +76,7 @@ type Msg
     | Init String
     | GetTrack String Int Int
     | HideTrack String
-      -- | GetBinTrack GPS.Msg
+    | GPSMsg GPS.Msg
     | CalendarMsg Calendar.Msg
 
 
@@ -98,7 +104,8 @@ update msg model =
             --     _ =
             --         Debug.log "Init map" 0
             -- in
-            ( model, Cmd.batch [ API.websocketOut <| System.getHours sysId ], Nothing )
+            -- ( model, Cmd.batch [ API.websocketOut <| System.getHours sysId ], Nothing )
+            ( model, Cmd.batch [ GPS.getHours sysId |> Cmd.map GPSMsg ], Nothing )
 
         SetCenter newPos ->
             ( { model | center = newPos }, Cmd.none, Nothing )
@@ -133,24 +140,39 @@ update msg model =
         CenterChanged newPos ->
             ( { model | center = newPos }, Cmd.none, Nothing )
 
-        -- GetBinTrack (GPS.GotData (Ok d)) ->
-        --     -- let
-        --     --     _ =
-        --     --         Debug.log "GetBinTrack" (List.length d)
-        --     -- in
-        --     ( { model | track = d }, Cmd.none, Nothing )
-        -- GetBinTrack (GPS.GotData (Err _)) ->
-        --     let
-        --         _ =
-        --             Debug.log "Error GetBinTrack" 0
-        --     in
-        --     ( model, Cmd.none, Nothing )
+        GPSMsg (GPS.GotHours (Ok d)) ->
+            let
+                -- _ =
+                --     Debug.log "GotHours (TODO: как-то нужно преобразовать в дни)" d
+                cmodel =
+                    model.calendar |> Calendar.update (Calendar.LoadHours d.hours) |> Tuple.first
+            in
+            -- ( { model | track = d }, Cmd.none, Nothing )
+            ( { model | calendar = cmodel }, Cmd.none, Nothing )
+
+        GPSMsg (GPS.GotHours (Err _)) ->
+            let
+                _ =
+                    Debug.log "Error GetBinTrack" 0
+            in
+            ( model, Cmd.none, Nothing )
+
         CalendarMsg sub_msg ->
             let
                 ( cmodel, cmsg ) =
                     model.calendar |> Calendar.update sub_msg
             in
-            ( { model | calendar = cmodel }, cmsg |> Cmd.map CalendarMsg, Nothing )
+            -- Может и не самое элегантное решение
+            case sub_msg of
+                Calendar.LoadTrack hour_start ->
+                    let
+                        _ =
+                            Debug.log "LoadTrack" hour_start
+                    in
+                    ( { model | calendar = cmodel }, cmsg |> Cmd.map CalendarMsg, Nothing )
+
+                _ ->
+                    ( { model | calendar = cmodel }, cmsg |> Cmd.map CalendarMsg, Nothing )
 
 
 view : Html a
