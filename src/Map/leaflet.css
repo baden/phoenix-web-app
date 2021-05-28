@@ -71,12 +71,12 @@
 }
 
 .stop-marker-START {
-    z-index: 1001 !important;
+    z-index: 1003 !important;
     background-color: green;
 }
 
 .stop-marker-FINISH {
-    z-index: 1001 !important;
+    z-index: 1003 !important;
     background-color: red;
 }
 
@@ -87,4 +87,16 @@
     height: 6px !important;
     margin-top: -3px !important;
     margin-left: -3px !important;
+    z-index: 1001 !important;
+}
+
+.stop-marker-STOP {
+    z-index: 1002 !important;
+}
+
+.hovered-control {
+    cursor: pointer;
+}
+.hovered-control:hover {
+    background-color: #f4f4f4;
 }

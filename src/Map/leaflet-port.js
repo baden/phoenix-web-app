@@ -12,12 +12,19 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 
 import './leaflet.css';
+// import './eventmarker.css';
 import {MapTiles} from './tile_layers';
 import {MapSettings} from './settings';
 
 import debounce from './debounce';
 import gps from './navi_api';
+// import * as d3 from 'd3';
+console.log("d3.js is here", d3);
 // import greenIconUrl from 'static/images/markers/leaf-green.png';
+
+import EventMarker from './eventmarker';
+// console.log("EventMarker", EventMarker);
+import {mIcon, iIcon} from './markers';
 
 var maps = {};
 
@@ -27,7 +34,11 @@ const attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">Ope
 
 const tileLayers = MapTiles();
 const settings = MapSettings();
-// console.log("settings = ", settings);
+
+import {center_controls} from './center-controls.js';
+console.log("center_controls = ", center_controls);
+// Patch Leflet for support center controls
+center_controls(L);
 // console.log('tileLayers = ', tileLayers);
 
 // console.log("Lem = ", Lem);
@@ -136,8 +147,17 @@ function addMap(element) {
     var expanded = false;
     console.log("add map element (TBD)", [element]);
     if(element.hasOwnProperty('_leaflet_id')) return;
+
+
+    const currentPos = L.layerGroup([]);
+    // maps[element._leaflet_id]
+    const overlayMaps = {
+        "Текущее положение": currentPos
+    };
+
+
     var myOptions = {
-        layers: tileLayers.baseLayers[settings.baseLayer],
+        layers: [tileLayers.baseLayers[settings.baseLayer], currentPos],
         minZoom: 2,
         zoomAnimation: true,
         fadeAnimation: false,
@@ -156,7 +176,9 @@ function addMap(element) {
 
     // tileLayers.baseLayers[defaultLayer].addTo(map);
 
-    var layersControl = new L.Control.Layers(tileLayers.baseLayers);
+
+
+    var layersControl = new L.Control.Layers(tileLayers.baseLayers, overlayMaps, {autoZIndex: true});
     layersControl.addTo(map);
 
     L.control.zoom({
@@ -169,6 +191,74 @@ function addMap(element) {
         settings.save();
         // gtag('event', 'map', { event_category: 'change_type', event_label: evt.name });
     });
+
+    // TODO: Возможно стоит воспользоваться этим?
+    // https://github.com/domoritz/leaflet-locatecontrol/blob/gh-pages/src/L.Control.Locate.js
+
+    let uRhere;
+    map.on('locationfound', (ev) => {
+        console.log("locationfound", ev);
+        uRhere = ev.latlng;
+        L.marker([ev.latlng.lat, ev.latlng.lng], {title: "U R here", icon: mIcon('face')})
+            .bindTooltip( String("Вы здесь"), {
+                permanent: false,
+                opacity: 0.7,
+                direction: "bottom",
+                className: 'icon-car_icon'
+            })
+            .addTo(currentPos);
+            // addLayer
+        // mIncon([ev.latlng.lat, ev.latlng.lng]).addTo(map);
+        // ev.latlng
+    });
+    map.on('locationerror', (ev) => {
+        console.log("locationerror", ev);
+    });
+    map.locate({
+        // watch: true,
+        // setView: true,
+        // maxZoom: 14,
+        enableHighAccuracy: true
+    });
+
+
+    const Mapmode = L.Control.extend({
+        options: { position: 'bottomleft'},
+        onAdd: map => {
+            const container = L.DomUtil.create('div', 'leaflet-control-layers leaflet-control-layers-expanded leaflet-control hovered-control');
+            container.id = 'leaflet-control-custom-container-buffer';
+            container.style = 'padding-right: 5px;padding-bottom: 2px;';
+            container.title = 'Показать где я';
+            // const item = L.DomUtil.create('div', null, container);
+            container.innerHTML = `<i style="font-size: 20px; margin: 0; padding: 0" class="material-icons">location_searching</i>`;
+
+            // const checkboxInnerContainer = L.DomUtil.create('div', 'leaflet-control-custom-checkbox-buffer-container', checkbox
+            L.DomEvent.on(container, 'click', event => {
+                console.log("clicked", event);
+                if(uRhere) {
+                    map.flyTo(uRhere);
+                }
+                // this.setState({ showBuffer: event.target.checked })
+            });
+            return container;
+        }
+    });
+    map.addControl(new Mapmode());
+
+    // Пока не уверен что хочу сюда это перенести.
+    if(false) {
+        const Tracks = L.Control.extend({
+            options: {position: 'topcenter'},
+            onAdd: map => {
+                const container = L.DomUtil.create('div', 'leaflet-control-layers leaflet-control-layers-expanded leaflet-control hovered-control');
+                container.innerHTML = `TPB(Tracks)`
+                return container;
+
+            }
+        });
+        map.addControl(new Tracks());
+    }
+
 
     maps[element._leaflet_id] = map;
     // console.log("added leaflet id", element._leaflet_id);
@@ -275,69 +365,6 @@ class LeafletMap extends HTMLElement {
 
 
 
-        // TRY GeoJSON
-        // 48.422656 35.026016
-        // var geojsonFeature = {
-        //     "type": "Feature",
-        //     "properties": {
-        //         "name": "Coors Field",
-        //         "amenity": "Baseball Stadium",
-        //         "popupContent": "This is where the Rockies play!"
-        //     },
-        //     "geometry": {
-        //         "type": "Point",
-        //         "coordinates": [35.026016, 48.422656]
-        //     }
-        // };
-        // L.geoJSON(geojsonFeature).addTo(this._map);
-
-        var myLines = [{
-            "type": "LineString",
-            "coordinates": [[ 35.026016, 48.422656 ], [35.028016, 48.422656], [35.026016, 48.424656]]
-        }, {
-            "type": "LineString",
-            "coordinates": [[-105, 40], [-110, 45], [-115, 55]]
-        }];
-
-        // var myLayer = L.geoJSON().addTo(this._map);
-        // myLayer.addData(myLines);
-
-        // this._trackLayer = L.geoJSON().addTo(this._map);
-
-        var data_points = {
-            "type": "FeatureCollection",
-            "name": "test-points-short-named",
-            "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
-            "features": [
-            { "type": "Feature", "properties": { "name": "<span class=\"icon-car_icon image-logo\"></span> " + this._title }, "geometry": { "type": "Point", "coordinates": [ 35.026016, 48.422656 ] } }
-            // { "type": "Feature", "properties": { "name": "6"}, "geometry": { "type": "Point", "coordinates": [ -135.02480935075292, 60.672888247036376 ] } },
-            // { "type": "Feature", "properties": { "name": "12"}, "geometry": { "type": "Point", "coordinates": [ -135.02449372349508, 60.672615176262731 ] } },
-            // { "type": "Feature", "properties": { "name": "25"}, "geometry": { "type": "Point", "coordinates": [ -135.0240752514004, 60.673313811878423 ] } }
-            ]};
-
-            // var customTooltip =
-            // var customTooltip = document.createElement("div");
-            // customTooltip.className = "custom-tooltip";
-            // customTooltip.innerHTML = "Boo:<span class=\"icon-car_icon image-logo\"></span>";
-
-            // this.appendChild(container);
-
-            var pointLayer = L.geoJSON(null, {
-              pointToLayer: function(feature, latlng){
-                const label = String(feature.properties.name) // .bindTooltip can't use straight 'feature.properties.attribute'
-                return new L.CircleMarker(latlng, {
-                  radius: 1,
-              }).bindTooltip( label /*customTooltip*/, {
-                  permanent: true,
-                  opacity: 1.0,
-                  direction: "bottom",
-                  className: 'icon-car_icon'
-              }).openTooltip();
-                }
-              });
-            pointLayer.addData(data_points);
-            this._map.addLayer(pointLayer);
-
         // this._center_marker = L.marker([lat, lng], {icon: DefaultIcon}).addTo(this._map);
         // L.marker([lat, lng], {icon: redMarker}).addTo(this._map);
 
@@ -413,9 +440,22 @@ class LeafletMap extends HTMLElement {
             }
 
             value.forEach(item => {
-                let {pos, title} = item;
+                let {pos, title, icon} = item;
                 // L.marker([pos.lat, pos.lng], {icon: redMarker}).addTo(this._map);
-                L.marker([pos.lat, pos.lng]).addTo(this._map);
+                // const tooltip = `${title}`;
+                const marker = L.marker([pos.lat, pos.lng], {icon: iIcon(icon)})
+                    .bindTooltip( String(title), {
+                        permanent: false,
+                        opacity: 0.7,
+                        direction: "bottom",
+                        className: 'icon-car_icon'
+                    })
+                    // .openTooltip()
+                    .addTo(this._map);
+
+                // setTimeout(() => {
+                //     marker.closeTooltip()
+                // }, 5000);
 
             });
 
@@ -475,10 +515,10 @@ class LeafletMap extends HTMLElement {
                     const myLines = map_path(data.track, this._trackLayer);
                     path_decorator(myLines, this._trackLayer );
 
-                    // var myLines = L.polyline(data.track, {
-                    //     smoothFactor: 1.0
-                    // }).addTo(this._trackLayer);
-
+                    // // var myLines = L.polyline(data.track, {
+                    // //     smoothFactor: 1.0
+                    // // }).addTo(this._trackLayer);
+                    //
                     let index = 0;
                     const eventMarker = (e) => {
                         let title = '?';
@@ -514,6 +554,11 @@ class LeafletMap extends HTMLElement {
                         eventMarker(e).addTo(this._trackLayer);
                     });
 
+                    // const eventmarker = new EventMarker();
+                    // console.log("eventmarker", eventmarker);
+                    // eventmarker.addTo(this._trackLayer);
+                    // eventmarker.setData(data.events);
+
                     this._trackLayer.addTo(this._map);
 
                     this._map.fitBounds(data.bounds);
@@ -522,124 +567,6 @@ class LeafletMap extends HTMLElement {
 
 
                 });
-
-
-            return;
-
-            // Получение точек остановок
-            // Попробуем пока для простоты это реализовать тут
-            let stops = [];
-            let stopped = false;
-            value.forEach(p => {
-                // console.log("point", p.fsource);
-                if([FSOURCE.STOPACC, FSOURCE.TIMESTOPACC, FSOURCE.TIMESTOP, FSOURCE.SLOW].includes(p.fsource)) {
-                    if(!stopped) {
-                        stops.push(p);
-                        stopped = true;
-                    }
-                } else {
-                    stopped = false;
-                }
-            });
-            console.log("Stops: ", stops);
-
-            this._trackLayer = L.layerGroup();
-
-            // var layer_Onthogenetic_Juveniles_Migration_13 = L.layerGroup({
-            //   attribution: '',
-            //   interactive: false,
-            //   layerName: 'layer_Onthogenetic_Juveniles_Migration_13',
-            //   pane: 'pane_Onthogenetic_Juveniles_Migration_13',
-            // });
-            //
-            // function pop_Onthogenetic_Juveniles_Migration_13(feature, layer) {
-            //   var polyline = L.polyline(layer.getLatLngs()).addTo(layer_Onthogenetic_Juveniles_Migration_13);
-            //   var arrowHead = L.polylineDecorator(polyline, {
-            //     patterns: [
-            //       {offset: '100%', repeat: 0, symbol: L.Symbol.arrowHead({pixelSize: 60, polygon: false, pathOptions: {stroke: true}})}
-            //     ]
-            //   }).addTo(layer_Onthogenetic_Juveniles_Migration_13);
-            //   // your code
-            // }
-
-            // Style functions
-            function onEachFeature(feature, layer) {
-                // var congInfo = Object.values(feature.properties.member[cong])[0];
-                layer.bindPopup(`Информация пока недоступна.`);
-            };
-
-            // console.log("L.polylineDecorator =", L.polylineDecorator);
-
-            this._trackLayer = new L.featureGroup();
-            var myLines = L.polyline(value, {
-                smoothFactor: 2.0
-            }).addTo(this._trackLayer);
-            // var myLines = L.polyline([[ 48.422656, 35.026016  ], [48.422656, 35.028016], [48.424656, 35.026016]]).addTo(this._trackLayer);
-            var arrowHead = L.polylineDecorator(myLines, {
-                patterns: [
-                    {offset: 0,
-                        repeat: 40,
-                        // symbol: L.Symbol.dash({pixelSize: 10})
-                        // symbol: L.Symbol.arrowHead({pixelSize: 8, polygon: false, pathOptions: {color: '#3388ff', stroke: true}})
-                        symbol: L.Symbol.arrowHead({pixelSize: 8, polygon: false, pathOptions: {color: '#000000', stroke: true, weight: 1.5, opacity: 0.5}})
-                    }
-                ]
-            }).addTo(this._trackLayer);
-
-            // var myfeatures = L.featureGroup([myLines, arrowHead]).addTo(this._trackLayer);
-            // myfeatures.on('mouseover', function(e) {
-            //     // console.log("mouseover", e.target);
-            //     // var layer = e.target;
-            //     // layer.setStyle({color: '#8B0000',opacity: 1,fillOpacity:1});
-            //     myfeatures.setStyle({color: '#8B0000',opacity: 1,fillOpacity:1});
-            // });
-
-            stops.forEach((p, i) => {
-                stopMarker(p.lat, p.lng, i+1).addTo(this._trackLayer);
-            });
-
-
-            this._trackLayer.addTo(this._map);
-
-            // const myLines = [{
-            //     "type": "LineString",
-            //     "coordinates": value.track
-            // }];
-            // // this._trackLayer =
-            // L.geoJSON(myLines, {
-            //         // onEachFeature: pop_Onthogenetic_Juveniles_Migration_13
-            //         onEachFeature: (feature, layer) => {
-            //             // console.log("onEachFeature", feature, layer);
-            //             L.polylineDecorator(layer, {
-            //                 patterns: [
-            //                     {offset: 0,
-            //                         repeat: 40,
-            //                         symbol: L.Symbol.arrowHead({pixelSize: 8, polygon: false, pathOptions: {color: '#3388ff', stroke: true}})
-            //                     }
-            //                 ]
-            //             // }).addTo(this._map);; //.addTo(this._trackLayer);
-            //             }).addTo(this._trackLayer); //.addTo(this._trackLayer);
-            //         },
-            //         // onEachFeature: onEachFeature,
-            //         // pointToLayer: iro
-            //         // pointToLayer: function (feature, latlng) {
-            //         //     return L.marker(latlng, {
-            //         //         icon: arrowIcon,
-            //         //         riseOnHover: true,
-            //         //         rotationAngle: feature.properties.orientation,
-            //         //         rotationOrigin: 'center center'
-            //         //     })
-            //         // }
-            //     }).addTo(this._trackLayer);
-            //
-            // this._trackLayer.addTo(this._map);
-            // if(this._trackLayer) {
-            //     console.log("update data", myLines);
-            // this._trackLayer.addData(myLines);
-            // }
-            console.log("_trackLayer", this._trackLayer);
-
-
         }
     }
 
@@ -664,7 +591,7 @@ class LeafletMap extends HTMLElement {
 }
 
 const map_path = (track, layer) => L.polyline(track, {
-    smoothFactor: 1.0
+    smoothFactor: 1.6
 }).addTo(layer);
 
 const path_decorator = (track, layer) => L.polylineDecorator(track, {

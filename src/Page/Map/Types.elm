@@ -29,19 +29,22 @@ decodeLatLng =
 type alias Marker =
     { pos : LatLng
     , title : String
+    , icon : String
     }
 
 
 encodeMarker : Marker -> Encode.Value
-encodeMarker { pos, title } =
+encodeMarker { pos, title, icon } =
     Encode.object
         [ ( "pos", encodeLatLng pos )
         , ( "title", Encode.string title )
+        , ( "icon", Encode.string icon )
         ]
 
 
 decodeMarker : Decode.Decoder Marker
 decodeMarker =
-    Decode.map2 Marker
+    Decode.map3 Marker
         (Decode.field "pos" decodeLatLng)
         (Decode.field "title" Decode.string)
+        (Decode.field "icon" Decode.string)

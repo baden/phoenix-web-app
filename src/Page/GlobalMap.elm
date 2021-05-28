@@ -115,7 +115,7 @@ update msg model =
             ( { model
                 | showAddress = True
                 , center = LatLng lat lng
-                , markers = [ Marker (LatLng lat lng) "TBD" ]
+                , markers = [ Marker (LatLng lat lng) "???" "car" ]
               }
             , Geo.getAddress ( lat, lng ) ResponseAddress
             , Nothing
@@ -152,10 +152,10 @@ update msg model =
             ( { model | calendar = cmodel }, Cmd.none, Nothing )
 
         GPSMsg (GPS.GotHours (Err _)) ->
-            let
-                _ =
-                    Debug.log "Error GetBinTrack" 0
-            in
+            -- let
+            --     _ =
+            --         Debug.log "Error GetBinTrack" 0
+            -- in
             ( model, Cmd.none, Nothing )
 
         CalendarMsg sub_msg ->
@@ -166,10 +166,10 @@ update msg model =
             -- Может и не самое элегантное решение
             case sub_msg of
                 Calendar.LoadTrack day_string ->
-                    let
-                        _ =
-                            Debug.log "LoadTrack" day_string
-                    in
+                    -- let
+                    --     _ =
+                    --         Debug.log "LoadTrack" day_string
+                    -- in
                     -- GetTrack
                     ( { model | calendar = cmodel, track = day_string }, cmsg |> Cmd.map CalendarMsg, Nothing )
 
@@ -228,7 +228,7 @@ viewSystem appState model system mtrack =
                 Just dynamic ->
                     case ( dynamic.latitude, dynamic.longitude ) of
                         ( Just latitude, Just longitude ) ->
-                            [ Marker (LatLng latitude longitude) "TBD" ]
+                            [ Marker (LatLng latitude longitude) system.title system.icon ]
 
                         _ ->
                             []
@@ -243,14 +243,13 @@ viewSystem appState model system mtrack =
             , Html.Events.on "centerChanged" <| Decode.map CenterChanged <| Decode.at [ "target", "center" ] <| decodeLatLng
             ]
             []
-        , div [ class "map-debug" ]
-            [ --div [] [ text <| "Position: " ++ String.fromFloat model.center.lat ++ ", " ++ String.fromFloat model.center.lng ]
-              div [ class "map-bottom-control" ]
-                [ -- div [ class "map-bottom-control-btn", onClick (GetTrack system.id "10/05/2021") ] [ text "Трек за сегодня" ]
-                  -- [ div [ class "map-bottom-control-btn", onClick (GetTrack system.id 450045 450188) ] [ text "Трек за сегодня" ]
-                  div [ class "map-bottom-control-btn" ] [ Calendar.view appState model.calendar |> Html.map CalendarMsg ]
-                , div [ class "map-bottom-control-btn", onClick (HideTrack system.id) ] [ text "Скрыть трек" ]
-                ]
+        , --div [] [ text <| "Position: " ++ String.fromFloat model.center.lat ++ ", " ++ String.fromFloat model.center.lng ]
+          div [ class "map-bottom-control" ]
+            [ -- div [ class "map-bottom-control-btn", onClick (GetTrack system.id "10/05/2021") ] [ text "Трек за сегодня" ]
+              -- [ div [ class "map-bottom-control-btn", onClick (GetTrack system.id 450045 450188) ] [ text "Трек за сегодня" ]
+              -- div [ class "map-bottom-control-btn" ] [ Calendar.view appState model.calendar |> Html.map CalendarMsg ]
+              Calendar.view appState model.calendar |> Html.map CalendarMsg
+            , div [ class "map-bottom-control-btn", onClick (HideTrack system.id) ] [ text "X" ]
             ]
         , div [ class "locations" ]
             -- [ span [ class "locations-btn open-locations", onClick (SetCenter 48.4226036 35.0252341) ]
@@ -260,7 +259,8 @@ viewSystem appState model system mtrack =
 
                 _ ->
                     text ""
-            , span [ class "tracking" ] [ text "Сегодня" ]
+
+            -- , span [ class "tracking" ] [ text "Сегодня" ]
             , div [ class "locations-wr", classList [ ( "show", model.showAddress ) ] ]
                 [ div [ class "locations-notifications" ]
                     [ span [ class "image icon-location" ] []

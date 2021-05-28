@@ -2,8 +2,8 @@ module Components.UI.Calendar exposing (..)
 
 import AppState exposing (AppState)
 import Components.DateTime
-import Html exposing (Html, div, table, td, text, tr)
-import Html.Attributes exposing (class)
+import Html exposing (Html, button, div, i, table, td, text, tr)
+import Html.Attributes as HA exposing (class)
 import Html.Events as HE exposing (onClick)
 import Html.Lazy exposing (lazy, lazy2)
 import List.Extra exposing (unique)
@@ -27,6 +27,7 @@ type Msg
 type VisState
     = Closed
     | Opened
+    | Choosed String
 
 
 
@@ -54,10 +55,11 @@ update msg model =
         LoadHours hs ->
             ( { model | hours = hs }, Cmd.none )
 
-        LoadTrack hour_start ->
+        LoadTrack day ->
             -- TODO: Это событие будет перехвачено в родительском элементе
             -- Решение наверное не самое элегантное
-            update DoClose model
+            -- update DoClose model
+            ( { model | state = Choosed day }, Cmd.none )
 
 
 
@@ -73,12 +75,25 @@ view appState model =
         Opened ->
             viewCalendarWidget appState model
 
+        Choosed day ->
+            viewChoosed day appState model
+
 
 viewPanelWidget : AppState -> Model -> Html Msg
 viewPanelWidget appState model =
-    div [ onClick DoOpen ]
-        [ text "Календарь"
-        ]
+    -- div [ onClick DoOpen ]
+    -- [ text "Треки" ]
+    Html.button [ class "btn btn-md btn-secondary", onClick DoOpen ]
+        [ Html.i [ class "material-icons" ] [ text "moving" ], text " ", text "" ]
+
+
+viewChoosed : String -> AppState -> Model -> Html Msg
+viewChoosed day appState model =
+    -- div [ onClick DoOpen ]
+    --     [ text day
+    --     ]
+    Html.button [ class "btn btn-md btn-secondary", onClick DoOpen ]
+        [ Html.i [ class "material-icons" ] [ text "moving" ], text " ", text day ]
 
 
 viewCalendarWidget : AppState -> Model -> Html Msg

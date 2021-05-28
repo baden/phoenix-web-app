@@ -951,7 +951,7 @@ const getHoursFromPoints = function (points, startIndex, stopIndex) {
 
 
 export function gps(sysId, from, to, options_) {
-    const url = `http://pil.fx.navi.cc/1.0/geos/${sysId}?from=${from}&to=${to}&access_token=${API_TOKEN}`;
+    const url = `https://fx.navi.cc/1.0/geos/${sysId}?from=${from}&to=${to}&access_token=${API_TOKEN}`;
     const options = options_ || DEFAULT_OPTIONS;
     console.log("gps", sysId, from, to);
 

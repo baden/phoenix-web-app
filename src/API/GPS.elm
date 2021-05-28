@@ -57,7 +57,7 @@ getHours sysId =
     Http.riskyRequest
         { method = "GET"
         , headers = [ Http.header "Accept" "application/json" ]
-        , url = "http://pil.fx.navi.cc/1.0/geos/" ++ sysId ++ "/hours?from=0&rand=1963672576&to=1000000&access_token=fenix_wip_token"
+        , url = "https://fx.navi.cc/1.0/geos/" ++ sysId ++ "/hours?from=0&rand=1963672576&to=1000000&access_token=fenix_wip_token"
         , body = Http.emptyBody
         , expect = Http.expectJson GotHours decodeHoursResp
         , timeout = Nothing

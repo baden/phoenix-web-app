@@ -85,6 +85,9 @@ leaflet-map {
     background: url(/static/media/background.dc0fba31.png) no-repeat center/cover;
 }
 
+.leaflet-right {
+    z-index: 1003 !important;
+}
 
 input.sms_code {
     text-align: left;
@@ -704,6 +707,14 @@ button[disabled] {
     cursor: not-allowed;
 }
 
+/* TODO: Перенести в тему */
+.menu-show-btn-mob {
+    width: 44px;
+    height: 44px;
+    border: 2px solid rgba(0,0,0,0.2);
+    background-clip: padding-box;
+}
+
 /* .btn { */
     /* padding: 5px 10px 5px 10px; */
     /* white-space: nowrap;
@@ -824,11 +835,26 @@ span#passwordText {
     font-size: .9rem;
 }
 
+
 .map-bottom-control {
-    display: block;
+    display: flex;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    z-index: 1000;
+    /* background-color: white;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    background-clip: padding-box;
+    border-radius: 4px; */
+
     /* height: 40px; */
     /* background-color: white; */
     /* padding: 10px; */
+}
+
+.locations {
+    right: 10px;
 }
 
 .map-bottom-control-btn {
@@ -837,9 +863,8 @@ span#passwordText {
     cursor: pointer;
 }
     .map-bottom-control-btn:hover {
-        background-color: #bbb;
+        background-color: #f4f4f4;
     }
-
 
 
 .calendar_opened {
@@ -869,11 +894,11 @@ span#passwordText {
             outline: 2px solid #3B6DF3;
         }
 
-        .calendar_opened .calendar_day_list {
+        .calendar_day_list {
             max-height: 300px;
             overflow-y: auto;
             overflow-x: hidden;
         }
-        .calendar_opened .calendar_day_list > div {
+        .calendar_day_list > div {
             padding: 5px 0;
         }

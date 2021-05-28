@@ -1,0 +1,151 @@
+.eventmarker{
+    position: absolute;
+    /* // position: relative;
+    // width: 32px;
+    // height: 32px;
+    // border: 1px solid black; */
+    left: 0px;
+    top: 0px;
+    /* // width: 500px;
+    // height: 500px; */
+}
+
+.eventmarker .track {
+    position: absolute;
+    border: 2px solid red;
+    width: 24px;
+    height: 24px;
+    margin-left: -12px;
+    margin-top: -12px;
+    /* // background-color: rgba(255, 255, 255, 0.75);; */
+    background-color: #fff;
+    /* // box-shadow: 2px 2px 8px rgba(0,0,0,0.5); */
+    box-shadow: 0px 0px 2px rgba(0,0,0,1.0);
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    /* // .transition-all(0.1s);
+    // .translate3d(0, 0, 0); */
+    -webkit-transform: translate3d(0, 0, 0);
+    /* .translate3d(0,0,0); */
+    /* .scale(0.9); */
+
+}
+    .eventmarker .track .eventmarker-nonumber {
+        display: none;
+    }
+
+.eventmarker .track.START {
+    /* // border: 2px solid #2d2; */
+    background-color: #070;
+    z-index: 3;
+}
+
+.eventmarker .track.FINISH {
+    /* // border: 2px solid #2dd; */
+    background-color: #f33;
+    z-index: 3;
+}
+
+.eventmarker .track.START, .eventmarker .track.FINISH {
+    width: 20px;
+    height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+    border-radius: 4px;
+    border: 2px solid white;
+    color: white;
+
+    span {
+        font-weight: bold;
+        line-height: 16px;
+
+        .lastmarker-control {
+            color: black;
+        }
+    }
+}
+
+
+.eventmarker .track.STOP {
+    width: 20px;
+    height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+    border-radius: 5px;
+    /* // border: 2px solid #0cf; */
+    border: 2px solid white;
+    background-color: #33f;
+    z-index: 2;
+    color: white;
+
+    .eventmarker-nonumber {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    span {
+        font-weight: bold;
+        line-height: 16px;
+
+        .lastmarker-control{
+            color: black;
+        }
+    }
+}
+
+.eventmarker .track.HOLD {
+    margin-left: -5px;
+    margin-top: -5px;
+    width: 10px;
+    height: 10px;
+    border: 1px solid black;
+    background-color: yellow;
+    z-index: 1;
+}
+
+.eventmarker .track:hover {
+    /* // width: 34px;
+    // height: 34px;
+    // border-radius: 17px;
+    // margin-left: -17px;
+    // margin-top: -17px;
+    // transform: scale(4);
+    // -webkit-transform: translate3d(0, 0, 0) scale(2); */
+    z-index: 1001;
+    /* .scale(2) */
+}
+
+.eventmarker .track:hover span {
+    /* // font-weight: bold;
+    // line-height: 27px;
+    // .rotate(360deg);
+    // .scale(12.0); */
+}
+.eventmarker .track span.title {
+    display: none;
+}
+.eventmarker .track:hover span.title {
+    display: block;
+    position: absolute;
+    white-space: nowrap;
+    left: 20px;
+    bottom: 20px;
+    border: 1px solid #ddd;
+    /* // color: white;
+    // background-color: white;
+    // font-size: 1.4em;
+    // font-weight: bold; */
+    background-color: #fff;
+    /* // text-shadow: 1px 1px 3px black; */
+    padding: 2px 6px 2px 4px;
+    border-top-left-radius: 10px 10px;
+    border-bottom-right-radius: 10px 10px;
+    border-top-right-radius: 10px 10px;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+}
