@@ -236,6 +236,7 @@ function addMap(element) {
             L.DomEvent.on(container, 'click', event => {
                 console.log("clicked", event);
                 if(uRhere) {
+                    // debounce
                     map.flyTo(uRhere);
                 }
                 // this.setState({ showBuffer: event.target.checked })
@@ -411,6 +412,20 @@ class LeafletMap extends HTMLElement {
         delete maps[this._leaflet_id];
     }
 
+    // Отложенная функция смены положения или отображения трека
+    lazyView(func, wait) {
+        console.log("lazyView:call");
+        const context = this;
+        const later = () => {
+            console.log("lazyView:done");
+            this.lazyTimeout = null;
+            func.apply(context);
+        };
+        clearTimeout(this.lazyTimeout);
+        this.lazyTimeout = setTimeout(later, wait);
+    }
+
+
     get center() {
         // console.log("get center", this._center);
         return this._center;
@@ -418,12 +433,13 @@ class LeafletMap extends HTMLElement {
     set center(value) {
         // this.htmlElement.setAttribute("cx", value);
         if (value !== null && value.lat !== this._center.lat && value.lng !== this._center.lng) {
-            // console.log("set center", value, "old: ", this._center);
+            console.log("set center", value, "old: ", this._center);
             this._center = value;
             if(!this._map) return;
             var lat = this._center.lat;
             var lng = this._center.lng;
-            this._map.flyTo(L.latLng(lat, lng), 15);
+            this.lazyView(() => { this._map.flyTo(L.latLng(lat, lng), 15); }, 100);
+            // this._map.flyTo(L.latLng(lat, lng), 15);
             this._map.invalidateSize();
             if(this._center_marker) this._center_marker.setLatLng(L.latLng(lat, lng));
         }
@@ -432,10 +448,10 @@ class LeafletMap extends HTMLElement {
     get markers() { return this._markers; }
     set markers(value) {
         if (value !== null && !_.isEqual(value, this._markers)) {
-            // console.log("set markers", value);
+            console.log("set markers", value);
 
             if(!this._map) {
-                console.log("Wtf? Map is not found!");
+                console.warn("Wtf? Map is not found! Use promise or something lazy");
                 return;
             }
 
@@ -476,19 +492,13 @@ class LeafletMap extends HTMLElement {
             console.log("set track", value);
             this._track = value;
 
-            if(!this._map) {
-                console.log("Wtf? Map is not found!");
+            // Весь функционал вынесен сюда.
+            if((value.sysId == "") || (value.day == "")) {
+                if(this._map && this._trackLayer) {
+                    this._map.removeLayer(this._trackLayer);
+                }
                 return;
             }
-
-            if(this._trackLayer) {
-                this._map.removeLayer(this._trackLayer);
-            }
-
-
-            // Весь функционал вынесен сюда.
-            if(value.sysId == "") return;
-            if(value.day == "") return;
 
             const [d,m,y] = value.day.split('/');
             const day = new Date(y|0, (m|0)-1, d|0);
@@ -503,6 +513,15 @@ class LeafletMap extends HTMLElement {
             gps(value.sysId, from, to)
                 .then(data => {
                     console.log("parsed=", data);
+
+                    if(!this._map) {
+                        console.log("Wtf? Map is not found!");
+                        return;
+                    }
+
+                    if(this._trackLayer) {
+                        this._map.removeLayer(this._trackLayer);
+                    }
 
                     this._trackLayer = L.layerGroup();
 
@@ -561,7 +580,8 @@ class LeafletMap extends HTMLElement {
 
                     this._trackLayer.addTo(this._map);
 
-                    this._map.fitBounds(data.bounds);
+                    this.lazyView(() => {this._map.fitBounds(data.bounds)}, 100);
+                    // this._map.fitBounds(data.bounds);
                     if(this._map.zoom > 17) this._map.setZoom(17);
 
 

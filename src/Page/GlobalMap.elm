@@ -23,6 +23,7 @@ import Process
 import Task
 import Time
 import Types.Dt as DT
+import Url.Builder as UB
 
 
 type alias Model =
@@ -33,27 +34,41 @@ type alias Model =
 
     -- , track : List System.TrackPoint
     -- Теперь это просто день, строкой
-    , track : String
-
+    -- , track : String
     -- Мне не нравится что тут часы а не дни. Как-то бы это преобразовать на этапе загрузки
     -- , hours : List Int
     , calendar : Calendar.Model
     }
 
 
-init : Maybe String -> Maybe String -> Maybe String -> ( Model, Cmd Msg )
-init mSysId mlat mlng =
+init : Maybe String -> Maybe String -> Maybe String -> Maybe String -> ( Model, Cmd Msg )
+init mSysId mlat mlng mday =
+    -- let
+    --     _ =
+    --         Debug.log "Map init" ( mSysId, ( mlat, mlng ), mday )
+    -- in
     ( { center = LatLng (mlat |> mstr2float 48.5013798) (mlng |> mstr2float 34.6234255)
       , address = Nothing
       , showAddress = False
       , markers = []
-      , track = ""
 
+      -- , track = mday |> Maybe.withDefault ""
       -- , hours = []
       , calendar = Calendar.init mSysId
       }
     , Cmd.batch [ initTask mSysId ]
     )
+
+
+initTask : Maybe String -> Cmd Msg
+initTask mSysId =
+    case mSysId of
+        Nothing ->
+            -- TDB: Сейчас глобальная карта со всеми системами не реализована
+            Cmd.none
+
+        Just sysId ->
+            Process.sleep 1000 |> Task.perform (\_ -> Init sysId)
 
 
 mstr2float d v =
@@ -75,21 +90,10 @@ type Msg
     | HideAddress
     | CenterChanged LatLng
     | Init String
-    | GetTrack String String
-    | HideTrack String
+      -- | GetTrack String String
+      -- | HideTrack String
     | GPSMsg GPS.Msg
     | CalendarMsg Calendar.Msg
-
-
-initTask : Maybe String -> Cmd Msg
-initTask mSysId =
-    case mSysId of
-        Nothing ->
-            -- TDB: Сейчас глобальная карта со всеми системами не реализована
-            Cmd.none
-
-        Just sysId ->
-            Process.sleep 1000 |> Task.perform (\_ -> Init sysId)
 
 
 setCenter : LatLng -> Model -> Model
@@ -121,14 +125,12 @@ update msg model =
             , Nothing
             )
 
-        GetTrack sysId day ->
-            -- TODO: Индикатор загрузки трека
-            ( { model | track = day }, Cmd.none, Nothing )
-
-        HideTrack sysId ->
-            -- ( model, Cmd.none, Just <| GMsg.HideTrack sysId )
-            ( { model | track = "" }, Cmd.none, Just <| GMsg.HideTrack sysId )
-
+        -- GetTrack sysId day ->
+        --     -- TODO: Индикатор загрузки трека
+        --     ( { model | track = day }, Cmd.none, Nothing )
+        -- HideTrack sysId ->
+        --     -- ( model, Cmd.none, Just <| GMsg.HideTrack sysId )
+        --     ( { model | track = "" }, Cmd.none, Just <| GMsg.HideTrack sysId )
         ResponseAddress (Ok address) ->
             ( { model | address = Just <| Geo.addressToString address }, Cmd.none, Nothing )
 
@@ -165,14 +167,13 @@ update msg model =
             in
             -- Может и не самое элегантное решение
             case sub_msg of
-                Calendar.LoadTrack day_string ->
-                    -- let
-                    --     _ =
-                    --         Debug.log "LoadTrack" day_string
-                    -- in
-                    -- GetTrack
-                    ( { model | calendar = cmodel, track = day_string }, cmsg |> Cmd.map CalendarMsg, Nothing )
-
+                -- Calendar.LoadTrack day_string ->
+                --     -- let
+                --     --     _ =
+                --     --         Debug.log "LoadTrack" day_string
+                --     -- in
+                --     -- GetTrack
+                --     ( { model | calendar = cmodel, track = day_string }, cmsg |> Cmd.map CalendarMsg, Nothing )
                 _ ->
                     ( { model | calendar = cmodel }, cmsg |> Cmd.map CalendarMsg, Nothing )
 
@@ -217,8 +218,8 @@ encodeTrack sysId day =
 -- Encode.list System.encodeTrackPoint track
 
 
-viewSystem : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe System.SystemDocumentTrack -> Html Msg
-viewSystem appState model system mtrack =
+viewSystem : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe String -> Html Msg
+viewSystem appState model system mday =
     let
         markers =
             case system.dynamic of
@@ -232,6 +233,9 @@ viewSystem appState model system mtrack =
 
                         _ ->
                             []
+
+        -- _ =
+        --     Debug.log "map:view day" mday
     in
     div [ class "container-map" ]
         [ Html.node "leaflet-map"
@@ -239,7 +243,7 @@ viewSystem appState model system mtrack =
               Html.Attributes.property "center" (encodeLatLng model.center)
             , Html.Attributes.property "markers" (Encode.list encodeMarker markers)
             , Html.Attributes.property "title" (Encode.string system.title)
-            , Html.Attributes.property "track" (encodeTrack system.id model.track)
+            , Html.Attributes.property "track" (encodeTrack system.id (mday |> Maybe.withDefault ""))
             , Html.Events.on "centerChanged" <| Decode.map CenterChanged <| Decode.at [ "target", "center" ] <| decodeLatLng
             ]
             []
@@ -248,8 +252,12 @@ viewSystem appState model system mtrack =
             [ -- div [ class "map-bottom-control-btn", onClick (GetTrack system.id "10/05/2021") ] [ text "Трек за сегодня" ]
               -- [ div [ class "map-bottom-control-btn", onClick (GetTrack system.id 450045 450188) ] [ text "Трек за сегодня" ]
               -- div [ class "map-bottom-control-btn" ] [ Calendar.view appState model.calendar |> Html.map CalendarMsg ]
-              Calendar.view appState model.calendar |> Html.map CalendarMsg
-            , div [ class "map-bottom-control-btn", onClick (HideTrack system.id) ] [ text "X" ]
+              Calendar.view appState system.id mday model.calendar |> Html.map CalendarMsg
+            , div [ class "map-debug" ] [ text "Центр: " ]
+
+            -- , div [ class "map-bottom-control-btn", onClick (HideTrack system.id) ] [ text "X" ]
+            -- , div [] [ a [ href <| UB.absolute [ "map", system.id ] [] ] [ text "Тест роутинга пустой карты" ] ]
+            -- , div [] [ a [ href <| UB.absolute [ "map", system.id ] [ UB.string "day" "08/05/2021" ] ] [ text "Тест роутинга карты с днем" ] ]
             ]
         , div [ class "locations" ]
             -- [ span [ class "locations-btn open-locations", onClick (SetCenter 48.4226036 35.0252341) ]

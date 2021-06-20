@@ -6,14 +6,19 @@ import Html.Attributes as HA exposing (attribute, class, href, id)
 import Html.Events exposing (onClick)
 
 
-disabledOnWait { t } child =
-    div [ class "tooltip" ]
-        [ div [ class "tooltip-wr" ]
-            [ div [ class "tooltip-content tooltip-content-big" ]
-                [ text <| t "control.Вы сможете нажать эту кнопку после того как Феникc исполнит команды которые ждут выполнения" ]
-            ]
-        , div [ class "tooltip-title" ] [ child ]
-        ]
+disabledOnWait dynamic { t } child =
+    case dynamic.waitState of
+        Nothing ->
+            child
+
+        Just _ ->
+            div [ class "tooltip" ]
+                [ div [ class "tooltip-wr" ]
+                    [ div [ class "tooltip-content tooltip-content-big" ]
+                        [ text <| t "control.Вы сможете нажать эту кнопку после того как Феникc исполнит команды которые ждут выполнения" ]
+                    ]
+                , div [ class "tooltip-title" ] [ child ]
+                ]
 
 
 disabledOnWaitClass dynamic =

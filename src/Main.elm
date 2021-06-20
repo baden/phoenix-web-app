@@ -53,7 +53,7 @@ init flags url key =
             Login.init
 
         ( globalMapModel, _ ) =
-            GlobalMap.init Nothing Nothing Nothing
+            GlobalMap.init Nothing Nothing Nothing Nothing
 
         ( linkSysModel, _ ) =
             LinkSys.init
@@ -383,7 +383,7 @@ update msg model =
                                 Route.SystemInfo sid ->
                                     leaveIfmember sid
 
-                                Route.SystemOnMap sid _ _ ->
+                                Route.SystemOnMap sid _ _ _ ->
                                     leaveIfmember sid
 
                                 _ ->
@@ -522,11 +522,16 @@ computeViewForPage page model =
             in
             ( { model | systemLogs = init_model }, Cmd.map (SystemLogsMsg >> OnPageMsg) init_cmd )
 
-        Route.SystemOnMap s mlat mlng ->
+        Route.SystemOnMap s mlat mlng mday ->
             let
                 --TOTO: systemConfigRec.init
+                -- _ =
+                --     Debug.log "Init Map for system" s
+                --
+                -- _ =
+                --     Debug.log "Model" model
                 ( init_model, init_cmd ) =
-                    GlobalMap.init (Just s) mlat mlng
+                    GlobalMap.init (Just s) mlat mlng mday
             in
             ( { model | globalMap = init_model }, Cmd.map (GlobalMapMsg >> OnPageMsg) init_cmd )
 
@@ -620,26 +625,8 @@ viewPage model =
         Route.GlobalMap ->
             GlobalMap.view
 
-        Route.SystemOnMap sysId mlat mlng ->
-            -- let
-            --     track =
-            --         Dict.get sysId model.tracks
-            -- in
-            -- -- view4SystemRec sysId model systemOnMapRec track
-            -- GlobalMap.viewSystem model.appState model.globalMap
-            case Dict.get sysId model.systems of
-                Nothing ->
-                    Html.div []
-                        [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра."
-                        , Html.a [ HA.class "btn", HA.href "/" ] [ Html.text "Вернуться на главную" ]
-                        ]
-
-                Just system ->
-                    let
-                        track =
-                            Dict.get sysId model.tracks
-                    in
-                    GlobalMap.viewSystem model.appState model.globalMap system track |> Html.map (GlobalMapMsg >> OnPageMsg)
+        Route.SystemOnMap sysId mlat mlng mday ->
+            viewMap4Sys sysId mlat mlng mday model
 
         Route.LinkSys ->
             view4SystemRec "" model linkSysRec
@@ -648,6 +635,18 @@ viewPage model =
         --     LinkSys.view model.linkSys |> Html.map (LinkSysMsg >> OnPageMsg)
         _ ->
             NotFound.view
+
+
+viewMap4Sys sysId mlat mlng mday model =
+    case Dict.get sysId model.systems of
+        Nothing ->
+            Html.div []
+                [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра."
+                , Html.a [ HA.class "btn", HA.href "/" ] [ Html.text "Вернуться на главную" ]
+                ]
+
+        Just system ->
+            GlobalMap.viewSystem model.appState model.globalMap system mday |> Html.map (GlobalMapMsg >> OnPageMsg)
 
 
 view4SystemRec : String -> Model -> PageRec smodel smsg Model Msg -> Html Msg
@@ -749,7 +748,7 @@ viewMenu model =
                         Just system ->
                             Menu.view Route.SystemConfigBase account model.appState (Just system) model.menuModel |> List.map (Html.map (OnPageMsg << Types.MenuMsg))
 
-                Route.SystemOnMap sysId mlat mlng ->
+                Route.SystemOnMap sysId mlat mlng mday ->
                     case Dict.get sysId model.systems of
                         Nothing ->
                             Menu.view Route.MapBase account model.appState Nothing model.menuModel |> List.map (Html.map (OnPageMsg << Types.MenuMsg))

@@ -2,17 +2,19 @@ module Components.UI.Calendar exposing (..)
 
 import AppState exposing (AppState)
 import Components.DateTime
-import Html exposing (Html, button, div, i, table, td, text, tr)
-import Html.Attributes as HA exposing (class)
+import Html exposing (Html, a, button, div, i, table, td, text, tr)
+import Html.Attributes as HA exposing (class, href)
 import Html.Events as HE exposing (onClick)
-import Html.Lazy exposing (lazy, lazy2)
+import Html.Lazy exposing (lazy, lazy4)
 import List.Extra exposing (unique)
 import Set exposing (Set)
 import Time
+import Url.Builder as UB
 
 
 type alias Model =
-    { state : VisState
+    { mSysId : Maybe String
+    , state : VisState
     , hours : List Int
     }
 
@@ -21,13 +23,15 @@ type Msg
     = DoOpen
     | DoClose
     | LoadHours (List Int)
-    | LoadTrack String
+
+
+
+-- | LoadTrack String
 
 
 type VisState
     = Closed
     | Opened
-    | Choosed String
 
 
 
@@ -37,8 +41,9 @@ type VisState
 
 
 init : Maybe String -> Model
-init _ =
-    { state = Closed
+init mSysId =
+    { mSysId = mSysId
+    , state = Closed
     , hours = []
     }
 
@@ -55,36 +60,40 @@ update msg model =
         LoadHours hs ->
             ( { model | hours = hs }, Cmd.none )
 
-        LoadTrack day ->
-            -- TODO: Это событие будет перехвачено в родительском элементе
-            -- Решение наверное не самое элегантное
-            -- update DoClose model
-            ( { model | state = Choosed day }, Cmd.none )
 
 
-
+-- LoadTrack day ->
+--     -- TODO: Это событие будет перехвачено в родительском элементе
+--     -- Решение наверное не самое элегантное
+--     -- update DoClose model
+--     ( { model | state = Choosed day }, Cmd.none )
 -- Не понимаю как работает lazy2, но я чет не вижу чтобы оно помогало
 
 
-view : AppState -> Model -> Html Msg
-view appState model =
+view : AppState -> String -> Maybe String -> Model -> Html Msg
+view appState sysId mday model =
     case model.state of
         Closed ->
-            viewPanelWidget appState model
+            viewPanelWidget appState mday model
 
         Opened ->
-            viewCalendarWidget appState model
-
-        Choosed day ->
-            viewChoosed day appState model
+            viewCalendarWidget appState sysId mday model
 
 
-viewPanelWidget : AppState -> Model -> Html Msg
-viewPanelWidget appState model =
+viewPanelWidget : AppState -> Maybe String -> Model -> Html Msg
+viewPanelWidget appState mday model =
     -- div [ onClick DoOpen ]
     -- [ text "Треки" ]
-    Html.button [ class "btn btn-md btn-secondary", onClick DoOpen ]
-        [ Html.i [ class "material-icons" ] [ text "moving" ], text " ", text "" ]
+    Html.button [ class "btn btn-md btn-secondary btn-compact", onClick DoOpen ]
+        [ Html.i [ class "material-icons" ] [ text "moving" ]
+        , text " "
+        , case mday of
+            Nothing ->
+                text "Треки"
+
+            Just day ->
+                text day
+        ]
 
 
 viewChoosed : String -> AppState -> Model -> Html Msg
@@ -96,17 +105,20 @@ viewChoosed day appState model =
         [ Html.i [ class "material-icons" ] [ text "moving" ], text " ", text day ]
 
 
-viewCalendarWidget : AppState -> Model -> Html Msg
-viewCalendarWidget appState model =
+viewCalendarWidget : AppState -> String -> Maybe String -> Model -> Html Msg
+viewCalendarWidget appState sysId mday model =
     div [ class "calendar_opened" ]
         [ -- , weeksView appState model
-          lazy2 dayListWidget appState.timeZone model.hours
-        , div [ class "calendar_control", onClick DoClose ] [ text "Закрыть" ]
+          lazy4 dayListWidget appState.timeZone model.hours sysId mday
+        , div [ class "calendar_control" ]
+            [ a [ class "custom-btn", href <| UB.absolute [ "map", sysId ] [] ] [ text "Скрыть трек" ]
+            , div [ class "custom-btn", onClick DoClose ] [ text "Закрыть" ]
+            ]
         ]
 
 
-dayListWidget : Time.Zone -> List Int -> Html Msg
-dayListWidget timeZone hours =
+dayListWidget : Time.Zone -> List Int -> String -> Maybe String -> Html Msg
+dayListWidget timeZone hours sysId mday =
     let
         -- TODO: Как-то бы формирование этого списка вынести в процедуру загрузки
         hour2day h =
@@ -142,9 +154,11 @@ dayListWidget timeZone hours =
 
         -- _ =
         --     Debug.log "day_list" ( day_list, timeZone )
+        key ( h, d ) =
+            a [ HA.classList [ ( "selected", (mday |> Maybe.withDefault "") == d ) ], href <| UB.absolute [ "map", sysId ] [ UB.string "day" d ], class "calendar_control" ] [ text d ]
     in
     day_list
-        |> List.map (\( h, d ) -> div [ class "calendar_control", onClick (LoadTrack h) ] [ text d ])
+        |> List.map key
         |> div [ class "calendar_day_list" ]
 
 

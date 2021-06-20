@@ -708,11 +708,14 @@ button[disabled] {
 }
 
 /* TODO: Перенести в тему */
-.menu-show-btn-mob {
-    width: 44px;
-    height: 44px;
-    border: 2px solid rgba(0,0,0,0.2);
-    background-clip: padding-box;
+@media screen and (max-width: 960px) {
+    .menu-show-btn-mob {
+        width: 44px;
+        height: 44px;
+        border: 2px solid rgba(0,0,0,0.2);
+        background-clip: padding-box;
+        box-shadow: none;
+    }
 }
 
 /* .btn { */
@@ -874,31 +877,60 @@ span#passwordText {
     flex-direction: column;
     gap: 6px;
     position: absolute;
-    bottom: 20px;
+    bottom: 0;
     z-index: 1001;
     padding: 10px;
     cursor: default;
 }
 
-    .calendar_opened .calenrad_weeks {
+    /* .calendar_opened .calenrad_weeks {
         display: flex;
         gap: 10px;
-    }
-    .calendar_opened .calendar_control {
-        cursor: pointer;
-        /* padding: 10px; */
-    }
-        .calendar_opened .calendar_control:hover {
-            color: white;
-            background-color: #3B6DF3;
-            outline: 2px solid #3B6DF3;
-        }
-
+    } */
         .calendar_day_list {
             max-height: 300px;
             overflow-y: auto;
             overflow-x: hidden;
         }
-        .calendar_day_list > div {
-            padding: 5px 0;
+        .calendar_day_list > a {
+            display: block;
+            padding: 8px 5px;
         }
+        .calendar_day_list > a:hover {
+            background-color: #3B6DF3;
+        }
+        .calendar_day_list > a.selected {
+            background-color: #00f;
+            color: white;
+        }
+
+.calendar_control {
+    /* padding: 10px; */
+    display: flex;
+    flex-direction: column;
+
+}
+
+.custom-btn {
+    cursor: pointer;
+    color: black;
+    background-color: white;
+    /* text-decoration: none; */
+    padding: 8px;
+}
+    .custom-btn:hover {
+        color: white;
+        background-color: #3B6DF3;
+        /* outline: 2px solid #3B6DF3; */
+    }
+
+.btn-compact {
+    padding-left: 8px;
+    padding-right: 8px;
+    width: auto;
+}
+
+.map-debug {
+    background-color: white;
+    padding-top: 12px;
+}

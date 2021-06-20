@@ -49,7 +49,7 @@ view ({ t } as appState) model system =
                         )
                             ++ (case dynamic.available |> List.member System.Point of
                                     True ->
-                                        [ InfoUI.disabledOnWait appState <|
+                                        [ InfoUI.disabledOnWait dynamic appState <|
                                             div [ class "details-blue-title blue-gradient-text", InfoUI.disabledOnWaitClass dynamic, onClick (OnSysCmdPre system.id System.Point) ]
                                                 [ span [ class "details-icon icon-refresh" ] [], text <| t "control.Обновить" ]
                                         ]

@@ -76,47 +76,52 @@ calculation { gsm, gps, accel, gsm_on, sessions } lifetime =
 -- 5. Ток потребления в режиме активного трекинга – 36,0mA. (GSM+GPS?)
 
 
+fixer =
+    -- Все значения взять на 20% выше расчетных
+    1 / 1.2
+
+
 drain_self : Int -> Float
 drain_self s =
     -- Тут базовое потребление + собственный саморазряд - 0.010мА + 0.0066 мА
     -- (toFloat s) * (0.01 + 0.0066) / 3600
     -- (опытные образцы )Тут базовое потребление + собственный саморазряд - 0.030мА + 0.0066 мА
-    toFloat s * (0.03 + 0.0066) / 3600
+    fixer * toFloat s * (0.03 + 0.0066) / 3600
 
 
 drain_gsm : Int -> Float
 drain_gsm s =
     -- Ток потребления GSM взят с потолка - 1мА
-    toFloat s * 1.0 / 3600
+    fixer * toFloat s * 1.0 / 3600
 
 
 drain_cpu : Int -> Float
 drain_cpu s =
     -- Ток потребления процессора пока он не спит
-    toFloat s * 0.7 / 3600
+    fixer * toFloat s * 0.7 / 3600
 
 
 drain_gps : Int -> Float
 drain_gps s =
     -- Ток потребления GPS взят с потолка - 34мА
-    toFloat s * 27.0 / 3600
+    fixer * toFloat s * 27.0 / 3600
 
 
 drain_accel : Int -> Float
 drain_accel s =
     -- В серийной версии будет 38.0мкА
-    toFloat s * 0.038 / 3600
+    fixer * toFloat s * 0.038 / 3600
 
 
 drain_gsm_on : Int -> Float
 drain_gsm_on s =
     -- Ток потребления GSM взят с потолка (как сеанс связи с сервером) - 0,3667mAh.
-    toFloat s * 0.3667 * 2.0 / 3
+    fixer * toFloat s * 0.3667 * 2.0 / 3
 
 
 drain_session : Int -> Float
 drain_session s =
-    toFloat s * 0.3667 * 1.0 / 3
+    fixer * toFloat s * 0.3667 * 1.0 / 3
 
 
 expect_at_sleep : Float -> Int -> String

@@ -15,7 +15,7 @@ type Page
     | User
     | Properties
     | GlobalMap
-    | SystemOnMap SysId (Maybe String) (Maybe String)
+    | SystemOnMap SysId (Maybe String) (Maybe String) (Maybe String)
     | Config
     | SystemInfo String
     | SystemConfig String
@@ -40,7 +40,7 @@ routeParser =
         , map User (s "user")
         , map Properties (s "properties")
         , map GlobalMap (s "map")
-        , map SystemOnMap (s "map" </> string <?> Query.string "lat" <?> Query.string "lng")
+        , map SystemOnMap (s "map" </> string <?> Query.string "lat" <?> Query.string "lng" <?> Query.string "day")
         , map Config (s "config")
         , map SystemInfo (s "system" </> string)
         , map SystemConfig (s "system" </> string </> s "config")

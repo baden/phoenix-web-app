@@ -203,10 +203,10 @@ masterDialogView5 { t } model sysId params =
 
         smsHelp =
             if s2 && (model.adminCode /= "") then
-                span [ class "page-subtext" ] [ text <| t "config.SMS-коды управления имеют вид:", span [ id "passwordText" ] [ text model.adminCode ], text " link." ]
+                span [ class "page-subtext" ] [ text <| t "config.SMS-коды управления имеют вид:", span [ id "passwordText" ] [ text model.adminCode ], text " link" ]
 
             else
-                span [ class "page-subtext" ] [ text <| t "config.SMS-коды управления имеют вид:", span [ id "passwordText" ] [], text "link." ]
+                span [ class "page-subtext" ] [ text <| t "config.SMS-коды управления имеют вид:", span [ id "passwordText" ] [], text "link" ]
 
         mixedQueue =
             Dict.union (changesList model) params.queue

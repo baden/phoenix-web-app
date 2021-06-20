@@ -205,7 +205,7 @@ expectSleepIn ({ t } as appState) dynamic prolongCmd =
                     ]
                 , span [ class "date" ] [ text autosleep ]
                 ]
-            , InfoUI.disabledOnWait appState <|
+            , InfoUI.disabledOnWait dynamic appState <|
                 div [ class "details-blue-title blue-gradient-text modal-open", InfoUI.disabledOnWaitClass dynamic, onClick OnShowProlongSleepDialog ]
                     [ text <| t "control.Продлить режим"
                     , span [ class "uppercase-txt mode" ] [ text "Поиск" ]
@@ -221,7 +221,7 @@ expectSleepIn ({ t } as appState) dynamic prolongCmd =
 startNewState : AppState.AppState -> String -> String -> System.State -> System.Dynamic -> Html Msg
 startNewState ({ t } as appState) state sysId i dynamic =
     div [ class "content-item" ]
-        [ InfoUI.disabledOnWait appState <|
+        [ InfoUI.disabledOnWait dynamic appState <|
             div [ class "details-blue-title blue-gradient-text", InfoUI.disabledOnWaitClass dynamic, onClick (OnSysCmdPre sysId i) ]
                 [ span [ class "details-icon icon-search" ] []
                 , text <| t "control.Включить режим"
