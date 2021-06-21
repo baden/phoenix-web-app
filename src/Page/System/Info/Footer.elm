@@ -19,12 +19,17 @@ view ({ t } as appState) model system =
             text "TBD"
 
         Just dynamic ->
-            case dynamic.waitState of
-                Nothing ->
-                    footerNoWait appState model system dynamic.available
+            case dynamic.state of
+                Just Off ->
+                    div [] []
 
-                Just waitState ->
-                    footerWait appState model system waitState dynamic
+                _ ->
+                    case dynamic.waitState of
+                        Nothing ->
+                            footerNoWait appState model system dynamic.available
+
+                        Just waitState ->
+                            footerWait appState model system waitState dynamic
 
 
 footerWait : AppState -> Model -> SystemDocumentInfo -> System.State -> System.Dynamic -> Html Msg
@@ -71,7 +76,11 @@ footerWait ({ t, tr } as appState) model system waitState dynamic =
 
 footerNoWait : AppState -> Model -> SystemDocumentInfo -> List System.State -> Html Msg
 footerNoWait ({ t } as appState) model system available =
-    if List.member System.Unlock available then
+    if List.member System.CLock available then
+        button [ class "green-gradient-text block-engine-btn modal-open cursor-pointer", onClick (OnSysCmd system.id System.CLock) ]
+            [ span [ class "icon-key" ] [], text <| t "control.Отмена процедуры блокировки" ]
+
+    else if List.member System.Unlock available then
         button [ class "green-gradient-text block-engine-btn modal-open cursor-pointer", onClick (OnSysCmdPre system.id System.Unlock) ]
             [ span [ class "icon-key" ] [], text <| t "control.Разблокировать двигатель" ]
 

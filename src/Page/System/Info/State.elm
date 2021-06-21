@@ -12,6 +12,15 @@ import Page.System.Info.UI as InfoUI
 import Types.Dt as DT
 
 
+just_text v =
+    div [ class "details-changed-mode" ]
+        [ div [ class "details-revert-mode" ]
+            [ span []
+                [ text v ]
+            ]
+        ]
+
+
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 view ({ t } as appState) model system =
     let
@@ -27,7 +36,7 @@ view ({ t } as appState) model system =
 
                         Just Off ->
                             ( "Феникс выключен."
-                            , [ text <| "Для включения - откройте крышку Феникса и нажмите кнопку ON/OFF." ]
+                            , [ just_text <| "Для включения - откройте крышку Феникса и нажмите кнопку." ]
                             )
 
                         Just Point ->

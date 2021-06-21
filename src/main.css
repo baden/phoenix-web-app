@@ -872,7 +872,7 @@ span#passwordText {
 
 .calendar_opened {
     border: 1px solid black;
-    background: white;
+    /* background: white; */
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -897,32 +897,19 @@ span#passwordText {
             padding: 8px 5px;
         }
         .calendar_day_list > a:hover {
-            background-color: #3B6DF3;
+            /* background-color: #3B6DF3; */
         }
         .calendar_day_list > a.selected {
-            background-color: #00f;
-            color: white;
+            /* background-color: #00f; */
+            /* color: white; */
         }
 
 .calendar_control {
     /* padding: 10px; */
     display: flex;
     flex-direction: column;
-
 }
 
-.custom-btn {
-    cursor: pointer;
-    color: black;
-    background-color: white;
-    /* text-decoration: none; */
-    padding: 8px;
-}
-    .custom-btn:hover {
-        color: white;
-        background-color: #3B6DF3;
-        /* outline: 2px solid #3B6DF3; */
-    }
 
 .btn-compact {
     padding-left: 8px;

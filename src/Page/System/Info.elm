@@ -350,15 +350,23 @@ block { t } slock pre sysId =
             case slock of
                 True ->
                     ( "control.block_smart_text"
-                    , Lock
+                    , SLock
                     , "control.block_smart_comment"
                     )
 
                 False ->
                     ( "control.block_lazy_text"
-                    , SLock
+                    , Lock
                     , "control.block_lazy_comment"
                     )
+
+        opstate =
+            case slock of
+                True ->
+                    Lock
+
+                False ->
+                    SLock
     in
     div [ class "modal-bg show" ]
         [ div [ class "modal-wr" ]
@@ -369,7 +377,13 @@ block { t } slock pre sysId =
                     [ span [ class "modal-text" ] [ text pre, text " ", text <| t text_ ]
                     , span [ class "checkmark-wrap" ]
                         [ label [ class "checkboxContainer" ]
-                            [ input [ checked slock, name "", type_ "checkbox", onCheck (always <| OnSysCmdPre sysId state) ] []
+                            [ input
+                                [ checked slock
+                                , name ""
+                                , type_ "checkbox"
+                                , onCheck (always <| OnSysCmdPre sysId opstate)
+                                ]
+                                []
                             , span [ class "checkmark" ] []
                             ]
                         , span [ class "checkmark-text" ]

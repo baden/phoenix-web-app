@@ -3038,3 +3038,20 @@ button, select, input {
   box-shadow: 0px -2px 5px 0px rgba(0, 0, 0, 0.75);
   z-index: 1000;
   display: none; }
+
+.calendar_opened {
+  background-color: #35364A; }
+  .calendar_opened .calendar_day_list a {
+    color: #DFE0F3; }
+    .calendar_opened .calendar_day_list a.selected {
+      background-color: #608BFF; }
+
+.custom-btn {
+  cursor: pointer;
+  color: #DFE0F3;
+  /* text-decoration: none; */
+  padding: 8px; }
+  .custom-btn:hover {
+    color: #2C92F1; }
+
+/* outline: 2px solid #3B6DF3; */

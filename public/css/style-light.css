@@ -3127,3 +3127,20 @@ button, select, input {
     box-shadow: 0px 3px 15px #DCDCDC; }
   .menu-close-btn-mob {
     background: url("../images/toggle_menu_light.svg") no-repeat center/22px 22px; } }
+
+.calendar_opened {
+  background-color: #F6F7FA; }
+  .calendar_opened .calendar_day_list a {
+    color: #333; }
+    .calendar_opened .calendar_day_list a.selected {
+      background-color: #3B6DF3; }
+
+.custom-btn {
+  cursor: pointer;
+  color: #333;
+  /* text-decoration: none; */
+  padding: 8px; }
+  .custom-btn:hover {
+    color: #2C92F1; }
+
+/* outline: 2px solid #3B6DF3; */
