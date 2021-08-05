@@ -10,6 +10,7 @@ import Html.Attributes as HA exposing (class, href, id)
 import Html.Events as HE exposing (onClick)
 import Json.Encode as Encode
 import Msg as GMsg
+import Regex
 import Types.Dt as DT
 
 
@@ -48,6 +49,16 @@ getLogs sysId offset =
     API.websocketOut <| System.getLogs sysId offset
 
 
+userReplace : String -> (Regex.Match -> String) -> String -> String
+userReplace userRegex replacer string =
+    case Regex.fromString userRegex of
+        Nothing ->
+            string
+
+        Just regex ->
+            Regex.replace regex replacer string
+
+
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe (List SystemDocumentLog) -> Html Msg
 view ({ t } as appState) model system mlogs =
     let
@@ -71,7 +82,8 @@ view ({ t } as appState) model system mlogs =
                                     [ span [] [ text date ], span [] [ text time ] ]
 
                                 -- , span [ HA.property "innerHTML" (Encode.string itm.text) ] []
-                                , text itm.text
+                                , text <|
+                                    userReplace "<[^>]*>" (\_ -> "") itm.text
                                 ]
                     in
                     logs

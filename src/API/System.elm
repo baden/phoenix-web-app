@@ -463,7 +463,7 @@ systemDocumentParamsDecoder =
         |> required "id" JD.string
         -- |> required "data" (JD.keyValuePairs systemDocumentParamDecoder)
         |> required "data" (JD.keyValuePairs systemDocumentParamDecoder |> JD.andThen sortParamList)
-        |> required "queue" (JD.dict JD.string)
+        |> optional "queue" (JD.dict JD.string) Dict.empty
 
 
 sortParamList : List ( String, SystemDocumentParam ) -> JD.Decoder (List ( String, SystemDocumentParam ))

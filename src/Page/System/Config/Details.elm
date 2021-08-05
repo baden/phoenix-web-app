@@ -38,7 +38,7 @@ view ({ t } as appState) model system mparams =
             [ div [ class "details-item" ]
                 [ div [ class "setting-item" ]
                     [ maybeRow "Модель" system.hwid identity
-                    , maybeRow "Версия ПО" system.hwid identity
+                    , maybeRow "Версия ПО" system.swid identity
                     , maybeRow "IMEI" system.imei identity
                     , maybeRowEditable "Номер телефона" system.phone identity
                     , div [ class "content-item" ]
