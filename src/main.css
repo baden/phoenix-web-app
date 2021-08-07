@@ -82,7 +82,7 @@ leaflet-map {
     z-index: 1001;
     /* background-color: rgba(255,255,255,0.5); */
     /* background:#e5e5e5; */
-    background: url(/static/media/background.dc0fba31.png) no-repeat center/cover;
+    /* background: url(/static/media/background.dc0fba31.png) no-repeat center/cover; */
 }
 
 .leaflet-right {
@@ -562,7 +562,7 @@ a.input-label {
   left: 0;
   right: 0;
   /* background-color: #fafafa; */
-  background: url(/static/media/background.dc0fba31.png) no-repeat center/cover;
+  /* background: url(/static/media/background.dc0fba31.png) no-repeat center/cover; */
   padding: 0;
   max-height: 70%;
   width: 55%;

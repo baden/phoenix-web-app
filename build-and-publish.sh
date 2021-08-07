@@ -1,9 +1,9 @@
 #!/bin/bash
 
 
-PATH=/home/baden/.node/node-v9.4.0-linux-x64/bin:$PATH npm run build-css || exit 1
-PATH=/home/baden/.node/node-v9.4.0-linux-x64/bin:$PATH elm-app build || exit 1
-
+# PATH=/home/baden/.node/node-v9.4.0-linux-x64/bin:$PATH npm run build-css || exit 1
+# PATH=/home/baden/.node/node-v9.4.0-linux-x64/bin:$PATH elm-app build || exit 1
+nvm use 14
 
 APP_ROOT="/opt/fx.navi.cc"
 
