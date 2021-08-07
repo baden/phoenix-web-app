@@ -230,3 +230,30 @@ batteryChangeCapacityDialogView { t } model sysId capacity =
             ]
         ]
     ]
+
+
+editPhoneDialogView : AppState -> Model -> String -> List (UI Msg)
+editPhoneDialogView { t } model sysId =
+    if model.showEditPhoneDialog then
+        [ div [ class "modal-bg modal-change-name show" ]
+            [ div [ class "modal-wr" ]
+                [ div [ class "modal-content" ]
+                    [ div [ class "modal-close close modal-close-btn", onClick OnEditPhoneCancel ] []
+                    , div [ class "modal-title" ] [ text <| t "config.Номер телефона" ]
+                    , div [ class "modal-body" ]
+                        [ div [ class "input-st modal-input" ]
+                            [ span [ class "input-sm-label" ] [ text <| t "config.Введите номер телефона" ]
+                            , input [ attribute "autocomplete" "off", HA.value model.newPhone, onInput OnPhoneChange ] []
+                            ]
+                        ]
+                    , div [ class "modal-btn-group" ]
+                        [ button [ class "btn btn-md btn-secondary modal-close-btn", onClick OnEditPhoneCancel ] [ text <| t "config.Отмена" ]
+                        , button [ class "btn btn-md btn-primary", onClick (OnPhoneConfirm sysId model.newPhone) ] [ text <| t "config.Сохранить" ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+
+    else
+        []

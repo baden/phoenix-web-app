@@ -26,7 +26,11 @@ view ({ t } as appState) model system =
                 _ ->
                     case dynamic.waitState of
                         Nothing ->
-                            footerNoWait appState model system dynamic.available
+                            if system.executor then
+                                footerNoWait appState model system dynamic.available
+
+                            else
+                                text ""
 
                         Just waitState ->
                             footerWait appState model system waitState dynamic

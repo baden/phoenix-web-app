@@ -26,7 +26,9 @@ init sysId =
       , offId = ""
       , showTitleChangeDialog = False
       , newTitle = ""
+      , newPhone = ""
       , showIconChangeDialog = False
+      , showEditPhoneDialog = False
       , newIcon = ""
       , showState = SS_Root
       , showMasterDialog = MasterPage1
@@ -223,6 +225,31 @@ update msg model =
         OnBatteryCapacityCancel ->
             ( { model | newBatteryCapacity = BC_None }, Cmd.none, Nothing )
 
+        OnExecutor sysId value ->
+            let
+                cmd =
+                    API.websocketOut <|
+                        System.setSystemExecutor sysId value
+            in
+            ( model, Cmd.batch [ cmd ], Nothing )
+
+        OnEditPhone oldPhone ->
+            ( { model | showEditPhoneDialog = True, newPhone = oldPhone }, Cmd.none, Nothing )
+
+        OnEditPhoneCancel ->
+            ( { model | showEditPhoneDialog = False }, Cmd.none, Nothing )
+
+        OnPhoneChange enteredPhone ->
+            ( { model | newPhone = enteredPhone }, Cmd.none, Nothing )
+
+        OnPhoneConfirm sysId newPhone ->
+            let
+                cmd =
+                    API.websocketOut <|
+                        System.setSystemPhone sysId newPhone
+            in
+            ( { model | showEditPhoneDialog = False }, Cmd.batch [ cmd ], Nothing )
+
         OnNoCmd ->
             ( model, Cmd.none, Nothing )
 
@@ -254,6 +281,7 @@ view appState model system mparams =
             ++ viewRemoveWidget appState model system
             ++ Dialogs.paramChangeDialogView appState model mparams
             ++ batteryMaintanceDialogView appState model system.id
+            ++ Dialogs.editPhoneDialogView appState model system.id
 
 
 viewContainer : AppState.AppState -> Model -> SystemDocumentInfo -> Maybe SystemDocumentParams -> Html Msg

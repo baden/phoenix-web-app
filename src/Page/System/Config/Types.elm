@@ -24,7 +24,9 @@ type alias Model =
     , offId : String
     , showTitleChangeDialog : Bool
     , newTitle : String
+    , newPhone : String
     , showIconChangeDialog : Bool
+    , showEditPhoneDialog : Bool
     , newIcon : String
     , showState : ShowState
     , showMasterDialog : MasterPage
@@ -96,6 +98,11 @@ type Msg
     | OnBatteryChange BatteryChange
     | OnBatteryCapacityConfirm String String
     | OnBatteryCapacityCancel
+    | OnExecutor String Bool
+    | OnEditPhone String
+    | OnEditPhoneCancel
+    | OnPhoneChange String
+    | OnPhoneConfirm String String
 
 
 type BatteryChange

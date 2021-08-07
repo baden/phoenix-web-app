@@ -43,6 +43,7 @@ type alias SystemDocumentInfo =
     , battery : Maybe Battery
     , params : SystemParams
     , icon : String
+    , executor : Bool
     }
 
 
@@ -73,6 +74,7 @@ systemDocumentDecoder =
         |> optional "battery" (JD.maybe Battery.batteryDecoder) Nothing
         |> required "params" systemParamsDecoder
         |> required "icon" JD.string
+        |> optional "executor" JD.bool False
 
 
 type alias Dynamic =
@@ -558,6 +560,26 @@ setSystemTitle sysId newTitle =
             [ ( "key", Encode.string sysId )
             , ( "path", Encode.string "title" )
             , ( "value", Encode.string newTitle )
+            ]
+
+
+setSystemPhone : String -> String -> Encode.Value
+setSystemPhone sysId newPhone =
+    Document.updateDocumentRequest "system" <|
+        Encode.object
+            [ ( "key", Encode.string sysId )
+            , ( "path", Encode.string "phone" )
+            , ( "value", Encode.string newPhone )
+            ]
+
+
+setSystemExecutor : String -> Bool -> Encode.Value
+setSystemExecutor sysId newExecutor =
+    Document.updateDocumentRequest "system" <|
+        Encode.object
+            [ ( "key", Encode.string sysId )
+            , ( "path", Encode.string "executor" )
+            , ( "value", Encode.bool newExecutor )
             ]
 
 
