@@ -4,6 +4,7 @@ import API
 import API.Account exposing (AccountDocumentInfo, fixSysListRequest)
 import API.System exposing (SystemDocumentInfo, SystemDocumentLog, SystemDocumentParams)
 import AppState exposing (AppState)
+import Browser.Navigation as Nav
 import Components.UI.Menu as Menu
 import Components.UI.Scale as Scale
 import Components.UI.Theme as Theme
@@ -64,7 +65,8 @@ updateOverRec msg rec model =
 
 type alias Model x =
     { x
-        | account : Maybe AccountDocumentInfo
+        | key : Nav.Key
+        , account : Maybe AccountDocumentInfo
         , appState : AppState
         , tracks : Dict String API.System.SystemDocumentTrack
     }
@@ -86,9 +88,9 @@ upmessageUpdate msg ( model, cmd ) =
                         newSysList =
                             account.systems |> ListExtra.remove sid
                     in
-                    -- ( model, Cmd.batch [ cmd, API.websocketOut <| fixSysListRequest newSysList ] )
                     -- TODO: Временно убрал функцию удаления Феникса
-                    ( model, Cmd.batch [ cmd ] )
+                    -- ( model, Cmd.batch [ cmd ] )
+                    ( model, Cmd.batch [ cmd, API.websocketOut <| fixSysListRequest newSysList, Nav.pushUrl model.key "/" ] )
 
         Just (MsgT.MenuMsg menuMsg) ->
             case menuMsg of

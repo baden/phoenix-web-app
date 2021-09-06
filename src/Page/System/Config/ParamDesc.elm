@@ -186,6 +186,7 @@ paramDesc =
         , ( "gps.vignacc", PDI "Скорость принудительной регистрации движения (игнорируется акселерометр) × 0,01852 км/ч" (PD_Int 100 30000) )
         , ( "gps.vstart", PDI "Скорость регистрации начала движения × 0,01852 км/ч" (PD_Int 100 30000) )
         , ( "gps.vstop", PDI "Скорость регистрирации остановки объекта × 0,01852 км/ч" (PD_Int 100 30000) )
+        , ( "gps.vsmart", PDI "Скорость больше которой запускается процедура интеллектуальной блокировки × 0,01852 км/ч" (PD_Int 100 30000) )
         , ( "gps.data.1"
           , PDI "Назначение дополнительного поля данных GPS"
                 (PD_Enum
@@ -700,7 +701,7 @@ description : String -> String
 description name =
     case Dict.get name paramDesc of
         Nothing ->
-            ""
+            "{" ++ name ++ "}"
 
         Just { title } ->
             title
@@ -712,6 +713,7 @@ disabled name =
         List.member name
             [ "executor.id"
             , "executor.key"
+            , "executor.dynamic"
             , "factory.reset"
             , "fwupdate.path"
             , "fwupdate.port"

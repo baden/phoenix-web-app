@@ -253,8 +253,8 @@ viewSystem appState model system mday =
               -- [ div [ class "map-bottom-control-btn", onClick (GetTrack system.id 450045 450188) ] [ text "Трек за сегодня" ]
               -- div [ class "map-bottom-control-btn" ] [ Calendar.view appState model.calendar |> Html.map CalendarMsg ]
               Calendar.view appState system.id mday model.calendar |> Html.map CalendarMsg
-            , div [ class "map-debug" ] [ text "Центр: " ]
 
+            -- , div [ class "map-debug" ] [ text "Центр: " ]
             -- , div [ class "map-bottom-control-btn", onClick (HideTrack system.id) ] [ text "X" ]
             -- , div [] [ a [ href <| UB.absolute [ "map", system.id ] [] ] [ text "Тест роутинга пустой карты" ] ]
             -- , div [] [ a [ href <| UB.absolute [ "map", system.id ] [ UB.string "day" "08/05/2021" ] ] [ text "Тест роутинга карты с днем" ] ]

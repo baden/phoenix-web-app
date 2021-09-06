@@ -531,9 +531,20 @@ class LeafletMap extends HTMLElement {
                     };
 
                     this._trackLayer = new L.featureGroup();
-                    const myLines = map_path(data.track, this._trackLayer);
-                    path_decorator(myLines, this._trackLayer );
 
+                    let connector;
+                    data.tracks.forEach((track, i) => {
+                        if(i==0) {
+                            connector = track.slice(-1)[0];
+                            console.log("---> connector", i, connector);
+                        } else {
+                            const path_connector = map_path_connector([connector, track[0]], this._trackLayer);
+                            path_decorator(path_connector, this._trackLayer, 1.0 );
+                            connector = track.slice(-1)[0];
+                        }
+                        const myLines = map_path(track, this._trackLayer);
+                        path_decorator(myLines, this._trackLayer, 1.5 );
+                    });
                     // // var myLines = L.polyline(data.track, {
                     // //     smoothFactor: 1.0
                     // // }).addTo(this._trackLayer);
@@ -614,11 +625,16 @@ const map_path = (track, layer) => L.polyline(track, {
     smoothFactor: 1.6
 }).addTo(layer);
 
-const path_decorator = (track, layer) => L.polylineDecorator(track, {
+const map_path_connector = (track, layer) => L.polyline(track, {
+    weight: 1,
+    color: 'red'
+}).addTo(layer);
+
+const path_decorator = (track, layer, weight) => L.polylineDecorator(track, {
     patterns: [
         {offset: 0,
             repeat: 40,
-            symbol: L.Symbol.arrowHead({pixelSize: 8, polygon: false, pathOptions: {color: '#000000', stroke: true, weight: 1.5, opacity: 0.5}})
+            symbol: L.Symbol.arrowHead({pixelSize: 8, polygon: false, pathOptions: {color: '#000000', stroke: true, weight, opacity: 0.5}})
         }
     ]
 }).addTo(layer);

@@ -221,11 +221,11 @@ const bingpsparse_2 = (array, hoursFrom, options) => {
 
     var events = getEventsFromPoints (points, 0, points.length, options);
     var bounds = getBoundsFromPoints (points, 0, points.length);
-    var track = getTrackFromPoints (points, 0, points.length);
+    var tracks = getTracksFromPoints (points, 0, points.length);
     var ranges = getRangesFromPoints (points, 0, points.length, options);
     var hours = getHoursFromPoints (points, 0, points.length);
     var ret = {
-        track: track,
+        tracks: tracks,
         bounds: bounds,
         points: points,
         min_hour: hours.min || 0,
@@ -452,7 +452,7 @@ const bingpsparse = (array, hoursFrom, options) => {
     // }
 
     return {
-        track: track,
+        tracks: [track],
         bounds: bounds,
         points: points,
         min_hour: min_hour,
@@ -840,8 +840,10 @@ const getBoundsFromPoints = function (points, startIndex, stopIndex) {
     return bounds;
 };
 
-const getTrackFromPoints = function (points, startIndex, stopIndex) {
+const getTracksFromPoints = function (points, startIndex, stopIndex) {
+    var last_point;
     var track = [];
+    let tracks = [];
     // console.log("getTrackFromPoints", points, startIndex, stopIndex);
     if (points) {
         if (!startIndex)
@@ -851,12 +853,29 @@ const getTrackFromPoints = function (points, startIndex, stopIndex) {
         for (var i = startIndex; i < stopIndex; i++) {
             //if (!isStop (points [i]))
             if(points [i].lat && (points [i].lat !== 0.0)){
+                const new_point = new L.LatLng (points [i].lat, points [i].lon);
+
+                if(!last_point) {
+                    // console.log(points [i]);
+                    track.push (new_point);
+                    last_point = points[i];
+                } else {
+                    if((points[i].dt - last_point.dt) > 300) {
+                    // if(distance(points[i], last_point) > 1) {
+                        console.log("=== Break at", new Date(last_point.dt * 1000), new Date(points[i].dt * 1000));
+                        tracks.push(track);
+                        track = [];
+                    }
+                    track.push (new_point);
+                    last_point = points[i];
+                }
                 // console.log('points [i].lat=', points [i].lat);
-                track.push (new L.LatLng (points [i].lat, points [i].lon));
             }
         }
     }
-    return track;
+    tracks.push(track);
+    return tracks;
+    // return [track];
 };
 
 
@@ -965,6 +984,9 @@ export function gps(sysId, from, to, options_) {
                 // console.log("fetch done", res);
                 // console.log("fetch done", data_view, options);
                 const parsed = (options.raw) ? bingpsparse(data_view, from, options) : bingpsparse_2(data_view, from, options);
+
+                // Разделим трек на куски если он не целый
+
                 // console.log("parsed=", parsed);
                 resolve(parsed);
             });
