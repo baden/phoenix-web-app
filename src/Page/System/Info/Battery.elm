@@ -33,14 +33,14 @@ view ({ t } as appState) model system =
                                 hiddenMode =
                                     div [ class "wait-mode" ]
                                         [ span [ class "mode-title" ]
-                                            [ text <| t "control.Режим", text " ", span [ class "uppercase-txt" ] [ text <| t "Ожидание" ], text ":" ]
+                                            [ text <| t "control.Режим", text " ", span [ class "uppercase-txt" ] [ text <| t "Ожидание" ], text ": " ]
                                         , span [] [ text (Battery.expect_at_sleep capacity sleep) ]
                                         ]
 
                                 trackingMode =
                                     div [ class "search-mode" ]
                                         [ span [ class "mode-title" ]
-                                            [ text <| t "control.Режим", text " ", span [ class "uppercase-txt" ] [ text <| t "Поиск" ], text ":" ]
+                                            [ text <| t "control.Режим", text " ", span [ class "uppercase-txt" ] [ text <| t "Поиск" ], text ": " ]
                                         , span [] [ text (Battery.expect_at_tracking capacity) ]
                                         ]
 

@@ -94,7 +94,7 @@ view ({ t } as appState) model system mparams =
 
 waitModeTime { t } value =
     div [ class "wait-mode" ]
-        [ span [ class "mode-title" ] [ text <| t "Режим", text " ", span [ class "uppercase-txt" ] [ text <| t "Ожидание" ], text ": " ]
+        [ span [ class "mode-title" ] [ text <| t "Режим", text " ", span [ class "uppercase-txt" ] [ text <| t "Ожидание" ], text ":" ]
         , span [] [ text value ]
         ]
 

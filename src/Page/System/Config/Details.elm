@@ -40,7 +40,7 @@ view ({ t } as appState) model system mparams =
                     [ maybeRow "Модель" system.hwid identity
                     , maybeRow "Версия ПО" system.swid identity
                     , maybeRow "IMEI" system.imei identity
-                    , maybeRowEditable "Номер телефона" system.phone identity
+                    , maybeRowEditable "SIM-карта" system.phone identity
                     , div [ class "content-item" ]
                         [ span [ class "checkmark-wrap setting-executors" ]
                             [ label [ class "checkboxContainer" ]

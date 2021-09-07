@@ -1134,14 +1134,14 @@ button, select, input {
     text-overflow: ellipsis;
     overflow: hidden; }
   .submenu-back {
-    font-weight: 600;
     font-size: 1.14rem;
     color: #fff;
     position: relative;
     padding-left: 21px;
     top: 3px;
     margin-bottom: 20px;
-    padding: 12px 15px 12px 30px; }
+    padding: 12px 15px 12px 30px;
+      padding-white-space: nowrap; }
     .submenu-back .arrow {
       position: absolute;
       left: 0;
@@ -1235,11 +1235,8 @@ button, select, input {
 .submenu-name {
   color: #fff; }
 
-.submenu-back {
-  white-space: nowrap;
-  color: #8F90A3; }
-  .submenu-back .arrow {
-    background: url("../images/menu_back_light.svg") no-repeat; }
+.submenu-back .arrow {
+  background: url("../images/menu_back_light.svg") no-repeat; }
 
 .modal-bg {
   position: fixed;
@@ -1763,12 +1760,12 @@ button, select, input {
   font-size: 1rem;
   padding-left: 12px;
   font-weight: 600; }
-  .details-mode .wait-mode {
+  .details-mode div:first-child {
     margin-bottom: 10px; }
-    .details-mode .wait-mode .mode-title {
+    .details-mode div:first-child .mode-title {
       font-size: 0.93rem;
       font-weight: 700; }
-  .details-mode .search-mode {
+  .details-mode div:last-child {
     color: #8F90A3; }
 
 .details-changed-mode {

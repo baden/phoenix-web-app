@@ -21,66 +21,76 @@ just_text v =
         ]
 
 
+
+-- TODO: Вынести в библиотеку?
+
+
+stateTextAndWidget : AppState.AppState -> SystemDocumentInfo -> ( String, List (Html Msg) )
+stateTextAndWidget appState system =
+    -- ( stateText, controlWidgets ) =
+    case system.dynamic of
+        Nothing ->
+            ( "Данные о состоянии еще не получены", [] )
+
+        Just dynamic ->
+            case dynamic.state of
+                Nothing ->
+                    ( "идет определение...", [] )
+
+                Just Off ->
+                    ( "Феникс выключен."
+                    , [ just_text <| "Для включения - откройте крышку Феникса и нажмите кнопку." ]
+                    )
+
+                Just Point ->
+                    ( "Идет определение местоположения..."
+                    , [ text <| "Это может занять до 15 минут." ]
+                    )
+
+                Just Tracking ->
+                    let
+                        -- autosleep =
+                        --     dynamic.autosleep |> Maybe.withDefault 0 |> String.fromInt
+                        last_session =
+                            case dynamic.lastping of
+                                Nothing ->
+                                    DT.fromInt 0
+
+                                Just lastping ->
+                                    lastping
+
+                        -- autosleepText =
+                        --     DT.addSecs last_session (DT.fromMinutes (Maybe.withDefault 0 dynamic.autosleep)) |> DT.toPosix |> dateTimeFormat appState.timeZone
+                        prolongCmd =
+                            case dynamic.waitState of
+                                Nothing ->
+                                    -- [ Html.div [ HA.class "row" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
+                                    [ Html.div [ HA.class "col s12 l3" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
+
+                                _ ->
+                                    []
+                    in
+                    ( "Поиск"
+                    , [ expectSleepIn appState dynamic prolongCmd
+                      , startNewState appState "Ожидание" system.id System.Hidden dynamic
+                      ]
+                    )
+
+                -- Just Tracking ->
+                -- ++ prolongCmd
+                Just Hidden ->
+                    ( System.stateAsString Hidden, [ startNewState appState "Поиск" system.id System.Tracking dynamic ] )
+
+                Just state ->
+                    -- [ UI.row_item [ text <| "Текущий режим: " ++ (System.stateAsString state) ] ]
+                    ( System.stateAsString state, [] )
+
+
 view : AppState.AppState -> Model -> SystemDocumentInfo -> Html Msg
 view ({ t } as appState) model system =
     let
         ( stateText, controlWidgets ) =
-            case system.dynamic of
-                Nothing ->
-                    ( "Данные о состоянии еще не получены", [] )
-
-                Just dynamic ->
-                    case dynamic.state of
-                        Nothing ->
-                            ( "идет определение...", [] )
-
-                        Just Off ->
-                            ( "Феникс выключен."
-                            , [ just_text <| "Для включения - откройте крышку Феникса и нажмите кнопку." ]
-                            )
-
-                        Just Point ->
-                            ( "Идет определение местоположения..."
-                            , [ text <| "Это может занять до 15 минут." ]
-                            )
-
-                        Just Tracking ->
-                            let
-                                -- autosleep =
-                                --     dynamic.autosleep |> Maybe.withDefault 0 |> String.fromInt
-                                last_session =
-                                    case dynamic.lastping of
-                                        Nothing ->
-                                            DT.fromInt 0
-
-                                        Just lastping ->
-                                            lastping
-
-                                -- autosleepText =
-                                --     DT.addSecs last_session (DT.fromMinutes (Maybe.withDefault 0 dynamic.autosleep)) |> DT.toPosix |> dateTimeFormat appState.timeZone
-                                prolongCmd =
-                                    case dynamic.waitState of
-                                        Nothing ->
-                                            -- [ Html.div [ HA.class "row" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
-                                            [ Html.div [ HA.class "col s12 l3" ] [ UI.cmdButton "Отложить" OnShowProlongSleepDialog ] ]
-
-                                        _ ->
-                                            []
-                            in
-                            ( "Поиск"
-                            , [ expectSleepIn appState dynamic prolongCmd
-                              , startNewState appState "Ожидание" system.id System.Hidden dynamic
-                              ]
-                            )
-
-                        -- Just Tracking ->
-                        -- ++ prolongCmd
-                        Just Hidden ->
-                            ( System.stateAsString Hidden, [ startNewState appState "Поиск" system.id System.Tracking dynamic ] )
-
-                        Just state ->
-                            -- [ UI.row_item [ text <| "Текущий режим: " ++ (System.stateAsString state) ] ]
-                            ( System.stateAsString state, [] )
+            stateTextAndWidget appState system
     in
     div [ class "details-item" ]
         [ div [ class "title" ] [ text <| t "control.Текущий режим" ]

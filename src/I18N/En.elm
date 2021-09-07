@@ -171,7 +171,7 @@ translations =
                 , ( "Удалить Феникс", string "Delete the Fenix" )
                 , ( "Экзекутор в наличии", string "The Executor is available" )
                 , ( "Не указан", string "Not indicated" )
-                , ( "Номер телефона", string "Phone number" )
+                , ( "SIM-карта", string "SIM-card" )
                 , ( "IMEI", string "IMEI" )
                 , ( "Версия ПО", string "Software version" )
                 , ( "Модель", string "Model" )

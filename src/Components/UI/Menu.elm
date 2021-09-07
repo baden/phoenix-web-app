@@ -1,7 +1,7 @@
 port module Components.UI.Menu exposing (..)
 
 import API.Account as Account exposing (AccountDocumentInfo)
-import API.System exposing (SystemDocumentInfo)
+import API.System as System exposing (State(..), SystemDocumentInfo)
 import AppState exposing (AppState)
 import AssocList as Dict exposing (Dict)
 import Components.UI.Scale as Scale
@@ -217,10 +217,7 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
                         ]
                     , span [ class "submenu-status" ]
                         [ div [ class "fenix-status" ]
-                            [ span [ class "status-icon wait-status" ] []
-                            , span [ class "status" ] [ text "Ожидание" ]
-                            , span [ class "icon sleep" ] []
-                            ]
+                            (fenixStatus appState msystem)
                         ]
                     ]
                 , ul [ class "submenu-items" ] systemMenu
@@ -234,6 +231,48 @@ view pageBase account ({ t } as appState) msystem ({ themePopup, languagePopup }
 
 
 -- Private
+
+
+fenixStatus : AppState -> Maybe SystemDocumentInfo -> List (Html Msg)
+fenixStatus { t } msystem =
+    case msystem of
+        Nothing ->
+            []
+
+        Just system ->
+            let
+                stateText =
+                    -- ( stateText, controlWidgets ) =
+                    case system.dynamic of
+                        Nothing ->
+                            "Данные о состоянии еще не получены"
+
+                        Just dynamic ->
+                            case dynamic.state of
+                                Nothing ->
+                                    "идет определение..."
+
+                                Just Off ->
+                                    "Феникс выключен."
+
+                                Just Point ->
+                                    "Идет определение местоположения..."
+
+                                Just Tracking ->
+                                    "Поиск"
+
+                                -- Just Tracking ->
+                                -- ++ prolongCmd
+                                Just Hidden ->
+                                    System.stateAsString Hidden
+
+                                Just state ->
+                                    System.stateAsString state
+            in
+            [ span [ class "status-icon wait-status" ] []
+            , span [ class "status" ] [ text <| t <| "control." ++ stateText ]
+            , span [ class "icon sleep" ] []
+            ]
 
 
 menuTheme : AppState -> Model -> Html Msg

@@ -204,7 +204,7 @@
 		height: 5px
 		width: 12px
 		background: $secondaryTxt
-		border-radius: 2px 2px 0 0 
+		border-radius: 2px 2px 0 0
 	&-wr
 		border: 1px solid $secondaryTxt
 		border-radius: 2px
@@ -407,13 +407,15 @@
 		font-size: 1rem
 		padding-left: 12px
 		font-weight: 600
-		.wait-mode
+		div:first-child
 			margin-bottom: 10px
 			.mode-title
 				font-size: 0.93rem
 				font-weight: 700
-		.search-mode
+		div:last-child
 			color: $secondaryTxt
+		// .wait-mode
+		// .search-mode
 
 	&-changed-mode
 		background: $bgBasic
@@ -655,9 +657,9 @@
 	animation: showPhone 7s ease-in-out infinite
 
 @keyframes showPhone
-	0% 
+	0%
 		opacity: 1
-	100% 
+	100%
 		opacity: 0
 
 .copiedMess
