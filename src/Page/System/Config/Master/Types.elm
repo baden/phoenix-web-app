@@ -138,16 +138,16 @@ trackToValue : MasterDataTrack -> String
 trackToValue v =
     case v of
         M_TRACK_MIN ->
-            -- 12 часов
-            "720"
+            -- 7 суток
+            "10080"
 
         M_TRACK_MID ->
-            -- 4 часа
-            "240"
+            -- 24 часа
+            "1440"
 
         M_TRACK_MAX ->
-            -- 1 час
-            "60"
+            -- 6 часов
+            "360"
 
 
 masterNextPage : MasterPage -> MasterPage

@@ -209,6 +209,13 @@ translations =
                 , ( "Показать", string "Show" )
                 , ( "изменения", string "changes" )
                 , ( "Хорошо", string "Хорошо" )
+                , ( "Максимальное время работы в режиме Поиск - ", string "Максимальное время работы в режиме Поиск - " )
+                , ( "7 суток", string "7 days" )
+                , ( "24 часа", string "24 hours" )
+                , ( "6 часов", string "6 hours" )
+                , ( "Рекомендуется для охраны автомобиля на длительной стоянке.", string "Recommended for guarding a car in a long parking lot." )
+                , ( "Рекомендуется для наиболее вероятного обнаружения угнанного автомобиля.", string "Recommended for the most likely detection of a stolen vehicle." )
+                , ( "Рекомендуется для максимальной экономии энергии батареи питания.", string "Recommended for maximum battery saving." )
                 ]
           )
         , ( "control"
