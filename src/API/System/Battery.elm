@@ -183,7 +183,7 @@ expect_at_tracking capacity =
         secsInH =
             3600
 
-        -- будем считать 80% времени работы
+        -- будем считать 33% времени работы
         drain_each_hour =
             (drain_gsm_on 1
                 + drain_session 60
@@ -192,7 +192,7 @@ expect_at_tracking capacity =
                 + drain_cpu secsInH
             )
                 -- 0.8
-                * 1.0
+                * 0.33
 
         -- _ =
         --     Debug.log "drain_each_hour" drain_each_hour

@@ -159,13 +159,13 @@ masterDialogView3 { t } model sysId params =
     [ div [ class "title-st" ] [ text <| t "config.Информирование" ]
     , div [ class "page-subtext" ] [ text <| t "config.Когда происходят определенные события, Феникс может отправлять SMS на заданный номер" ]
     , div [ class "config-sm-title" ] [ text <| t "config.Укажите номер телефона" ]
-    , div [ class "config-set-phone input-st" ] [ span [ class "phone-prefix" ] [ text "+380" ], input [ attribute "autocomplete" "off", value model.smsPhone1, HE.onInput OnSMSPhone1 ] [] ]
+    , div [ class "config-set-phone input-st" ] [ input [ attribute "autocomplete" "off", value model.smsPhone1, HE.onInput OnSMSPhone1 ] [] ]
     , div [ class "config-sm-title" ] [ text <| t "config.Выберите события" ]
-    , div [ class "toggler-list" ]
+    , div [ class "toggler-list", HA.disabled True ]
         [ toggler "Критический остаток средств" balance (\v m -> { m | balance = v })
         , toggler "Низкий уровень заряда батареи" lowPower (\v m -> { m | lowPower = v })
         , toggler "Изменение режима (Поиск <-> Ожидание)" changeMode (\v m -> { m | changeMode = v })
-        , toggler "Начало движения (в режиме Поиск)" moved (\v m -> { m | moved = v })
+        , toggler "Изменение местоположения (в режиме Поиск)" moved (\v m -> { m | moved = v })
         , toggler "Включение и выключение Феникса" onOff (\v m -> { m | onOff = v })
         , toggler "Вскрытие корпуса" caseOpen (\v m -> { m | caseOpen = v })
         ]

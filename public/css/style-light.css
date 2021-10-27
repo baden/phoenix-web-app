@@ -2302,7 +2302,7 @@ button, select, input {
     position: absolute;
     left: 0; }
   .config-set-phone input {
-    padding-left: 47px; }
+    padding-left: 8px; }
 
 .config-set-ussd {
   margin-top: 15px; }

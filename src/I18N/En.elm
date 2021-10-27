@@ -149,7 +149,7 @@ translations =
                 , ( "Критический остаток средств", string "Critical balance of funds" )
                 , ( "Низкий уровень заряда батареи", string "Low battery level" )
                 , ( "Изменение режима (Поиск <-> Ожидание)", string "Changing mode ( Search) <-> Standby)" )
-                , ( "Начало движения (в режиме Поиск)", string "Start driving (in Search mode)" )
+                , ( "Изменение местоположения (в режиме Поиск)", string "Changing location (in Search mode)" )
                 , ( "Включение и выключение Феникса", string "Switching Fenix on and off" )
                 , ( "Вскрытие корпуса", string "Opening the enclosure" )
                 , ( "Контроль баланса SIM-карты", string "Checking the SIM card balance" )

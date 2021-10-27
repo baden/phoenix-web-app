@@ -81,7 +81,7 @@ initMasterData =
         { balance = False
         , lowPower = False
         , changeMode = False
-        , moved = False
+        , moved = True
         , caseOpen = False
         , onOff = False
 
