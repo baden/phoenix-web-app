@@ -26,7 +26,7 @@ just_text v =
 
 
 stateTextAndWidget : AppState.AppState -> SystemDocumentInfo -> ( String, List (Html Msg) )
-stateTextAndWidget appState system =
+stateTextAndWidget ({ t } as appState) system =
     -- ( stateText, controlWidgets ) =
     case system.dynamic of
         Nothing ->
@@ -39,12 +39,12 @@ stateTextAndWidget appState system =
 
                 Just Off ->
                     ( "Феникс выключен."
-                    , [ just_text <| "Для включения - откройте крышку Феникса и нажмите кнопку." ]
+                    , [ just_text <| t <| "control.Для включения - откройте крышку Феникса и нажмите кнопку." ]
                     )
 
                 Just Point ->
                     ( "Идет определение местоположения..."
-                    , [ text <| "Это может занять до 15 минут." ]
+                    , [ text <| t <| "control.Это может занять до 15 минут." ]
                     )
 
                 Just Tracking ->

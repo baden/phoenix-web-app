@@ -107,7 +107,7 @@ paramsWidget { t } sysId params showQueue =
                             ]
             in
             div [ class "details-item" ]
-                [ div [ class "title" ] [ text (ParamDesc.description name) ]
+                [ div [ class "title" ] [ text <| t <| "params." ++ name ]
                 , div [ class "setting-item-wr" ] valueField
                 ]
 

@@ -11,6 +11,7 @@ translations =
         , ( "Режим", string "Mode" )
         , ( "Поиск", string "Search" )
         , ( "Ожидание", string "Standby" )
+        , ( "Выключен", string "Power Off" )
         , ( "themes"
           , object
                 [ ( "dark", string "Dark" )
@@ -253,12 +254,12 @@ translations =
                 , ( "На ч", string "На {{h}} ч" )
                 , ( "Включить режим", string "Activate mode" )
                 , ( "Смена Режима", string "Mode change" )
-                , ( "change_state_dialog", string "{{date}}, при следующем сеансе связи, Феникс будет переведён в режим {{state}}" )
+                , ( "change_state_dialog", string "+++{{date}}, при следующем сеансе связи, Феникс будет переведён в режим {{state}}" )
                 , ( "Информация будет доступна после выхода Феникса на связь.", string "Information will be available once Fenix has been contacted." )
                 , ( "неизвестно", string "unknown" )
                 , ( "Положение неизвестно", string "Position unknown" )
                 , ( "Разблокировать двигатель", string "Unlock the engine" )
-                , ( "wait_state", string "{{datetime}}, при следующем сеансе связи," )
+                , ( "wait_state", string "+++{{datetime}}, при следующем сеансе связи," )
                 , ( "будет определено текущее местоположение", string "the current location will be determined" )
                 , ( "будет продлена работа Феникса в режиме Поиск", string "the Fenix will be extended in Search mode" )
                 , ( "будет запущена отложенная блокировка двигателя", string "the delayed engine blocking will be started" )
@@ -276,6 +277,8 @@ translations =
                 , ( "block_lazy_comment", string "Recommended in cases where the vehicle has definitely not made it to the «deadhead» or where the vehicle is in direct line of sight." )
                 , ( "Заблокировать", string "Block" )
                 , ( "Вы сможете нажать эту кнопку после того как Феникc исполнит команды которые ждут выполнения", string "You will be able to press this button after the Fenix has executed the commands that are waiting to be executed" )
+                , ( "Для включения - откройте крышку Феникса и нажмите кнопку.", string "+++Для включения - откройте крышку Феникса и нажмите кнопку." )
+                , ( "Это может занять до 15 минут.", string "+++Это может занять до 15 минут." )
                 ]
           )
         , ( "params"
