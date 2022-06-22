@@ -1,0 +1,76 @@
+[debug] [2022-06-20T11:42:51.262Z] ----------------------------------------------------------------------
+[debug] [2022-06-20T11:42:51.263Z] Command:       /home/baden/.nvm/versions/node/v14.17.4/bin/node /home/baden/.nvm/versions/node/v14.17.4/bin/firebase deploy
+[debug] [2022-06-20T11:42:51.263Z] CLI Version:   9.16.0
+[debug] [2022-06-20T11:42:51.264Z] Platform:      linux
+[debug] [2022-06-20T11:42:51.264Z] Node Version:  v14.17.4
+[debug] [2022-06-20T11:42:51.264Z] Time:          Mon Jun 20 2022 14:42:51 GMT+0300 (за східноєвропейським літнім часом)
+[debug] [2022-06-20T11:42:51.264Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2022-06-20T11:42:51.304Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2022-06-20T11:42:51.304Z] > authorizing via signed-in user (baden.i.ua@gmail.com)
+[debug] [2022-06-20T11:42:51.304Z] [iam] checking project fenix-ca60d for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2022-06-20T11:42:51.305Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2022-06-20T11:42:51.306Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2022-06-20T11:42:51.452Z] <<< HTTP RESPONSE 400 {"date":"Mon, 20 Jun 2022 11:42:51 GMT","expires":"Mon, 01 Jan 1990 00:00:00 GMT","cache-control":"no-cache, no-store, max-age=0, must-revalidate","pragma":"no-cache","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-06-20T11:42:51.455Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/fenix-ca60d:testIamPermissions  
+ {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2022-06-20T11:42:52.369Z] <<< HTTP RESPONSE 401 {"www-authenticate":"Bearer realm=\"https://accounts.google.com/\", error=\"invalid_token\"","vary":"X-Origin, Referer, Origin,Accept-Encoding","content-type":"application/json; charset=UTF-8","date":"Mon, 20 Jun 2022 11:42:52 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","server-timing":"gfet4t7; dur=777","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-06-20T11:42:52.370Z] <<< HTTP RESPONSE BODY {"error":{"code":401,"message":"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.","status":"UNAUTHENTICATED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"ACCESS_TOKEN_TYPE_UNSUPPORTED","metadata":{"service":"cloudresourcemanager.googleapis.com","method":"google.cloudresourcemanager.v1.Projects.TestIamPermissions"}}]}}
+[debug] [2022-06-20T11:42:52.373Z] [iam] error while checking permissions, command may fail: FirebaseError: HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+[debug] [2022-06-20T11:42:52.377Z] > refreshing access token with scopes: []
+[debug] [2022-06-20T11:42:52.377Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2022-06-20T11:42:52.504Z] <<< HTTP RESPONSE 400 {"expires":"Mon, 01 Jan 1990 00:00:00 GMT","pragma":"no-cache","date":"Mon, 20 Jun 2022 11:42:52 GMT","cache-control":"no-cache, no-store, max-age=0, must-revalidate","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-06-20T11:42:52.508Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/fenix-ca60d [none]
+[debug] [2022-06-20T11:42:52.686Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/fenix-ca60d 401
+[debug] [2022-06-20T11:42:52.686Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/fenix-ca60d {"error":{"code":401,"message":"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.","status":"UNAUTHENTICATED"}}
+[debug] [2022-06-20T11:42:52.687Z] HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+[debug] [2022-06-20T11:42:52.689Z] FirebaseError: HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+    at module.exports (/home/baden/.nvm/versions/node/v14.17.4/lib/node_modules/firebase-tools/lib/responseToError.js:38:12)
+    at Client.doRequest (/home/baden/.nvm/versions/node/v14.17.4/lib/node_modules/firebase-tools/lib/apiv2.js:238:23)
+    at processTicksAndRejections (internal/process/task_queues.js:95:5)
+    at async Client.request (/home/baden/.nvm/versions/node/v14.17.4/lib/node_modules/firebase-tools/lib/apiv2.js:96:20)
+    at async Object.getFirebaseProject (/home/baden/.nvm/versions/node/v14.17.4/lib/node_modules/firebase-tools/lib/management/projects.js:290:21)
+    at async Object.getDefaultHostingSite (/home/baden/.nvm/versions/node/v14.17.4/lib/node_modules/firebase-tools/lib/getDefaultHostingSite.js:8:21)
+    at async requireHostingSite (/home/baden/.nvm/versions/node/v14.17.4/lib/node_modules/firebase-tools/lib/requireHostingSite.js:9:18)
+    at async Object.fn (/home/baden/.nvm/versions/node/v14.17.4/lib/node_modules/firebase-tools/lib/commands/deploy.js:65:9)
+    at async /home/baden/.nvm/versions/node/v14.17.4/lib/node_modules/firebase-tools/lib/command.js:169:17
+[error] 
+[error] Error: Failed to get Firebase project fenix-ca60d. Please make sure the project exists and your account has permission to access it.
+[debug] [2022-06-20T11:43:17.462Z] ----------------------------------------------------------------------
+[debug] [2022-06-20T11:43:17.463Z] Command:       /home/baden/.nvm/versions/node/v14.17.4/bin/node /home/baden/.nvm/versions/node/v14.17.4/bin/firebase apps:list
+[debug] [2022-06-20T11:43:17.463Z] CLI Version:   9.16.0
+[debug] [2022-06-20T11:43:17.464Z] Platform:      linux
+[debug] [2022-06-20T11:43:17.464Z] Node Version:  v14.17.4
+[debug] [2022-06-20T11:43:17.464Z] Time:          Mon Jun 20 2022 14:43:17 GMT+0300 (за східноєвропейським літнім часом)
+[debug] [2022-06-20T11:43:17.464Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2022-06-20T11:43:17.502Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2022-06-20T11:43:17.503Z] > authorizing via signed-in user (baden.i.ua@gmail.com)
+[debug] [2022-06-20T11:43:17.507Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2022-06-20T11:43:17.507Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2022-06-20T11:43:17.652Z] <<< HTTP RESPONSE 400 {"date":"Mon, 20 Jun 2022 11:43:17 GMT","pragma":"no-cache","cache-control":"no-cache, no-store, max-age=0, must-revalidate","expires":"Mon, 01 Jan 1990 00:00:00 GMT","content-type":"application/json; charset=utf-8","vary":"X-Origin, Referer, Origin,Accept-Encoding","server":"scaffolding on HTTPServer2","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-06-20T11:43:17.655Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/fenix-ca60d:searchApps?pageSize=100  
+ 
+[debug] [2022-06-20T11:43:17.775Z] <<< HTTP RESPONSE 401 {"www-authenticate":"Bearer realm=\"https://accounts.google.com/\", error=\"invalid_token\"","vary":"X-Origin, Referer, Origin,Accept-Encoding","content-type":"application/json; charset=UTF-8","date":"Mon, 20 Jun 2022 11:43:17 GMT","server":"ESF","cache-control":"private","x-xss-protection":"0","x-frame-options":"SAMEORIGIN","x-content-type-options":"nosniff","alt-svc":"h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000,h3-Q050=\":443\"; ma=2592000,h3-Q046=\":443\"; ma=2592000,h3-Q043=\":443\"; ma=2592000,quic=\":443\"; ma=2592000; v=\"46,43\"","accept-ranges":"none","transfer-encoding":"chunked"}
+[debug] [2022-06-20T11:43:17.776Z] <<< HTTP RESPONSE BODY {"error":{"code":401,"message":"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.","status":"UNAUTHENTICATED"}}
+[debug] [2022-06-20T11:43:17.780Z] HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+[debug] [2022-06-20T11:43:17.786Z] FirebaseError: HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+    at module.exports (/home/baden/.nvm/versions/node/v14.17.4/lib/node_modules/firebase-tools/lib/responseToError.js:38:12)
+    at Request._callback (/home/baden/.nvm/versions/node/v14.17.4/lib/node_modules/firebase-tools/lib/api.js:41:35)
+    at Request.self.callback (/home/baden/.nvm/versions/node/v14.17.4/lib/node_modules/firebase-tools/node_modules/request/request.js:185:22)
+    at Request.emit (events.js:400:28)
+    at Request.emit (domain.js:470:12)
+    at Request.<anonymous> (/home/baden/.nvm/versions/node/v14.17.4/lib/node_modules/firebase-tools/node_modules/request/request.js:1154:10)
+    at Request.emit (events.js:400:28)
+    at Request.emit (domain.js:470:12)
+    at IncomingMessage.<anonymous> (/home/baden/.nvm/versions/node/v14.17.4/lib/node_modules/firebase-tools/node_modules/request/request.js:1076:12)
+    at Object.onceWrapper (events.js:519:28)
+    at IncomingMessage.emit (events.js:412:35)
+    at IncomingMessage.emit (domain.js:470:12)
+    at endReadableNT (internal/streams/readable.js:1317:12)
+    at processTicksAndRejections (internal/process/task_queues.js:82:21)
+[error] 
+[error] Error: Failed to list Firebase apps. See firebase-debug.log for more info.

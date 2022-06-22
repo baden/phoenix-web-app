@@ -8,7 +8,9 @@ import Json.Encode as Encode
 
 apiURL : String
 apiURL =
-    "https://gis.navi.cc/nominatim/reverse.php?format=json"
+    "https://gis.navi.cc/nominatim/reverse.php?format=json&accept-language=ua"
+
+    -- "https://nominatim.openstreetmap.org/reverse?format=json&accept-language=ua"
 
 
 

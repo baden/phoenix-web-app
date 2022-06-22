@@ -271,7 +271,8 @@ fenixStatus { t } msystem =
             in
             [ span [ class "status-icon wait-status" ] []
             , span [ class "status" ] [ text <| t <| "control." ++ stateText ]
-            , span [ class "icon sleep" ] []
+            -- , span [ class "icon sleep" ] []
+            , span [ class "fas icon fa-parking" ] []
             ]
 
 

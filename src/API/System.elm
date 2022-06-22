@@ -689,7 +689,7 @@ getLogs sysId offset =
         [ ( "cmd", Encode.string "system_logs" )
         , ( "id", Encode.string sysId )
         , ( "skip", Encode.int offset )
-        , ( "count", Encode.int 20 )
+        , ( "count", Encode.int 50 )
         ]
 
 

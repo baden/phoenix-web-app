@@ -98,7 +98,8 @@ view ({ t } as appState) model system =
             [ div [ class "content-item fenix-status fenix-big-status" ]
                 [ span [ class "status-big-icon wait-status status-icon" ] []
                 , span [ class "status" ] [ text <| t <| "control." ++ stateText ]
-                , span [ class "icon sleep" ] []
+                -- , span [ class "icon sleep" ] []
+                , span [ class "fas icon fa-parking" ] []
                 ]
 
             -- div [ class "details-blue-title blue-gradient-text" ]
@@ -227,7 +228,7 @@ expectSleepIn ({ t } as appState) dynamic prolongCmd =
             , InfoUI.disabledOnWait dynamic appState <|
                 div [ class "details-blue-title blue-gradient-text modal-open", InfoUI.disabledOnWaitClass dynamic, onClick OnShowProlongSleepDialog ]
                     [ text <| t "control.Продлить режим"
-                    , span [ class "uppercase-txt mode" ] [ text "Поиск" ]
+                    , span [ class "uppercase-txt mode" ] [ text <| t "Поиск" ]
                     ]
             ]
         ]

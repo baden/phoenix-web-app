@@ -65,7 +65,7 @@ view ({ t } as appState) model system mlogs =
         logsBody =
             case mlogs of
                 Nothing ->
-                    [ li [] [ text "Не загружено. Нажимте кнопку Обновить." ] ]
+                    [ li [] [ text <| t "logs.Не загружено. Нажимте кнопку Обновить." ] ]
 
                 Just logs ->
                     let
@@ -82,8 +82,8 @@ view ({ t } as appState) model system mlogs =
                                     [ span [] [ text date ], span [] [ text time ] ]
 
                                 -- , span [ HA.property "innerHTML" (Encode.string itm.text) ] []
-                                , text <|
-                                    userReplace "<[^>]*>" (\_ -> "") itm.text
+                                , text <| t <|
+                                    ("logs." ++ userReplace "<[^>]*>" (\_ -> "") itm.text)
                                 ]
                     in
                     logs

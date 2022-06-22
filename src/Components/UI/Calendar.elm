@@ -106,13 +106,13 @@ viewChoosed day appState model =
 
 
 viewCalendarWidget : AppState -> String -> Maybe String -> Model -> Html Msg
-viewCalendarWidget appState sysId mday model =
+viewCalendarWidget ({ t } as appState) sysId mday model =
     div [ class "calendar_opened" ]
         [ -- , weeksView appState model
           lazy4 dayListWidget appState.timeZone model.hours sysId mday
         , div [ class "calendar_control" ]
-            [ a [ class "custom-btn", href <| UB.absolute [ "map", sysId ] [] ] [ text "Скрыть трек" ]
-            , div [ class "custom-btn", onClick DoClose ] [ text "Закрыть" ]
+            [ a [ class "custom-btn", href <| UB.absolute [ "map", sysId ] [] ] [ text <| t "map.Скрыть трек" ]
+            , div [ class "custom-btn", onClick DoClose ] [ text <| t "map.Закрыть" ]
             ]
         ]
 

@@ -228,7 +228,7 @@ function addMap(element) {
             const container = L.DomUtil.create('div', 'leaflet-control-layers leaflet-control-layers-expanded leaflet-control hovered-control');
             container.id = 'leaflet-control-custom-container-buffer';
             container.style = 'padding-right: 5px;padding-bottom: 2px;';
-            container.title = 'Показать где я';
+            container.title = 'Показати де я';
             // const item = L.DomUtil.create('div', null, container);
             container.innerHTML = `<i style="font-size: 20px; margin: 0; padding: 0" class="material-icons">location_searching</i>`;
 
@@ -316,8 +316,8 @@ class LeafletMap extends HTMLElement {
         console.log("LeafletMap:constructor:", this, L);
 
         this._center = this.center || {
-            lat: 48.5013798,
-            lng: 34.6234255
+            lat: null, //48.5013798,
+            lng: null //34.6234255
         };
         delete this.center;
 
@@ -431,6 +431,7 @@ class LeafletMap extends HTMLElement {
         return this._center;
     }
     set center(value) {
+        // console.log("==set center", value);
         // this.htmlElement.setAttribute("cx", value);
         if (value !== null && value.lat !== this._center.lat && value.lng !== this._center.lng) {
             console.log("set center", value, "old: ", this._center);
@@ -438,7 +439,14 @@ class LeafletMap extends HTMLElement {
             if(!this._map) return;
             var lat = this._center.lat;
             var lng = this._center.lng;
-            this.lazyView(() => { this._map.flyTo(L.latLng(lat, lng), 15); }, 100);
+
+            if(
+                (Math.abs(value.lat) > 0.01) && (Math.abs(value.lon) > 0.01)
+            ) {
+                this.lazyView(() => { this._map.flyTo(L.latLng(lat, lng), 15); }, 100);
+
+            };
+
             // this._map.flyTo(L.latLng(lat, lng), 15);
             this._map.invalidateSize();
             if(this._center_marker) this._center_marker.setLatLng(L.latLng(lat, lng));

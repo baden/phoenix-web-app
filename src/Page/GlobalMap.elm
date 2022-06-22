@@ -48,6 +48,7 @@ init mSysId mlat mlng mday =
     --         Debug.log "Map init" ( mSysId, ( mlat, mlng ), mday )
     -- in
     ( { center = LatLng (mlat |> mstr2float 48.5013798) (mlng |> mstr2float 34.6234255)
+    -- ( { center = LatLng (mlat |> mstr2float 0.0) (mlng |> mstr2float 0.0)
       , address = Nothing
       , showAddress = False
       , markers = []
@@ -308,7 +309,7 @@ sysPosition appState sid maybe_dynamic maddress =
             case ( dynamic.latitude, dynamic.longitude, dynamic.dt ) of
                 ( Just latitude, Just longitude, Just dt ) ->
                     [ UI.row_item
-                        [ Html.text <| "Последнее положение определено " ++ (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ++ " "
+                        [ Html.text <| (appState.t "map.Последнее положение определено ") ++ (dt |> DT.toPosix |> dateTimeFormat appState.timeZone) ++ " "
 
                         -- , Html.button [ class "waves-effect waves-light btn", onClick (SetCenter latitude longitude) ] [ Html.text "Центровать" ]
                         ]

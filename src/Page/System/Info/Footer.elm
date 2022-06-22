@@ -16,7 +16,7 @@ view : AppState -> Model -> SystemDocumentInfo -> Html Msg
 view ({ t } as appState) model system =
     case system.dynamic of
         Nothing ->
-            text "TBD"
+            text ""
 
         Just dynamic ->
             case dynamic.state of
