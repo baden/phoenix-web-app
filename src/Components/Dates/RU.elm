@@ -1,4 +1,4 @@
-module Components.Dates.Russian exposing (russian)
+module Components.Dates.RU exposing (language)
 
 import DateFormat.Language exposing (Language)
 import Time exposing (Month(..), Weekday(..))
@@ -9,8 +9,8 @@ import Time exposing (Month(..), Weekday(..))
 -- import Time exposing (Month(..), Weekday(..))
 
 
-russian : Language
-russian =
+language : Language
+language =
     Language
         monthName
         -- monthNameShort

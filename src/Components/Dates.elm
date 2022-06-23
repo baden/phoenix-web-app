@@ -2,13 +2,17 @@ module Components.Dates exposing (..)
 
 import API.System as System
 import AppState
-import Components.Dates.Russian exposing (russian)
+import Components.Dates.RU as RU
+import Components.Dates.UA as UA
+import Components.Dates.EN as EN
 import Components.UI as UI
 import DateFormat
 import Html exposing (Html, a, div, text)
 import Html.Attributes as HA
 import Time exposing (Posix, Zone)
 import Types.Dt as DT
+import Date exposing (Language)
+import DateFormat.Language
 
 
 
@@ -83,10 +87,8 @@ expectSleepIn appState dynamic prolongCmd =
                         "никогда"
 
                     else
-                        DT.addSecs last_session offset |> DT.toPosix |> dateTimeFormat tz
+                        DT.addSecs last_session offset |> DT.toPosix |> dateTimeFormat appState
 
-        tz =
-            appState.timeZone
     in
     Html.div [ HA.class "row sessions" ]
         ([ Html.div [ HA.class "col s8 l6" ] [ text "Переход в режим Ожидание:" ]
@@ -96,14 +98,14 @@ expectSleepIn appState dynamic prolongCmd =
         )
 
 
-nextSessionText : AppState.AppState -> DT.Dt -> Maybe DT.Offset -> Zone -> String
-nextSessionText { t } last_session next_session tz =
+nextSessionText : AppState.AppState -> DT.Dt -> Maybe DT.Offset -> String
+nextSessionText ({ t } as appState) last_session next_session =
     case next_session of
         Nothing ->
             t "control.неизвестно"
 
         Just offset ->
-            DT.addSecs last_session offset |> DT.toPosix |> dateTimeFormat tz
+            DT.addSecs last_session offset |> DT.toPosix |> dateTimeFormat appState
 
 
 
@@ -163,19 +165,26 @@ humanOffset before current =
         "неизвестно"
 
 
-dateTimeFormat : Zone -> Posix -> String
-dateTimeFormat zone time =
-    dateFormat zone time ++ " " ++ timeFormat zone time
+dateTimeFormat : AppState.AppState -> Posix -> String
+dateTimeFormat {langCode, timeZone} time =
+    dateFormat langCode timeZone time ++ " " ++ timeFormat timeZone time
 
 
 
 -- russianDate time zone
 
+language : String -> DateFormat.Language.Language
+language langCode =
+    case langCode |> String.toUpper |> String.left 2 of
+        "EN" -> EN.language
+        "RU" -> RU.language
+        _ -> UA.language
 
-dateFormat : Zone -> Posix -> String
-dateFormat =
+
+dateFormat : String -> Zone -> Posix -> String
+dateFormat langCode =
     -- DateFormat.format
-    DateFormat.formatWithLanguage russian
+    DateFormat.formatWithLanguage (language langCode)
         [ DateFormat.dayOfMonthNumber
         , divToken
         , DateFormat.monthNameAbbreviated
@@ -185,15 +194,15 @@ dateFormat =
         ]
 
 
-dateTimeFormatFull : Zone -> Posix -> String
-dateTimeFormatFull zone time =
-    dateFormatFull zone time ++ " " ++ timeFormat zone time
+dateTimeFormatFull : String -> Zone -> Posix -> String
+dateTimeFormatFull langCode zone time =
+    dateFormatFull langCode zone time ++ " " ++ timeFormat zone time
 
 
-dateFormatFull : Zone -> Posix -> String
-dateFormatFull =
+dateFormatFull : String -> Zone -> Posix -> String
+dateFormatFull langCode =
     -- DateFormat.format
-    DateFormat.formatWithLanguage russian
+    DateFormat.formatWithLanguage (language langCode)
         [ DateFormat.dayOfMonthNumber
         , divToken
         , DateFormat.monthNameAbbreviated

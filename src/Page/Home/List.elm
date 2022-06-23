@@ -397,7 +397,7 @@ smallPowerWidget appState mbattery msleep mdynamic =
 
 
 batText : AppState -> Battery -> Float -> Int -> Maybe System.Dynamic -> List (Html Msg)
-batText { t } battery used sleep mdynamic =
+batText ({ t } as appState) battery used sleep mdynamic =
     let
         capacity =
             battery.init_capacity - used
@@ -419,12 +419,12 @@ batText { t } battery used sleep mdynamic =
         case trackingMode of
             True ->
                 [ span [ class "title" ] [ text <| t "list.Режим Поиск:" ]
-                , span [] [ text (Battery.expect_at_tracking capacity) ]
+                , span [] [ text (Battery.expect_at_tracking appState capacity) ]
                 ]
 
             False ->
                 [ span [ class "title" ] [ text <| t "list.Режим Ожидание:" ]
-                , span [] [ text (Battery.expect_at_sleep capacity sleep) ]
+                , span [] [ text (Battery.expect_at_sleep appState capacity sleep) ]
                 ]
     ]
 

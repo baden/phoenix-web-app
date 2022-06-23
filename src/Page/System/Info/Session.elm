@@ -38,9 +38,6 @@ view ({ t, now } as appState) model system =
                                 Just lastping ->
                                     lastping
 
-                        tz =
-                            appState.timeZone
-
                         nextSessionTextRow =
                             case dynamic.state of
                                 Just System.Off ->
@@ -49,13 +46,13 @@ view ({ t, now } as appState) model system =
                                 _ ->
                                     [ div [ class "content-item" ]
                                         [ span [ class "name" ] [ text <| t "control.Следующий сеанс связи:" ]
-                                        , span [ class "text" ] [ text <| Dates.nextSessionText appState last_session dynamic.next tz ]
+                                        , span [ class "text" ] [ text <| Dates.nextSessionText appState last_session dynamic.next ]
                                         ]
                                     ]
                     in
                     [ div [ class "content-item" ]
                         [ span [ class "name" ] [ text <| t "control.Последний сеанс связи:" ]
-                        , span [ class "text" ] [ text <| (last_session |> DT.toPosix |> Dates.dateTimeFormat tz) ]
+                        , span [ class "text" ] [ text <| (last_session |> DT.toPosix |> Dates.dateTimeFormat appState) ]
                         ]
                     ]
                         ++ nextSessionTextRow

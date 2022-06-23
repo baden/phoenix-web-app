@@ -68,8 +68,8 @@ view ({ t } as appState) model system mparams =
                                 [ div [ class "content-item-group" ]
                                     [ batteryWidget percentage
                                     , span [ class "details-mode" ]
-                                        [ waitModeTime appState (Battery.expect_at_sleep capacity sleep)
-                                        , trackerModeTime appState (Battery.expect_at_tracking capacity)
+                                        [ waitModeTime appState (Battery.expect_at_sleep appState capacity sleep)
+                                        , trackerModeTime appState (Battery.expect_at_tracking appState capacity)
                                         ]
                                     ]
                                 ]
@@ -79,7 +79,7 @@ view ({ t } as appState) model system mparams =
                             , div [ class "setting-item-wr" ]
                                 [ div [ class "setting-item" ]
                                     [ startCapacity appState (String.fromFloat battery.init_capacity)
-                                    , beginAt appState (battery.init_dt |> DT.toPosix |> dateFormatFull appState.timeZone)
+                                    , beginAt appState (battery.init_dt |> DT.toPosix |> dateFormatFull appState.langCode appState.timeZone)
 
                                     -- , totalTime appState "(TBD)673 ч 9 мин"
                                     , usedBattery appState (Round.round 1 used)

@@ -148,9 +148,16 @@ function getUserTheme() {
         window.localStorage.getItem(THEME_KEY) ||
         defaultTheme();
 
-    theme_style.href = "/css/style-" + themeName + ".css";
+    // Hardcored: only 'dark' and 'light' is supported
 
-    return (themeName);
+    if(themeName == "dark") {
+        theme_style.href = "/css/style-dark.css";
+        return "dark";
+    } else {
+        theme_style.href = "/css/style-light.css";
+        return "light";
+    }
+
 }
 
 function defaultTheme() {

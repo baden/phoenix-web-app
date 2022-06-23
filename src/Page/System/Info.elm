@@ -292,7 +292,7 @@ viewInfoEntended appState ({ extendInfo } as model) system =
 
 
 confirmDialogs : AppState -> Model -> String -> Maybe System.Dynamic -> List (Html Msg)
-confirmDialogs ({ t, tr, timeZone } as appState) model sysId mdynamic =
+confirmDialogs ({ t, tr } as appState) model sysId mdynamic =
     -- TODO: Вынести в модуль
     let
         pre =
@@ -306,7 +306,7 @@ confirmDialogs ({ t, tr, timeZone } as appState) model sysId mdynamic =
                             dynamic.lastping |> Maybe.withDefault (DT.fromInt 0)
 
                         pre_date =
-                            Dates.nextSessionText appState last_session dynamic.next timeZone
+                            Dates.nextSessionText appState last_session dynamic.next
                     in
                     tr "control.wait_state" [ ( "datetime", pre_date ) ]
     in

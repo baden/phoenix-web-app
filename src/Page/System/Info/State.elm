@@ -203,10 +203,8 @@ expectSleepIn ({ t } as appState) dynamic prolongCmd =
                         "никогда"
 
                     else
-                        DT.addSecs last_session offset |> DT.toPosix |> Dates.dateTimeFormat tz
+                        DT.addSecs last_session offset |> DT.toPosix |> Dates.dateTimeFormat appState
 
-        tz =
-            appState.timeZone
     in
     -- Html.div [ HA.class "row sessions" ]
     --     ([ Html.div [ HA.class "col s8 l6" ] [ text "Переход в режим Ожидание:" ]

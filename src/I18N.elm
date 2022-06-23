@@ -23,7 +23,7 @@ translations lang =
             I18N.Ru.translations
 
         _ ->
-            I18N.En.translations
+            I18N.Ua.translations
 
 
 type alias LanguageItem =

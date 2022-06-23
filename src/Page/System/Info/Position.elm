@@ -29,7 +29,7 @@ view ({ t } as appState) model system =
                         ( Just latitude, Just longitude, Just dt ) ->
                             div [ class "content-item" ]
                                 [ span [ class "name" ] [ text <| t "control.Положение определено:" ]
-                                , span [ class "text" ] [ text (dt |> DT.toPosix |> Dates.dateTimeFormat appState.timeZone) ]
+                                , span [ class "text" ] [ text (dt |> DT.toPosix |> Dates.dateTimeFormat appState) ]
                                 ]
 
                         ( _, _, _ ) ->

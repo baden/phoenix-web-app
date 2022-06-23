@@ -3,6 +3,7 @@ module API.System.Battery exposing (..)
 import Json.Decode as JD
 import Json.Decode.Pipeline exposing (hardcoded, optional, required)
 import Types.Dt as DT
+import AppState
 
 
 
@@ -130,8 +131,8 @@ drain_session s =
     toFloat s * 0.3573 * 1.0 / 3.0
 
 
-expect_at_sleep : Float -> Int -> String
-expect_at_sleep capacity sleep =
+expect_at_sleep : AppState.AppState -> Float -> Int -> String
+expect_at_sleep appState capacity sleep =
     let
         sessions =
             24 / (toFloat sleep / 60)
@@ -161,24 +162,24 @@ expect_at_sleep capacity sleep =
 
         ss =
             if y > 10 then
-                String.fromInt y ++ year_suffix y
+                String.fromInt y ++ year_suffix appState y
 
             else if y > 0 then
-                String.fromInt y ++ year_suffix y ++ " " ++ month_full (String.fromInt <| d // 30)
+                String.fromInt y ++ year_suffix appState y ++ " " ++ month_full appState (String.fromInt <| d // 30)
 
             else if d > 29 then
-                month_full (String.fromInt m) ++ " " ++ days_full (d - m * 30)
+                month_full appState (String.fromInt m) ++ " " ++ days_full appState (d - m * 30)
 
             else
                 -- (String.fromInt <| d) ++ "сут"
-                days_full d
+                days_full appState d
     in
     -- ss ++ " (" ++ String.fromInt drainD ++ "д)"
     ss
 
 
-expect_at_tracking : Float -> String
-expect_at_tracking capacity =
+expect_at_tracking : AppState.AppState -> Float -> String
+expect_at_tracking appState capacity =
     let
         secsInH =
             3600
@@ -209,59 +210,59 @@ expect_at_tracking capacity =
             d // 30
     in
     if m > 0 then
-        month_full (String.fromInt m) ++ " " ++ days_full (d - m * 30)
+        month_full appState (String.fromInt m) ++ " " ++ days_full appState (d - m * 30)
 
     else if d > 0 then
-        days_full d ++ " " ++ hours_full h
+        days_full appState d ++ " " ++ hours_full appState h
         -- String.fromInt d ++ "сут " ++ String.fromInt h ++ "ч"
 
     else
-        hours_full h
+        hours_full appState h
 
 
-year_suffix : Int -> String
-year_suffix y =
-    case y of
+year_suffix : AppState.AppState -> Int -> String
+year_suffix {t} y =
+    t <| case y of
         1 ->
-            " год"
+            "dates. год"
 
         2 ->
-            " года"
+            "dates. года"
 
         3 ->
-            " года"
+            "dates. года"
 
         4 ->
-            " года"
+            "dates. года"
 
         _ ->
-            " лет"
+            "dates. лет"
 
 
-month_full : String -> String
-month_full m =
+month_full : AppState.AppState -> String -> String
+month_full {t} m =
     case m of
         "0" ->
             ""
 
         "1" ->
-            m ++ " месяц"
+            m ++ (t "dates. месяц")
 
         "2" ->
-            m ++ " месяца"
+            m ++ (t "dates. месяца")
 
         "3" ->
-            m ++ " месяца"
+            m ++ (t "dates. месяца")
 
         "4" ->
-            m ++ " месяца"
+            m ++ (t "dates. месяца")
 
         _ ->
-            m ++ " месяцев"
+            m ++ (t "dates. месяцев")
 
 
-days_full : Int -> String
-days_full d =
+days_full : AppState.AppState -> Int -> String
+days_full ({t} as appState) d =
     let
         sd =
             String.fromInt d
@@ -270,23 +271,23 @@ days_full d =
         ""
 
     else if d == 1 then
-        sd ++ " день"
+        sd ++ (t "dates. день")
 
     else if d == 2 || d == 3 || d == 4 then
-        sd ++ " дня"
+        sd ++ (t "dates. дня")
 
     else if d > 30 then
-        "3" ++ days_full (d - 30)
+        "3" ++ days_full appState (d - 30)
 
     else if d > 20 then
-        "2" ++ days_full (d - 20)
+        "2" ++ days_full appState (d - 20)
 
     else
-        sd ++ " дней"
+        sd ++ (t "dates. дней")
 
 
-hours_full : Int -> String
-hours_full h =
+hours_full : AppState.AppState -> Int -> String
+hours_full ({t} as appState) h =
     let
         sh =
             String.fromInt h
@@ -295,13 +296,13 @@ hours_full h =
         ""
 
     else if h == 1 then
-        sh ++ " час"
+        sh ++ (t "dates. час")
 
     else if h == 2 || h == 3 || h == 4 then
-        sh ++ " часа"
+        sh ++ (t "dates. часа")
 
     else if h > 20 then
-        "2" ++ hours_full (h - 20)
+        "2" ++ hours_full appState (h - 20)
 
     else
-        sh ++ " часов"
+        sh ++ (t "dates. часов")

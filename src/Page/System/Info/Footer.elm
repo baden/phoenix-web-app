@@ -47,11 +47,8 @@ footerWait ({ t, tr } as appState) model system waitState dynamic =
                 Just lastping ->
                     lastping
 
-        tz =
-            appState.timeZone
-
         pre_date =
-            Dates.nextSessionText appState last_session dynamic.next tz
+            Dates.nextSessionText appState last_session dynamic.next
 
         pre =
             tr "control.wait_state" [ ( "datetime", pre_date ) ]

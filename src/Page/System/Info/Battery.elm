@@ -34,14 +34,14 @@ view ({ t } as appState) model system =
                                     div [ class "wait-mode" ]
                                         [ span [ class "mode-title" ]
                                             [ text <| t "control.Режим", text " ", span [ class "uppercase-txt" ] [ text <| t "Ожидание" ], text ": " ]
-                                        , span [] [ text (Battery.expect_at_sleep capacity sleep) ]
+                                        , span [] [ text (Battery.expect_at_sleep appState capacity sleep) ]
                                         ]
 
                                 trackingMode =
                                     div [ class "search-mode" ]
                                         [ span [ class "mode-title" ]
                                             [ text <| t "control.Режим", text " ", span [ class "uppercase-txt" ] [ text <| t "Поиск" ], text ": " ]
-                                        , span [] [ text (Battery.expect_at_tracking capacity) ]
+                                        , span [] [ text (Battery.expect_at_tracking appState capacity) ]
                                         ]
 
                                 lifetime =
