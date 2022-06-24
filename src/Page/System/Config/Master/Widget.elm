@@ -8,6 +8,7 @@ import Html exposing (Html, a, div, form, input, label, p, span, text)
 import Html.Attributes as HA exposing (attribute, checked, class, href, type_)
 import Html.Events as HE
 import Page.System.Config.Types exposing (..)
+import AppState
 
 
 masterPageForm : List (Html Msg) -> Html Msg
@@ -221,15 +222,15 @@ text_row s =
     row [ UI.text s ]
 
 
-changes_table : Dict String String -> List (UI msg)
-changes_table dict =
+changes_table : AppState.AppState -> Dict String String -> List (UI msg)
+changes_table {t} dict =
     let
         row ( ttl, val ) =
             Html.tr [] [ Html.td [ HA.class "right-align", HA.style "width" "50%" ] [ Html.text ttl ], Html.td [] [ Html.text val ] ]
     in
     [ Html.div [ HA.class "row" ] <|
         [ Html.div [ HA.class "col s12 m10 offset-m1 l8 offset-l2 xl6 offset-xl3" ]
-            [ Html.text "Следующие параметры будут изменены:"
+            [ Html.text <| t <| "config.Следующие параметры будут изменены:"
             , Html.table []
                 [ Html.tbody [] (dict |> Dict.toList |> List.map row)
                 ]

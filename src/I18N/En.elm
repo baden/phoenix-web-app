@@ -217,6 +217,7 @@ translations =
                 , ( "Рекомендуется для охраны автомобиля на длительной стоянке.", string "Recommended for guarding a car in a long parking lot." )
                 , ( "Рекомендуется для наиболее вероятного обнаружения угнанного автомобиля.", string "Recommended for the most likely detection of a stolen vehicle." )
                 , ( "Рекомендуется для максимальной экономии энергии батареи питания.", string "Recommended for maximum battery saving." )
+                , ( "Следующие параметры будут изменены:", string "The following parameters will be changed:")
                 ]
           )
         , ( "control"
@@ -254,12 +255,12 @@ translations =
                 , ( "На ч", string "На {{h}} ч" )
                 , ( "Включить режим", string "Activate mode" )
                 , ( "Смена Режима", string "Mode change" )
-                , ( "change_state_dialog", string "+++{{date}}, при следующем сеансе связи, Феникс будет переведён в режим {{state}}" )
+                , ( "change_state_dialog", string "{{date}}, at the next communication session, Phoenix will be transferred to the mode {{state}}" )
                 , ( "Информация будет доступна после выхода Феникса на связь.", string "Information will be available once Fenix has been contacted." )
                 , ( "неизвестно", string "unknown" )
                 , ( "Положение неизвестно", string "Position unknown" )
                 , ( "Разблокировать двигатель", string "Unlock the engine" )
-                , ( "wait_state", string "+++{{datetime}}, при следующем сеансе связи," )
+                , ( "wait_state", string "{{datetime}}, at the next communication session," )
                 , ( "будет определено текущее местоположение", string "the current location will be determined" )
                 , ( "будет продлена работа Феникса в режиме Поиск", string "the Fenix will be extended in Search mode" )
                 , ( "будет запущена отложенная блокировка двигателя", string "the delayed engine blocking will be started" )
@@ -417,6 +418,14 @@ translations =
                 , ( " час", string " hour")
                 , ( " часа", string " hours")
                 , ( " часов", string " hours")
+                ]
+          )
+        , ( "status"
+          , object
+                [ ( "Авто в движении", string "Car on moving" )
+                , ( "Авто в спящем состоянии", string "Car on sleeping")
+                , ( "Состояние еще неизвестно", string "Unknown state yet")
+                , ( "", string "")
                 ]
           )
         ]

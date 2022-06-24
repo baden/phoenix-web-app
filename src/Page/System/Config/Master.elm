@@ -189,7 +189,7 @@ masterDialogView4 { t } model sysId params =
 
 
 masterDialogView5 : AppState -> Model -> String -> SystemDocumentParams -> List (Html Msg)
-masterDialogView5 { t } model sysId params =
+masterDialogView5 ({ t } as appState) model sysId params =
     let
         ( s1, s2 ) =
             model.masterData.masterSecurValue
@@ -247,7 +247,7 @@ masterDialogView5 { t } model sysId params =
         -- , masterFooterLast sysId params.queue (changesList model)
         ]
     ]
-        ++ showChanges model sysId
+        ++ showChanges appState model sysId
 
 
 masterFooterLast : String -> Dict String String -> Dict String String -> List (Html Msg)
@@ -372,14 +372,14 @@ changesList ({ masterData } as model) =
                )
 
 
-showChanges : Model -> String -> List (Html Msg)
-showChanges model sysId =
+showChanges : AppState.AppState -> Model -> String -> List (Html Msg)
+showChanges appState model sysId =
     case model.showChanges of
         False ->
             []
 
         True ->
-            changes_table <| changesList model
+            changes_table appState <| changesList model
 
 
 

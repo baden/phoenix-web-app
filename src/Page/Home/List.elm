@@ -263,18 +263,18 @@ stateIcon { t } mdynamic =
         ( title_, icon ) =
             case mdynamic of
                 Nothing ->
-                    ( "Состояние еще неизвестно", "sleep" )
+                    ( t "status.Состояние еще неизвестно", "sleep" )
 
                 Just d ->
                     case d.state of
                         Nothing ->
-                            ( "Состояние еще неизвестно", "sleep" )
+                            ( t "status.Состояние еще неизвестно", "sleep" )
 
                         Just System.Tracking ->
-                            ( "Авто в движении", "green-car" )
+                            ( t "status.Авто в движении", "green-car" )
 
                         _ ->
-                            ( "Авто в спящем состоянии", "sleep" )
+                            ( t "status.Авто в спящем состоянии", "sleep" )
 
         -- ("Нет сигнала", "chair")
         -- ("Авто не движется", "stop")
