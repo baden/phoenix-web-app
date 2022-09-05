@@ -547,6 +547,7 @@ computeViewForPage page model =
 view : Model -> Browser.Document Msg
 view model =
     let
+        {t} = model.appState
         modal =
             case model.errorMessage of
                 Nothing ->
@@ -554,10 +555,10 @@ view model =
 
                 Just errorText ->
                     [ UI.modal
-                        "Ошибка"
-                        [ UI.ModalText errorText
+                        (t "Ошибка")
+                        [ UI.ModalText <| t errorText
                         ]
-                        [ UI.cmdButton "Закрыть" OnCloseModal
+                        [ UI.cmdButton (t "map.Закрыть") OnCloseModal
                         ]
                     , UI.modal_overlay OnCloseModal
                     ]
@@ -585,6 +586,11 @@ view model =
 
 -- TODO: Тут бы провести глобальную унификацию!
 
+noRightsMsg t =
+    Html.div []
+        [ Html.text <| t "errors.Ошибка! Система не существует или у вас недостаточно прав для просмотра."
+        , Html.a [ HA.class "btn", HA.href "/" ] [ Html.text "errors.Вернуться на главную" ]
+        ]
 
 viewPage : Model -> Html Msg
 viewPage model =
@@ -610,10 +616,7 @@ viewPage model =
         Route.SystemLogs sysId ->
             case Dict.get sysId model.systems of
                 Nothing ->
-                    Html.div []
-                        [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра."
-                        , Html.a [ HA.class "btn", HA.href "/" ] [ Html.text "Вернуться на главную" ]
-                        ]
+                    noRightsMsg model.appState.t
 
                 Just system ->
                     let
@@ -640,10 +643,7 @@ viewPage model =
 viewMap4Sys sysId mlat mlng mday model =
     case Dict.get sysId model.systems of
         Nothing ->
-            Html.div []
-                [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра."
-                , Html.a [ HA.class "btn", HA.href "/" ] [ Html.text "Вернуться на главную" ]
-                ]
+            noRightsMsg model.appState.t
 
         Just system ->
             GlobalMap.viewSystem model.appState model.globalMap system mday |> Html.map (GlobalMapMsg >> OnPageMsg)
@@ -675,10 +675,7 @@ view4System : String -> Model -> (SystemDocumentInfo -> Html Msg) -> Html Msg
 view4System sysId model pageView =
     case Dict.get sysId model.systems of
         Nothing ->
-            Html.div []
-                [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра."
-                , Html.a [ HA.class "btn", HA.href "/" ] [ Html.text "Вернуться на главную" ]
-                ]
+            noRightsMsg model.appState.t
 
         Just system ->
             pageView system
@@ -688,10 +685,7 @@ view4SystemParams : String -> Model -> (SystemDocumentInfo -> Maybe SystemDocume
 view4SystemParams sysId model pageView =
     case Dict.get sysId model.systems of
         Nothing ->
-            Html.div []
-                [ Html.text "Ошибка! Система не существует или у вас недостаточно прав для просмотра."
-                , Html.a [ HA.class "btn", HA.href "/" ] [ Html.text "Вернуться на главную" ]
-                ]
+            noRightsMsg model.appState.t
 
         Just system ->
             pageView system Nothing

@@ -267,7 +267,7 @@ wellcomeTitle title_ =
 
 wellcomeButton : String -> Html a
 wellcomeButton title_ =
-    Html.a [ href "/linksys", class "btn blue-btn btn-add" ] [ text title_ ]
+    Html.a [ href "/linksys", class "btn btn-primary btn-lg btn-add" ] [ text title_ ]
 
 
 type alias MasterItem m =

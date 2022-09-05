@@ -53,6 +53,7 @@ translations =
         , ( "login"
           , object
                 [ ( "Добро пожаловать", string "Welcome" )
+                , ( "Добро пожаловать!", string "Welcome!" )
                 , ( "Войдите, чтобы продолжить", string "Log in to continue" )
                 , ( "Введите Ваш логин", string "Enter your username" )
                 , ( "name_not_found", string "The username was not found. Please check and try again." )
@@ -71,6 +72,10 @@ translations =
                 , ( "Укажите пароль повторно", string "Enter the password again" )
                 , ( "Пароль указан неверно", string "The password is incorrect" )
                 , ( "Вы должны принять условия", string "You have to accept the conditions" )
+                , ( "Чтобы пользоваться сервисом, вы должны ", string "To use the service, you must " )
+                , ( "авторизоваться", string "to be authorized" )
+                , ( "зарегистрироваться", string "register" )
+                , ( "Добавьте Феникс в список наблюдения", string "Add your Phoenix to watchlist" )
                 ]
           )
         , ( "list"
@@ -218,6 +223,10 @@ translations =
                 , ( "Рекомендуется для наиболее вероятного обнаружения угнанного автомобиля.", string "Recommended for the most likely detection of a stolen vehicle." )
                 , ( "Рекомендуется для максимальной экономии энергии батареи питания.", string "Recommended for maximum battery saving." )
                 , ( "Следующие параметры будут изменены:", string "The following parameters will be changed:")
+                , ( "Номер телефона", string "Phone number" )
+                , ( "Введите номер телефона", string "Set phone number" )
+                , ( "Определено автоматически", string "Detected automatically" )
+                , ( "Установлен пользователем", string "Installed by user" )
                 ]
           )
         , ( "control"
@@ -400,7 +409,8 @@ translations =
                 , ( "Нет сигнала GPS", string "Немає сигналу GPS" )
                 , ( "Режим изменен на: ПОИСК", string "Режим змінено на: ПОШУК" )
                 , ( "Cигнал GPS восстановлен.", string "Сигнал GPS відновлено." )
-                , ( "", string "" )
+                , ( "Режим изменен на: ОЖИДАНИЕ", string "" )
+                , ( "Получена команда на смену режима на ОЖИДАНИЕ через WEB-приложение", string "Received command to change the mode to STANDBY via the WEB application" )
                 , ( "", string "" )
                 ]
           )
@@ -428,4 +438,11 @@ translations =
                 , ( "", string "")
                 ]
           )
+        , ( "errors"
+          , object
+                [ ( "Код неверный, уже использован или вышло время действия кода.", string "The code is invalid, has already been used, or the code has expired." )
+                , ( "Неверное имя пользователя или пароль.", string "The username or password you entered is incorrect.")
+                , ( "Ошибка! Система не существует или у вас недостаточно прав для просмотра.", string "Error! The system does not exist or you do not have sufficient rights to view.")
+                ]
+        )
         ]

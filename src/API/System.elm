@@ -33,6 +33,7 @@ type alias SystemDocumentInfo =
     , title : String
     , imei : Maybe String
     , phone : Maybe String
+    , phoneManual : Maybe String
 
     -- , lastPosition : Maybe LastPosition
     -- , lastSession : Maybe LastSession
@@ -65,6 +66,7 @@ systemDocumentDecoder =
         |> required "title" JD.string
         |> optional "imei" (JD.maybe JD.string) Nothing
         |> optional "phone" (JD.maybe JD.string) Nothing
+        |> optional "phone_manual" (JD.maybe JD.string) Nothing
         -- |> optional "last_position" (JD.maybe lastPositionDecoder) Nothing
         -- |> optional "last_session" (JD.maybe lastSessionDecoder) Nothing
         |> optional "dynamic" (JD.maybe dynamicDecoder) Nothing
@@ -568,7 +570,7 @@ setSystemPhone sysId newPhone =
     Document.updateDocumentRequest "system" <|
         Encode.object
             [ ( "key", Encode.string sysId )
-            , ( "path", Encode.string "phone" )
+            , ( "path", Encode.string "phone_manual" )
             , ( "value", Encode.string newPhone )
             ]
 

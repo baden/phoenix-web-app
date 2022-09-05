@@ -43,7 +43,9 @@ view ({ t } as appState) { showPhone } system =
                 -- number-phone accountPhone showAnimate
                 [ div [ class "number-phone accountPhone", classList [ ( "showAnimate", showPhone ) ], onClick phoneClick ]
                     [ span [ class "details-icon icon-phone" ] []
-                    , span [ class "text", id "phoneForCopy" ] [ text <| Maybe.withDefault (t "config.Не указан") system.phone ]
+                    , span [ class "text", id "phoneForCopy" ] [
+                        text <| Maybe.withDefault (Maybe.withDefault (t "config.Не указан") system.phone ) <| system.phoneManual
+                        ]
                     ]
                 , div [ class "details-blue-title blue-gradient-text topUpText", classList [ ( "hidden", showPhone ) ] ]
                     [ span [ class "details-icon icon-card" ] []

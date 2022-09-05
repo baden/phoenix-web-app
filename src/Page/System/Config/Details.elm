@@ -3,7 +3,7 @@ module Page.System.Config.Details exposing (..)
 import API.System as System exposing (State(..), SystemDocumentInfo, SystemDocumentParams)
 import AppState exposing (AppState)
 import Html exposing (Html, a, div, input, label, span, text)
-import Html.Attributes as HA exposing (attribute, class, name, type_, value)
+import Html.Attributes as HA exposing (attribute, class, name, type_, value, title)
 import Html.Events as HE
 import Page.System.Config.Types exposing (..)
 
@@ -23,12 +23,19 @@ view ({ t } as appState) model system mparams =
                         , span [ class "text" ] [ text v ]
                         ]
 
-        maybeRowEditable : String -> Maybe String -> (String -> String) -> Html Msg
-        maybeRowEditable label field foo =
+        maybeRowEditable : String -> Maybe String -> Maybe String -> (String -> String) -> Html Msg
+        maybeRowEditable label field field_manual foo =
+            let
+                (mark, v) = case (field, field_manual) of
+                    (_, Just value) -> (t "config.Установлен пользователем", Just value)
+                    (Just value, Nothing) -> (t "config.Определено автоматически", Just value)
+                    (_, _) -> ("?", Nothing)
+            in
             div [ class "content-item setting-det-phone" ]
                 [ span [ class "name" ] [ text <| t <| "config." ++ label, text ":" ]
-                , span [ class "text" ] [ text <| Maybe.withDefault (t "config.Не указан") <| field ]
-                , Html.button [ class "setting-edit details-edit-btn openModalPhone", HE.onClick <| OnEditPhone <| Maybe.withDefault "" <| system.phone ] [ span [ class "icon-edit" ] [] ]
+                , span [ class "text", title mark ] [ text <| Maybe.withDefault (t "config.Не указан") <| v ]
+                --, span [ class "mark hide"] [text mark]
+                , Html.button [ class "setting-edit details-edit-btn openModalPhone", HE.onClick <| OnEditPhone <| Maybe.withDefault "" <| v ] [ span [ class "icon-edit" ] [] ]
                 ]
     in
     Html.div [ class "details-wrapper-bg" ]
@@ -40,7 +47,7 @@ view ({ t } as appState) model system mparams =
                     [ maybeRow "Модель" system.hwid identity
                     , maybeRow "Версия ПО" system.swid identity
                     , maybeRow "IMEI" system.imei identity
-                    , maybeRowEditable "SIM-карта" system.phone identity
+                    , maybeRowEditable "SIM-карта" system.phone system.phoneManual identity
                     , div [ class "content-item" ]
                         [ span [ class "checkmark-wrap setting-executors" ]
                             [ label [ class "checkboxContainer" ]

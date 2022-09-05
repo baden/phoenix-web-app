@@ -52,11 +52,11 @@ auth_info ({ t } as appState) macc systems =
     case macc of
         Nothing ->
             --[ UI.smallForm
-            [ UI.formHeader "Добро пожаловать"
-            , UI.formSubtitle "Чтобы пользоваться сервисом, вы должны "
-            , UI.greenLink "/login" "авторизоваться"
+            [ UI.formHeader <| t "login.Добро пожаловать"
+            , UI.formSubtitle <| t "login.Чтобы пользоваться сервисом, вы должны "
+            , UI.greenLink "/login" (t "login.авторизоваться")
             , text " или "
-            , UI.greenLink "/auth" "зарегистрироваться"
+            , UI.greenLink "/auth" (t "login.зарегистрироваться")
             , text " в системе."
             ]
 
@@ -68,9 +68,9 @@ auth_info ({ t } as appState) macc systems =
                 -- , UI.row_item [ UI.linkIconTextButton "plus-square" "Добавить Феникс" "/linksys" ]
                 -- ]
                 [ UI.wellcomeContent
-                    [ UI.wellcomeTitle "Добро пожаловать!"
-                    , UI.formSubtitle "Добавьте Феникс в список наблюдения"
-                    , UI.wellcomeButton "Добавить"
+                    [ UI.wellcomeTitle <| t "login.Добро пожаловать!"
+                    , UI.formSubtitle <| t "login.Добавьте Феникс в список наблюдения"
+                    , UI.wellcomeButton <| t "list.Добавить"
                     ]
                 ]
 
